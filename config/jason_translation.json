@@ -1,0 +1,29 @@
+{
+  "actions": {
+    "move": ["move_to"],
+    "rescue": ["rescue"],
+    "load": ["load"],
+    "unload": ["unload"],
+    "notify_ready": ["notify_ambulance_ready"],
+    "notify_fire": ["notify_fire_needed"],
+    "rest": ["rest"],
+    "ignore": ["log", "radio_busy", "radio_done", "radio_loaded", "radio_found"]
+  },
+  "predicates": {
+    "buried": ["buried_civilian", "buried_victim"],
+    "surface": ["surface_civilian"],
+    "ready": ["ready_for_ambulance", "ready_for_pickup", "fire_ready", "fire_done", "reported_transportable"],
+    "loaded": ["loaded"],
+    "delivered": ["delivered"],
+    "found": ["found_civilian"],
+    "told_fire": ["told_fire"],
+    "told_ambulance": ["told_ambulance"],
+    "collapsed": ["collapsed"],
+    "damaged": ["damaged"],
+    "building": ["building"],
+    "road": ["road"],
+    "known_road": ["known_road"],
+    "visited": ["visited"],
+    "refuge": ["refuge", "found_refuge"]
+  }
+}
