@@ -4,7 +4,7 @@ This repository contains the implementation and the small reproducible example u
 
 The idea is simple. We first build a raw MCMAS model that contains the physically available behavior of the rescue domain. We then read the Jason AgentSpeak programs and use their goals, contexts, beliefs, plan order, and movement priorities to generate a more constrained MCMAS protocol. The resulting Jason-guided model is checked with the same ATL properties.
 
-The raw model tells us what is physically possible. The Jason-guided model tells us what remains possible under the decisions encoded by the Jason programs. The translation is intentionally restrictive, so this repository does not assume that ATL properties are preserved from the raw model to the Jason-guided model.
+The raw model tells us what is physically possible. The Jason-guided model tells us what remains possible under the decisions encoded by the Jason programs.
 
 ## Repository structure
 
@@ -33,8 +33,6 @@ The raw model tells us what is physically possible. The Jason-guided model tells
 │   └── figures/
 │       ├── raw_state_trace.pdf
 │       └── jason_guided_state_trace.pdf
-└── scripts/
-    └── reproduce_custom2.sh
 ```
 
 ## Main files
@@ -79,26 +77,6 @@ python3 src/jason_guided.py \
   --initial examples/custom2/input/initial.json \
   --output build/custom2/custom2_jason_guided.ispl
 ```
-
-The generated files can be compared with the checked-in reference models:
-
-```bash
-cmp build/custom2/custom2_raw.ispl \
-    examples/custom2/generated/custom2_raw.ispl
-
-cmp build/custom2/custom2_jason_guided.ispl \
-    examples/custom2/generated/custom2_jason_guided.ispl
-```
-
-If `cmp` prints nothing, the files are identical.
-
-The same steps are wrapped in:
-
-```bash
-./scripts/reproduce_custom2.sh
-```
-
-If `mcmas` is available in `PATH`, the script also runs MCMAS on the regenerated Jason-guided model.
 
 ## Running MCMAS directly
 
