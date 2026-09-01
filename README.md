@@ -47,3 +47,86 @@ The physical model stays the same. What changes is the agent decision model.
         │   └── jason_mapping.json
         └── generated/
             └── c1_jason_guided.ispl
+```
+
+## Main files
+
+`src/jason_guided.py` is the general translator. It reads a baseline ISPL model, Jason AgentSpeak programs, and a semantic mapping, then generates the corresponding Jason-guided ISPL model.
+
+`agents/` contains the Jason programs used by the examples.
+
+Each folder under `examples/` contains its own baseline model, `jason_mapping.json`, and generated Jason-guided model.
+
+The translator itself is domain-independent. Domain-specific correspondences stay in the mapping files rather than being hard-coded in Python.
+
+## Requirements
+
+Python 3 is enough to run the translator. It uses only the Python standard library.
+
+MCMAS is required to model check the generated `.ispl` files.
+
+Jason itself is not required for translation because the `.asl` source files are read directly.
+
+## Generate the examples
+
+Run the following commands from the repository root.
+
+### Two-location RCRS example
+
+```bash
+python3 src/jason_guided.py \
+  --config examples/custom2/input/jason_mapping.json
+```
+
+### Nine-zone RCRS example
+
+```bash
+python3 src/jason_guided.py \
+  --config examples/abstract/input/jason_mapping.json
+```
+
+### Exact 95-area RCRS example
+
+```bash
+python3 src/jason_guided.py \
+  --config examples/exact95/input/jason_mapping.json
+```
+
+### CAGE example
+
+```bash
+python3 src/jason_guided.py \
+  --config examples/cage/input/jason_mapping.json
+```
+
+The generated files are written directly to the corresponding `generated/` folders.
+
+## Translation
+
+The translator follows five main steps:
+
+1. `BuildGoalControl`
+2. `BuildAgentSpec`
+3. `GenerateProtocol`
+4. `GenerateEvolutionRules`
+5. `ReplaceAgentDecisionModel`
+
+Jason provides the decision structure, while the baseline ISPL model remains the source of physical action legality and action effects.
+
+## Running MCMAS
+
+For example:
+
+```bash
+mcmas examples/custom2/generated/custom2_jason_guided.ispl
+```
+
+The ATL formulae are already included in the ISPL models.
+
+## Citation
+
+If you use this repository, please cite:
+
+**Leveraging BDI in ATL Model Checking to Mitigate State-Space Explosion**
+
+The final BibTeX entry will be added after publication details are available.
