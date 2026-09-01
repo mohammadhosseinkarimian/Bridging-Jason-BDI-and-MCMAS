@@ -1,0 +1,29 @@
+-- State 0 --
+  Agent Environment
+    alive_Civ=true
+    at_Civ=z_central_south
+    at_zone=z_west_north
+    buriedness_value_Civ=6
+    damage_Civ=none
+    dead_Civ=false
+    delivered_Civ=false
+    did_action_AT=none
+    did_action_FB=none
+    fb_zone=z_east_north
+    health_Civ=complete
+    health_clock=0
+    loaded_Civ=false
+    status_z_central_mid=collapsed
+    status_z_central_north=healthy
+    status_z_central_south=collapsed
+    status_z_east_mid=healthy
+    status_z_east_north=healthy
+    status_z_east_south=healthy
+    status_z_west_mid=healthy
+    status_z_west_north=healthy
+    status_z_west_south=healthy
+  Agent FireBrigade
+    dummy=false
+  Agent AmbulanceTeam
+    dummy=false
+

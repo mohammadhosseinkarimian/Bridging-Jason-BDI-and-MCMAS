@@ -1,0 +1,235 @@
+{
+  "files": {
+    "raw": "raw-test.ispl",
+    "output": "../generated/raw-test_jason_guided.ispl"
+  },
+  "jason": {
+    "vocabulary": {
+      "actions": {},
+      "predicates": {}
+    },
+    "roles": {
+      "role_a": {
+        "program": "../../../agents/fire_brigade.asl",
+        "ispl_agent": "FireBrigade",
+        "entry_goal": "step",
+        "goal_var": "fb_goal_level",
+        "plan": {
+          "actions": {
+            "rescue": "fb_rescue_Civ"
+          },
+          "predicates": {
+            "buried_civilian": {
+              "all": [
+                {
+                  "eq": [
+                    {
+                      "env": "alive_Civ"
+                    },
+                    true
+                  ]
+                },
+                {
+                  "neq": [
+                    {
+                      "env": "buriedness_value_Civ"
+                    },
+                    0
+                  ]
+                }
+              ]
+            },
+            "buried_victim": {
+              "all": [
+                {
+                  "eq": [
+                    {
+                      "env": "alive_Civ"
+                    },
+                    true
+                  ]
+                },
+                {
+                  "neq": [
+                    {
+                      "env": "buriedness_value_Civ"
+                    },
+                    0
+                  ]
+                }
+              ]
+            },
+            "found_civilian": true,
+            "buried_civilian_reported": false,
+            "rescued": {
+              "all": [
+                {
+                  "eq": [
+                    {
+                      "env": "alive_Civ"
+                    },
+                    true
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "env": "buriedness_value_Civ"
+                    },
+                    0
+                  ]
+                }
+              ]
+            },
+            "told_ambulance": true,
+            "at_area": true
+          },
+          "ignore_actions": [
+            "log",
+            "radio_busy",
+            "radio_done",
+            "radio_loaded",
+            "radio_found",
+            "notify_ambulance_ready"
+          ],
+          "fallback": "fb_rest",
+          "transitions": [
+            {
+              "from": "rescued_buried_civilian",
+              "to": "done",
+              "action": "rescue",
+              "when": {
+                "eq": [
+                  {
+                    "env": "buriedness_value_Civ"
+                  },
+                  1
+                ]
+              }
+            }
+          ],
+          "pass_through": [
+            "fb_move_to_974",
+            "fb_move_to_975",
+            "fb_move_to_976",
+            "fb_move_to_274",
+            "fb_move_to_279",
+            "fb_move_to_971",
+            "fb_move_to_970",
+            "fb_move_to_896",
+            "fb_move_to_960"
+          ]
+        }
+      },
+      "role_b": {
+        "program": "../../../agents/ambulance_team.asl",
+        "ispl_agent": "AmbulanceTeam",
+        "entry_goal": "step",
+        "goal_var": "at_goal_level",
+        "plan": {
+          "actions": {
+            "load": "at_load_Civ",
+            "unload": "at_unload_Civ"
+          },
+          "predicates": {
+            "delivered": {
+              "eq": [
+                {
+                  "env": "delivered_Civ"
+                },
+                true
+              ]
+            },
+            "loaded": {
+              "eq": [
+                {
+                  "env": "loaded_Civ"
+                },
+                true
+              ]
+            },
+            "buried_civilian": {
+              "all": [
+                {
+                  "eq": [
+                    {
+                      "env": "alive_Civ"
+                    },
+                    true
+                  ]
+                },
+                {
+                  "neq": [
+                    {
+                      "env": "buriedness_value_Civ"
+                    },
+                    0
+                  ]
+                }
+              ]
+            },
+            "found_civilian": true,
+            "surface_civilian": {
+              "all": [
+                {
+                  "eq": [
+                    {
+                      "env": "alive_Civ"
+                    },
+                    true
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "env": "buriedness_value_Civ"
+                    },
+                    0
+                  ]
+                }
+              ]
+            },
+            "refuge": true,
+            "found_refuge": true,
+            "at_area": true
+          },
+          "ignore_actions": [
+            "log",
+            "radio_busy",
+            "radio_done",
+            "radio_loaded",
+            "radio_found",
+            "notify_fire_needed"
+          ],
+          "fallback": "at_rest",
+          "transitions": [
+            {
+              "from": "loaded",
+              "to": "delivered",
+              "action": "load"
+            },
+            {
+              "from": "delivered",
+              "to": "done",
+              "action": "unload"
+            }
+          ],
+          "pass_through": [
+            "at_move_to_281",
+            "at_move_to_273",
+            "at_move_to_969",
+            "at_move_to_968",
+            "at_move_to_970",
+            "at_move_to_896",
+            "at_move_to_960",
+            "at_move_to_314",
+            "at_move_to_249"
+          ]
+        }
+      }
+    }
+  },
+  "model": {
+    "environment_agent": "Environment"
+  }
+}

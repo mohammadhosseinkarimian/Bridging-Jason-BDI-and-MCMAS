@@ -1,0 +1,17 @@
+-- State 0 --
+  Agent Environment
+    turn=blue_turn
+    blue_alert_OpServer0=none
+    blue_analysis_OpServer0=unknown
+    blue_pid_known_OpServer0=false
+    decoy_active_OpServer0=false
+    ot_service_running_OpServer0=true
+    red_access_OpServer0=none
+    red_believes_access_OpServer0=none
+    red_knows_host_OpServer0=false
+    red_knows_service_OpServer0=false
+  Agent Blue
+    dummy=false
+  Agent Red
+    dummy=false
+

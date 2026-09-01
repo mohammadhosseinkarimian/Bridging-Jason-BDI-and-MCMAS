@@ -1,0 +1,25 @@
+-- State 0 --
+  Agent Environment
+    alive_Civ=true
+    all_roads_initially_clear=true
+    at_area=area_1
+    brokenness_1=healthy
+    brokenness_2=collapsed
+    building_1=true
+    building_2=true
+    buriedness_value_Civ=1
+    civ_area=area_2
+    civilian_Civ=true
+    damage_Civ=moderate
+    dead_Civ=false
+    delivered_Civ=false
+    fb_area=area_1
+    health_Civ=high
+    hp_Civ=7500
+    loaded_Civ=false
+    refuge_area=area_1
+  Agent FireBrigade
+    dummy=false
+  Agent AmbulanceTeam
+    dummy=false
+

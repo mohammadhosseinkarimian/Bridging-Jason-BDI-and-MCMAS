@@ -1,0 +1,216 @@
+-- State 0 --
+  Agent Environment
+    Civ_ready_reported_to_AT=false
+    alive_Civ=true
+    all_roads_initially_clear=true
+    at_area=area_1
+    at_knows_buried_Civ=false
+    at_knows_refuge=true
+    brokenness_1=healthy
+    brokenness_2=collapsed
+    building_1=true
+    building_2=true
+    buried_Civ_reported_to_FB=false
+    buriedness_value_Civ=1
+    civ_area=area_2
+    civilian_Civ=true
+    damage_Civ=moderate
+    dead_Civ=false
+    delivered_Civ=false
+    fb_area=area_1
+    fb_knows_buried_Civ=false
+    health_Civ=high
+    hp_Civ=7500
+    loaded_Civ=false
+    refuge_area=area_1
+  Agent FireBrigade
+    dummy=false
+    fb_goal_level=saved_civilians
+    fb_visited_area_1=true
+    fb_visited_area_2=false
+  Agent AmbulanceTeam
+    at_goal_level=saved_civilians
+    at_visited_area_1=true
+    at_visited_area_2=false
+    dummy=false
+
+-- State 1 --
+  Agent Environment
+    Civ_ready_reported_to_AT=false
+    alive_Civ=true
+    all_roads_initially_clear=true
+    at_area=area_2
+    at_knows_buried_Civ=true
+    at_knows_refuge=true
+    brokenness_1=healthy
+    brokenness_2=collapsed
+    building_1=true
+    building_2=true
+    buried_Civ_reported_to_FB=false
+    buriedness_value_Civ=1
+    civ_area=area_2
+    civilian_Civ=true
+    damage_Civ=moderate
+    dead_Civ=false
+    delivered_Civ=false
+    fb_area=area_2
+    fb_knows_buried_Civ=true
+    health_Civ=moderate
+    hp_Civ=5000
+    loaded_Civ=false
+    refuge_area=area_1
+  Agent FireBrigade
+    dummy=false
+    fb_goal_level=saved_civilians
+    fb_visited_area_1=true
+    fb_visited_area_2=true
+  Agent AmbulanceTeam
+    at_goal_level=saved_civilians
+    at_visited_area_1=true
+    at_visited_area_2=true
+    dummy=false
+
+-- State 2 --
+  Agent Environment
+    Civ_ready_reported_to_AT=false
+    alive_Civ=true
+    all_roads_initially_clear=true
+    at_area=area_2
+    at_knows_buried_Civ=true
+    at_knows_refuge=true
+    brokenness_1=healthy
+    brokenness_2=collapsed
+    building_1=true
+    building_2=true
+    buried_Civ_reported_to_FB=false
+    buriedness_value_Civ=0
+    civ_area=area_2
+    civilian_Civ=true
+    damage_Civ=moderate
+    dead_Civ=false
+    delivered_Civ=false
+    fb_area=area_2
+    fb_knows_buried_Civ=true
+    health_Civ=at_risk
+    hp_Civ=2500
+    loaded_Civ=false
+    refuge_area=area_1
+  Agent FireBrigade
+    dummy=false
+    fb_goal_level=told_ambulance
+    fb_visited_area_1=true
+    fb_visited_area_2=true
+  Agent AmbulanceTeam
+    at_goal_level=loaded
+    at_visited_area_1=true
+    at_visited_area_2=true
+    dummy=false
+
+-- State 3 --
+  Agent Environment
+    Civ_ready_reported_to_AT=true
+    alive_Civ=true
+    all_roads_initially_clear=true
+    at_area=area_2
+    at_knows_buried_Civ=true
+    at_knows_refuge=true
+    brokenness_1=healthy
+    brokenness_2=collapsed
+    building_1=true
+    building_2=true
+    buried_Civ_reported_to_FB=false
+    buriedness_value_Civ=0
+    civ_area=in_ambulance
+    civilian_Civ=true
+    damage_Civ=moderate
+    dead_Civ=false
+    delivered_Civ=false
+    fb_area=area_2
+    fb_knows_buried_Civ=true
+    health_Civ=at_risk
+    hp_Civ=2500
+    loaded_Civ=true
+    refuge_area=area_1
+  Agent FireBrigade
+    dummy=false
+    fb_goal_level=saved_civilians
+    fb_visited_area_1=true
+    fb_visited_area_2=true
+  Agent AmbulanceTeam
+    at_goal_level=delivered
+    at_visited_area_1=true
+    at_visited_area_2=true
+    dummy=false
+
+-- State 4 --
+  Agent Environment
+    Civ_ready_reported_to_AT=true
+    alive_Civ=true
+    all_roads_initially_clear=true
+    at_area=area_1
+    at_knows_buried_Civ=true
+    at_knows_refuge=true
+    brokenness_1=healthy
+    brokenness_2=collapsed
+    building_1=true
+    building_2=true
+    buried_Civ_reported_to_FB=false
+    buriedness_value_Civ=0
+    civ_area=in_ambulance
+    civilian_Civ=true
+    damage_Civ=moderate
+    dead_Civ=false
+    delivered_Civ=false
+    fb_area=area_2
+    fb_knows_buried_Civ=true
+    health_Civ=at_risk
+    hp_Civ=2500
+    loaded_Civ=true
+    refuge_area=area_1
+  Agent FireBrigade
+    dummy=false
+    fb_goal_level=saved_civilians
+    fb_visited_area_1=true
+    fb_visited_area_2=true
+  Agent AmbulanceTeam
+    at_goal_level=delivered
+    at_visited_area_1=true
+    at_visited_area_2=true
+    dummy=false
+
+-- State 5 --
+  Agent Environment
+    Civ_ready_reported_to_AT=true
+    alive_Civ=true
+    all_roads_initially_clear=true
+    at_area=area_1
+    at_knows_buried_Civ=true
+    at_knows_refuge=true
+    brokenness_1=healthy
+    brokenness_2=collapsed
+    building_1=true
+    building_2=true
+    buried_Civ_reported_to_FB=false
+    buriedness_value_Civ=0
+    civ_area=area_1
+    civilian_Civ=true
+    damage_Civ=moderate
+    dead_Civ=false
+    delivered_Civ=true
+    fb_area=area_2
+    fb_knows_buried_Civ=true
+    health_Civ=at_risk
+    hp_Civ=2500
+    loaded_Civ=false
+    refuge_area=area_1
+  Agent FireBrigade
+    dummy=false
+    fb_goal_level=done
+    fb_visited_area_1=true
+    fb_visited_area_2=true
+  Agent AmbulanceTeam
+    at_goal_level=done
+    at_visited_area_1=true
+    at_visited_area_2=true
+    dummy=false
+

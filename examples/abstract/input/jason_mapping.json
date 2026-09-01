@@ -1,0 +1,451 @@
+{
+  "files": {
+    "raw": "abstract_raw.ispl",
+    "output": "../generated/abstract_jason_guided.ispl"
+  },
+  "jason": {
+    "vocabulary": {
+      "actions": {
+        "move": [
+          "move_to"
+        ],
+        "rescue": [
+          "rescue"
+        ],
+        "load": [
+          "load"
+        ],
+        "unload": [
+          "unload"
+        ],
+        "notify_ready": [
+          "notify_ambulance_ready"
+        ],
+        "notify_peer": [
+          "notify_fire_needed"
+        ],
+        "rest": [
+          "rest"
+        ],
+        "ignore": [
+          "log",
+          "radio_busy",
+          "radio_done",
+          "radio_loaded",
+          "radio_found"
+        ]
+      },
+      "predicates": {
+        "buried": [
+          "buried_civilian",
+          "buried_victim"
+        ],
+        "surface": [
+          "surface_civilian"
+        ],
+        "ready": [
+          "ready_for_ambulance",
+          "ready_for_pickup",
+          "fire_ready",
+          "fire_done",
+          "reported_transportable"
+        ],
+        "loaded": [
+          "loaded"
+        ],
+        "delivered": [
+          "delivered"
+        ],
+        "found": [
+          "found_civilian"
+        ],
+        "reported_to_peer": [
+          "told_fire"
+        ],
+        "reported_ready": [
+          "told_ambulance"
+        ],
+        "collapsed": [
+          "collapsed"
+        ],
+        "damaged": [
+          "damaged"
+        ],
+        "building": [
+          "building"
+        ],
+        "road": [
+          "road"
+        ],
+        "known_road": [
+          "known_road"
+        ],
+        "visited": [
+          "visited"
+        ],
+        "destination": [
+          "refuge",
+          "found_refuge"
+        ]
+      }
+    },
+    "roles": {
+      "role_a": {
+        "program": "../../../agents/fire_brigade.asl",
+        "ispl_agent": "FireBrigade",
+        "entry_goal": "step",
+        "state_var": "fb_zone",
+        "target_anchor": "target",
+        "other_role": "role_b",
+        "goal_var": "fb_goal_level",
+        "marker_var_template": "fb_visited_{member}",
+        "stages": [
+          {
+            "key": "work",
+            "action_category": "rescue"
+          },
+          {
+            "key": "notify",
+            "action_category": "notify_ready"
+          }
+        ],
+        "actions": {
+          "move_template": "fb_move_to_{member}",
+          "move_regex": "\\bfb_move_to_(z_(?:west|central|east)_(?:north|mid|south))\\b",
+          "work": "fb_rescue_Civ",
+          "notify": "fb_notify_ambulance_ready_Civ",
+          "rest": "fb_rest",
+          "move_endpoint_template": "{1}"
+        },
+        "action_order": [
+          "work",
+          "notify",
+          "rest"
+        ],
+        "ranking": {
+          "goal": "auto",
+          "fallback_goal": "patrol",
+          "signal_categories": [
+            "collapsed",
+            "damaged",
+            "building",
+            "road",
+            "visited",
+            "known_road"
+          ],
+          "classifiers": [
+            {
+              "name": "found_buried",
+              "all": [
+                "found",
+                "buried"
+              ]
+            },
+            {
+              "name": "buried",
+              "all": [
+                "buried"
+              ]
+            },
+            {
+              "name": "collapsed",
+              "all": [
+                "collapsed"
+              ]
+            },
+            {
+              "name": "damaged",
+              "all": [
+                "damaged"
+              ]
+            },
+            {
+              "name": "building",
+              "all": [
+                "building"
+              ]
+            },
+            {
+              "name": "road_unvisited",
+              "all": [
+                "road"
+              ],
+              "negative": [
+                "visited"
+              ]
+            },
+            {
+              "name": "road",
+              "all": [
+                "road"
+              ]
+            },
+            {
+              "name": "rest",
+              "context_equals": "true"
+            }
+          ],
+          "fallback_order": [
+            "collapsed",
+            "damaged",
+            "building",
+            "road_unvisited",
+            "road",
+            "rest"
+          ],
+          "class_categories": {
+            "collapsed": [
+              "collapsed"
+            ],
+            "damaged": [
+              "damaged"
+            ],
+            "building": [
+              "building"
+            ],
+            "road": [
+              "road_unvisited",
+              "road",
+              "known_road"
+            ]
+          },
+          "default_class": "road",
+          "label": "Patrol"
+        },
+        "plan": {
+          "relation": true
+        },
+        "marker_label": "Visited"
+      },
+      "role_b": {
+        "program": "../../../agents/ambulance_team.asl",
+        "ispl_agent": "AmbulanceTeam",
+        "entry_goal": "step",
+        "state_var": "at_zone",
+        "target_anchor": "target",
+        "other_role": "role_a",
+        "goal_var": "at_goal_level",
+        "marker_var_template": "at_visited_{member}",
+        "stages": [
+          {
+            "key": "report",
+            "action_category": "notify_peer"
+          },
+          {
+            "key": "acquire",
+            "action_category": "load"
+          },
+          {
+            "key": "finish",
+            "action_category": "unload"
+          }
+        ],
+        "actions": {
+          "move_template": "at_move_to_{member}",
+          "move_regex": "\\bat_move_to_(z_(?:west|central|east)_(?:north|mid|south))\\b",
+          "acquire": "at_load_Civ",
+          "finish": "at_unload_Civ",
+          "report": "at_report_buried_Civ",
+          "rest": "at_rest",
+          "move_endpoint_template": "{1}"
+        },
+        "action_order": [
+          "acquire",
+          "finish",
+          "report",
+          "rest"
+        ],
+        "ranking": {
+          "goal": "auto",
+          "fallback_goal": "patrol",
+          "signal_categories": [
+            "collapsed",
+            "damaged",
+            "building",
+            "road",
+            "visited",
+            "known_road"
+          ],
+          "classifiers": [
+            {
+              "name": "found_buried",
+              "all": [
+                "found",
+                "buried"
+              ]
+            },
+            {
+              "name": "buried",
+              "all": [
+                "buried"
+              ]
+            },
+            {
+              "name": "loaded",
+              "all": [
+                "loaded"
+              ]
+            },
+            {
+              "name": "known_road",
+              "all": [
+                "known_road"
+              ]
+            },
+            {
+              "name": "collapsed",
+              "all": [
+                "collapsed"
+              ]
+            },
+            {
+              "name": "damaged",
+              "all": [
+                "damaged"
+              ]
+            },
+            {
+              "name": "building",
+              "all": [
+                "building"
+              ]
+            },
+            {
+              "name": "road_unvisited",
+              "all": [
+                "road"
+              ],
+              "negative": [
+                "visited"
+              ]
+            },
+            {
+              "name": "road",
+              "all": [
+                "road"
+              ]
+            },
+            {
+              "name": "rest",
+              "context_equals": "true"
+            }
+          ],
+          "fallback_order": [
+            "collapsed",
+            "damaged",
+            "building",
+            "road_unvisited",
+            "road",
+            "rest"
+          ],
+          "class_categories": {
+            "collapsed": [
+              "collapsed"
+            ],
+            "damaged": [
+              "damaged"
+            ],
+            "building": [
+              "building"
+            ],
+            "road": [
+              "road_unvisited",
+              "road",
+              "known_road"
+            ]
+          },
+          "default_class": "road",
+          "label": "Patrol"
+        },
+        "plan": {
+          "relation": true
+        },
+        "marker_label": "Visited"
+      }
+    }
+  },
+  "model": {
+    "environment_agent": "Environment",
+    "domain": {
+      "enum_var": "fb_zone",
+      "value_regex": "z_(?:west|central|east)_(?:north|mid|south)",
+      "token_regex": "(?P<member>z_(?:west|central|east)_(?:north|mid|south))"
+    },
+    "anchors": {
+      "focus": {
+        "initial_var": "at_Civ",
+        "value_pattern": "z_(?:west|central|east)_(?:north|mid|south)"
+      },
+      "endpoint": {
+        "value": "z_west_mid"
+      }
+    },
+    "variables": {
+      "active": "alive_Civ",
+      "failed": "dead_Civ",
+      "holding": "loaded_Civ",
+      "complete": "delivered_Civ",
+      "level": "buriedness_value_Civ",
+      "focus_state": "at_Civ",
+      "endpoint_state": "at_zone"
+    },
+    "member_labels": {
+      "default": "road",
+      "rules": [
+        {
+          "declaration_regex": "\\bstatus_{member}:\\s*\\{healthy, damaged, collapsed\\};",
+          "state_regex": "Environment\\.status_{member}\\s*=\\s*(?P<value>healthy|damaged|collapsed)",
+          "value_map": {
+            "healthy": "building",
+            "damaged": "damaged",
+            "collapsed": "collapsed"
+          }
+        }
+      ]
+    },
+    "level": {
+      "zero_value": 0,
+      "final_value": 1,
+      "positive_values": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "continuing_values": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    }
+  },
+  "format": {
+    "actions_indent": 12,
+    "actions_per_line": 6,
+    "path_indent": 16,
+    "path_actions_per_line": 4
+  },
+  "coordination": {
+    "primary_role": "role_a",
+    "secondary_role": "role_b",
+    "primary_knows_focus_var": "fb_knows_buried_Civ",
+    "secondary_knows_focus_var": "at_knows_buried_Civ",
+    "focus_report_flag_var": "buried_Civ_reported_to_FB",
+    "ready_flag_var": "Civ_ready_reported_to_AT",
+    "secondary_knows_endpoint_var": "at_knows_refuge",
+    "primary_action_key": "work",
+    "primary_signal_action_key": "notify",
+    "secondary_signal_action_key": "report",
+    "secondary_take_action_key": "acquire",
+    "secondary_finish_action_key": "finish",
+    "idle_action_key": "rest",
+    "focus_name": "focus",
+    "endpoint_name": "endpoint",
+    "environment_evolution_insert_before": "        -- Health",
+    "memory_declaration_after_var": "complete"
+  }
+}

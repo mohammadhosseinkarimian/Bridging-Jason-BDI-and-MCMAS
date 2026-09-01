@@ -1,0 +1,7 @@
+digraph witness1 {
+ 0 [label="0",shape=ellipse]
+ 1 [label="1",shape=ellipse]
+ 2 [label="2",shape=ellipse]
+    0 -> 1[label="<env_idle;fb_move_to_2;at_move_to_2>"]
+    1 -> 2[label="<env_idle;fb_rescue_Civ;at_rest>"]
+}
