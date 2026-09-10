@@ -1,0 +1,51 @@
+{
+  "files": {
+    "raw": "c1.ispl",
+    "output": "../generated/c1_jason_guided.ispl"
+  },
+  "jason": {
+    "vocabulary": {
+      "actions": {},
+      "predicates": {}
+    },
+    "roles": {
+      "blue": {
+        "program": "../../../agents/blue_agent.asl",
+        "ispl_agent": "Blue",
+        "entry_goal": "step",
+        "goal_var": "blue_goal",
+        "plan": {
+          "actions": {
+            "remove": "Remove_OpServer0",
+            "restore": "Restore_OpServer0",
+            "monitor": "Monitor"
+          },
+          "predicates": {
+            "alerted": {
+              "neq": [
+                {
+                  "env": "blue_alert_OpServer0"
+                },
+                "none"
+              ]
+            },
+            "malicious": {
+              "eq": [
+                {
+                  "env": "blue_analysis_OpServer0"
+                },
+                "malicious"
+              ]
+            }
+          },
+          "pass_through": [
+            "BlueWait"
+          ]
+        }
+      }
+    }
+  },
+  "model": {
+    "environment_agent": "Environment"
+  }
+}

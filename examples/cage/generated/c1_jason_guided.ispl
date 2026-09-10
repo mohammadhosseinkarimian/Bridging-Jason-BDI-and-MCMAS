@@ -1,0 +1,169 @@
+Semantics=SingleAssignment;
+
+Agent Environment
+    Obsvars:
+        turn: {blue_turn, red_turn};
+    end Obsvars
+    Vars:
+        red_access_OpServer0: {none, decoy, user, root};
+        ot_service_running_OpServer0: boolean;
+        decoy_active_OpServer0: boolean;
+        blue_alert_OpServer0: {none, suspicious, confirmed};
+        blue_pid_known_OpServer0: boolean;
+        blue_analysis_OpServer0: {unknown, clean, malicious};
+        red_knows_host_OpServer0: boolean;
+        red_knows_service_OpServer0: boolean;
+        red_believes_access_OpServer0: {none, user, root};
+    end Vars
+    Actions = {env_idle, env_real_seen, env_real_missed, env_decoy};
+    Protocol:
+        turn = blue_turn: {env_idle};
+        turn = red_turn and decoy_active_OpServer0 = false: {env_real_seen, env_real_missed};
+        turn = red_turn and decoy_active_OpServer0 = true: {env_real_seen, env_real_missed, env_decoy};
+    end Protocol
+    Evolution:
+        turn = red_turn if turn = blue_turn;
+        turn = blue_turn if turn = red_turn;
+
+        red_access_OpServer0 = none if turn = blue_turn and Blue.Action = Restore_OpServer0;
+        red_access_OpServer0 = none if turn = blue_turn and Blue.Action = Remove_OpServer0 and
+            blue_pid_known_OpServer0 = true and red_access_OpServer0 = user;
+        red_access_OpServer0 = user if turn = blue_turn and Blue.Action = Remove_OpServer0 and
+            blue_pid_known_OpServer0 = false and red_access_OpServer0 = user;
+        red_access_OpServer0 = none if turn = blue_turn and Blue.Action = Remove_OpServer0 and red_access_OpServer0 = none;
+        red_access_OpServer0 = decoy if turn = blue_turn and Blue.Action = Remove_OpServer0 and red_access_OpServer0 = decoy;
+        red_access_OpServer0 = root if turn = blue_turn and Blue.Action = Remove_OpServer0 and red_access_OpServer0 = root;
+
+        red_access_OpServer0 = user if turn = red_turn and Red.Action = ExploitRemoteService_OpServer0 and
+            (Action = env_real_seen or Action = env_real_missed);
+        red_access_OpServer0 = decoy if turn = red_turn and Red.Action = ExploitRemoteService_OpServer0 and Action = env_decoy;
+        red_access_OpServer0 = root if turn = red_turn and Red.Action = PrivilegeEscalate_OpServer0 and red_access_OpServer0 = user;
+        red_access_OpServer0 = none if turn = red_turn and Red.Action = PrivilegeEscalate_OpServer0 and
+            (red_access_OpServer0 = none or red_access_OpServer0 = decoy);
+        red_access_OpServer0 = root if turn = red_turn and Red.Action = PrivilegeEscalate_OpServer0 and red_access_OpServer0 = root;
+
+        ot_service_running_OpServer0 = true if turn = blue_turn and Blue.Action = Restore_OpServer0;
+        ot_service_running_OpServer0 = false if turn = red_turn and Red.Action = Impact_OpServer0 and red_access_OpServer0 = root;
+
+        decoy_active_OpServer0 = true if turn = blue_turn and Blue.Action = Misinform_OpServer0;
+        decoy_active_OpServer0 = false if turn = blue_turn and Blue.Action = Restore_OpServer0;
+
+        blue_analysis_OpServer0 = clean if turn = blue_turn and Blue.Action = Analyse_OpServer0 and red_access_OpServer0 = none;
+        blue_analysis_OpServer0 = malicious if turn = blue_turn and Blue.Action = Analyse_OpServer0 and
+            (red_access_OpServer0 = decoy or red_access_OpServer0 = user or red_access_OpServer0 = root);
+        blue_analysis_OpServer0 = clean if turn = blue_turn and Blue.Action = Restore_OpServer0;
+
+        blue_pid_known_OpServer0 = false if turn = blue_turn and
+            (Blue.Action = Remove_OpServer0 or Blue.Action = Restore_OpServer0);
+        blue_pid_known_OpServer0 = true if turn = red_turn and Red.Action = ExploitRemoteService_OpServer0 and Action = env_real_seen;
+
+        blue_alert_OpServer0 = suspicious if turn = red_turn and Red.Action = DiscoverNetworkServices_OpServer0;
+        blue_alert_OpServer0 = confirmed if turn = red_turn and Red.Action = ExploitRemoteService_OpServer0 and
+            (Action = env_real_seen or Action = env_decoy);
+        blue_alert_OpServer0 = suspicious if turn = red_turn and Red.Action = ExploitRemoteService_OpServer0 and Action = env_real_missed;
+
+        red_knows_host_OpServer0 = true if turn = red_turn and Red.Action = DiscoverRemoteSystems;
+
+        red_knows_service_OpServer0 = true if turn = red_turn and Red.Action = DiscoverNetworkServices_OpServer0;
+
+        red_believes_access_OpServer0 = none if turn = red_turn and Red.Action = PrivilegeEscalate_OpServer0 and
+            (red_access_OpServer0 = none or red_access_OpServer0 = decoy);
+        red_believes_access_OpServer0 = user if turn = red_turn and Red.Action = ExploitRemoteService_OpServer0;
+        red_believes_access_OpServer0 = root if turn = red_turn and Red.Action = PrivilegeEscalate_OpServer0 and red_access_OpServer0 = user;
+        red_believes_access_OpServer0 = root if turn = red_turn and Red.Action = PrivilegeEscalate_OpServer0 and red_access_OpServer0 = root;
+        red_believes_access_OpServer0 = none if turn = red_turn and Red.Action = Impact_OpServer0 and
+            (red_access_OpServer0 = none or red_access_OpServer0 = decoy);
+        red_believes_access_OpServer0 = root if turn = red_turn and Red.Action = Impact_OpServer0 and red_access_OpServer0 = root;
+    end Evolution
+end Agent
+
+Agent Blue
+Lobsvars = {
+    blue_alert_OpServer0,
+    blue_pid_known_OpServer0,
+    blue_analysis_OpServer0,
+    decoy_active_OpServer0
+};    Vars:
+        dummy: boolean;
+        blue_goal: {defend, done};
+    end Vars
+    Actions = {Sleep, Monitor, Analyse_OpServer0, Remove_OpServer0, Misinform_OpServer0, Restore_OpServer0, BlueWait};
+    Protocol:
+        blue_goal = defend and !(Environment.blue_alert_OpServer0 = none) and Environment.turn = blue_turn: {Restore_OpServer0};
+        blue_goal = defend and Environment.blue_analysis_OpServer0 = malicious and Environment.blue_alert_OpServer0 = none and Environment.turn = blue_turn: {Remove_OpServer0};
+        blue_goal = defend and Environment.blue_alert_OpServer0 = none and !(Environment.blue_analysis_OpServer0 = malicious) and Environment.turn = blue_turn: {Monitor};
+        Environment.turn = red_turn: {BlueWait};
+    end Protocol
+    Evolution:
+        dummy = dummy if dummy = true;
+        dummy = dummy if dummy = false;
+        blue_goal = defend if blue_goal = defend;
+        blue_goal = done if blue_goal = done;
+    end Evolution
+end Agent
+
+
+Agent Red
+    Lobsvars = {red_knows_host_OpServer0, red_knows_service_OpServer0, red_believes_access_OpServer0};
+    Vars:
+        dummy: boolean;
+    end Vars
+    Actions = {Sleep, DiscoverRemoteSystems, DiscoverNetworkServices_OpServer0, ExploitRemoteService_OpServer0,
+               PrivilegeEscalate_OpServer0, Impact_OpServer0, RedWait};
+    Protocol:
+        Environment.turn = blue_turn: {RedWait};
+        Environment.turn = red_turn and Environment.red_knows_host_OpServer0 = false:
+            {Sleep, DiscoverRemoteSystems};
+        Environment.turn = red_turn and Environment.red_knows_host_OpServer0 = true and Environment.red_knows_service_OpServer0 = false:
+            {Sleep, DiscoverRemoteSystems, DiscoverNetworkServices_OpServer0};
+        Environment.turn = red_turn and Environment.red_knows_service_OpServer0 = true and Environment.red_believes_access_OpServer0 = none:
+            {Sleep, DiscoverRemoteSystems, DiscoverNetworkServices_OpServer0, ExploitRemoteService_OpServer0};
+        Environment.turn = red_turn and Environment.red_knows_service_OpServer0 = true and Environment.red_believes_access_OpServer0 = user:
+            {Sleep, DiscoverRemoteSystems, DiscoverNetworkServices_OpServer0, PrivilegeEscalate_OpServer0};
+        Environment.turn = red_turn and Environment.red_knows_service_OpServer0 = true and Environment.red_believes_access_OpServer0 = root:
+            {Sleep, DiscoverRemoteSystems, DiscoverNetworkServices_OpServer0, Impact_OpServer0};
+    end Protocol
+    Evolution:
+        dummy = dummy if dummy = true;
+        dummy = dummy if dummy = false;
+    end Evolution
+end Agent
+
+Evaluation
+    OpServer0_clean_eval if Environment.red_access_OpServer0 = none;
+    OpServer0_user_access_eval if Environment.red_access_OpServer0 = user;
+    OpServer0_root_access_eval if Environment.red_access_OpServer0 = root;
+    OpServer0_decoy_access_eval if Environment.red_access_OpServer0 = decoy;
+    OpServer0_OTService_running_eval if Environment.ot_service_running_OpServer0 = true;
+    OpServer0_impacted_eval if Environment.ot_service_running_OpServer0 = false;
+    Blue_alerted_eval if Environment.blue_alert_OpServer0 = suspicious or Environment.blue_alert_OpServer0 = confirmed;
+    Blue_analysis_malicious_eval if Environment.blue_analysis_OpServer0 = malicious;
+    Red_deceived_eval if Environment.red_access_OpServer0 = decoy and Environment.red_believes_access_OpServer0 = user;
+end Evaluation
+
+InitStates
+    Environment.turn = blue_turn and
+    Environment.red_access_OpServer0 = none and
+    Environment.ot_service_running_OpServer0 = true and
+    Environment.decoy_active_OpServer0 = false and
+    Environment.blue_alert_OpServer0 = none and
+    Environment.blue_pid_known_OpServer0 = false and
+    Environment.blue_analysis_OpServer0 = unknown and
+    Environment.red_knows_host_OpServer0 = false and
+    Environment.red_knows_service_OpServer0 = false and
+    Environment.red_believes_access_OpServer0 = none and
+    Blue.blue_goal = defend and
+    Blue.dummy = false and
+    Red.dummy = false;
+end InitStates
+
+Groups
+    blue_team = {Blue};
+    red_team = {Red};
+end Groups
+
+Formulae
+    <blue_team> G OpServer0_OTService_running_eval;
+    <red_team> F OpServer0_root_access_eval;
+    <red_team> F OpServer0_impacted_eval;
+end Formulae
