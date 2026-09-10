@@ -1,8 +1,0 @@
-digraph witness0 {
- 0 [label="0",shape=ellipse]
- 1 [label="1",shape=ellipse]
- 2 [label="2",shape=ellipse]
-    0 -> 1[label="<env_idle;Misinform_OpServer0;RedWait>"]
-    1 -> 2[label="<env_real_seen;BlueWait;Sleep>"]
-    2 -> 1[label="<env_idle;Remove_OpServer0;RedWait>"]
-}
