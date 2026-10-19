@@ -1,0 +1,230 @@
+Semantics=SingleAssignment;
+
+Agent Environment
+    Obsvars:
+        fb_area: {area_1, area_2, area_3};
+        at_area: {area_1, area_2, area_3};
+        civ_area: {area_1, area_2, area_3};
+        refuge_area: {area_1, area_2, area_3};
+
+        alive_Civ: boolean;
+        dead_Civ: boolean;
+        buriedness_value_Civ: 0 .. 6;
+        loaded_Civ: boolean;
+        delivered_Civ: boolean;
+        health_Civ: {high, moderate, at_risk, dead};
+
+        building_1: boolean;
+        building_2: boolean;
+        building_3: boolean;
+        brokenness_1: {healthy, damaged, collapsed};
+        brokenness_2: {healthy, damaged, collapsed};
+        brokenness_3: {healthy, damaged, collapsed};
+    end Obsvars
+
+    Actions = {env_idle};
+
+    Protocol:
+        Other: {env_idle};
+    end Protocol
+
+    Evolution:
+
+        -- Health deteriorates one level per transition while the civilian remains buried.
+        health_Civ = moderate if
+            alive_Civ = true and
+            buriedness_value_Civ = 1 and
+            health_Civ = high;
+        health_Civ = at_risk if
+            alive_Civ = true and
+            buriedness_value_Civ = 1 and
+            health_Civ = moderate;
+        health_Civ = dead if
+            alive_Civ = true and
+            buriedness_value_Civ = 1 and
+            health_Civ = at_risk;
+        alive_Civ = false if
+            alive_Civ = true and
+            buriedness_value_Civ = 1 and
+            health_Civ = at_risk;
+        dead_Civ = true if
+            alive_Civ = true and
+            buriedness_value_Civ = 1 and
+            health_Civ = at_risk;
+
+        -- FireBrigade movement on the star graph 2 -- 1 -- 3
+        fb_area = area_2 if FireBrigade.Action = fb_move_to_2;
+        fb_area = area_3 if FireBrigade.Action = fb_move_to_3;
+        fb_area = area_1 if FireBrigade.Action = fb_move_to_1;
+        fb_area = fb_area if FireBrigade.Action = fb_notify_ambulance_ready_Civ;
+        fb_area = fb_area if FireBrigade.Action = fb_rest;
+
+        -- AmbulanceTeam movement
+        at_area = area_2 if AmbulanceTeam.Action = at_move_to_2;
+        at_area = area_3 if AmbulanceTeam.Action = at_move_to_3;
+        at_area = area_1 if AmbulanceTeam.Action = at_move_to_1;
+        at_area = at_area if AmbulanceTeam.Action = at_report_buried_Civ;
+        at_area = at_area if AmbulanceTeam.Action = at_rest;
+
+        -- Rescue
+        buriedness_value_Civ = 0 if
+            alive_Civ = true and
+            buriedness_value_Civ = 1 and
+            civ_area = area_2 and
+            fb_area = area_2 and
+            FireBrigade.Action = fb_rescue_Civ;
+
+        -- Load
+        loaded_Civ = true if
+            alive_Civ = true and
+            buriedness_value_Civ = 0 and
+            loaded_Civ = false and
+            delivered_Civ = false and
+            civ_area = at_area and
+            AmbulanceTeam.Action = at_load_Civ;
+
+        -- The civilian moves with the ambulance after loading.
+        civ_area = area_1 if loaded_Civ = true and AmbulanceTeam.Action = at_move_to_1;
+        civ_area = area_2 if loaded_Civ = true and AmbulanceTeam.Action = at_move_to_2;
+        civ_area = area_3 if loaded_Civ = true and AmbulanceTeam.Action = at_move_to_3;
+
+        -- Unload at the refuge
+        loaded_Civ = false if
+            loaded_Civ = true and
+            at_area = area_1 and
+            refuge_area = area_1 and
+            AmbulanceTeam.Action = at_unload_Civ;
+        delivered_Civ = true if
+            loaded_Civ = true and
+            at_area = area_1 and
+            refuge_area = area_1 and
+            AmbulanceTeam.Action = at_unload_Civ;
+    end Evolution
+end Agent
+
+Agent FireBrigade
+    Vars:
+        dummy: boolean;
+    end Vars
+
+    Actions = {fb_move_to_1, fb_move_to_2, fb_move_to_3, fb_rescue_Civ, fb_notify_ambulance_ready_Civ, fb_rest};
+
+    Protocol:
+        Environment.dead_Civ = true or Environment.delivered_Civ = true:
+            {fb_rest};
+
+        Environment.fb_area = area_2 and Environment.buriedness_value_Civ = 0:
+            {fb_notify_ambulance_ready_Civ};
+
+        Environment.dead_Civ = false and Environment.delivered_Civ = false and Environment.fb_area = area_1:
+            {fb_move_to_2, fb_move_to_3, fb_rest};
+
+        Environment.dead_Civ = false and Environment.delivered_Civ = false and Environment.fb_area = area_2 and
+        Environment.alive_Civ = true and Environment.civ_area = area_2 and Environment.buriedness_value_Civ = 1:
+            {fb_move_to_1, fb_rescue_Civ, fb_rest};
+
+        Environment.dead_Civ = false and Environment.delivered_Civ = false and Environment.fb_area = area_2:
+            {fb_move_to_1, fb_rest};
+
+        Environment.dead_Civ = false and Environment.delivered_Civ = false and Environment.fb_area = area_3:
+            {fb_move_to_1, fb_rest};
+
+        Other: {fb_rest};
+    end Protocol
+
+    Evolution:
+        dummy = dummy if dummy = true;
+        dummy = dummy if dummy = false;
+    end Evolution
+end Agent
+
+Agent AmbulanceTeam
+    Vars:
+        dummy: boolean;
+    end Vars
+
+    Actions = {at_move_to_1, at_move_to_2, at_move_to_3, at_load_Civ, at_unload_Civ, at_report_buried_Civ, at_rest};
+
+    Protocol:
+        Environment.dead_Civ = true or Environment.delivered_Civ = true:
+            {at_rest};
+
+        Environment.at_area = area_2 and Environment.buriedness_value_Civ = 1:
+            {at_report_buried_Civ};
+
+        Environment.dead_Civ = false and Environment.delivered_Civ = false and Environment.at_area = area_1 and
+        Environment.loaded_Civ = true:
+            {at_move_to_2, at_move_to_3, at_unload_Civ, at_rest};
+
+        Environment.dead_Civ = false and Environment.delivered_Civ = false and Environment.at_area = area_1:
+            {at_move_to_2, at_move_to_3, at_rest};
+
+        Environment.dead_Civ = false and Environment.delivered_Civ = false and Environment.at_area = area_2 and
+        Environment.alive_Civ = true and Environment.civ_area = area_2 and
+        Environment.buriedness_value_Civ = 0 and Environment.loaded_Civ = false:
+            {at_move_to_1, at_load_Civ, at_rest};
+
+        Environment.dead_Civ = false and Environment.delivered_Civ = false and Environment.at_area = area_2:
+            {at_move_to_1, at_rest};
+
+        Environment.dead_Civ = false and Environment.delivered_Civ = false and Environment.at_area = area_3:
+            {at_move_to_1, at_rest};
+
+        Other: {at_rest};
+    end Protocol
+
+    Evolution:
+        dummy = dummy if dummy = true;
+        dummy = dummy if dummy = false;
+    end Evolution
+end Agent
+
+Evaluation
+    surface_alive_Civ_eval if
+        Environment.alive_Civ = true and
+        Environment.dead_Civ = false and
+        Environment.buriedness_value_Civ = 0;
+
+    delivered_alive_Civ_eval if
+        Environment.delivered_Civ = true and
+        Environment.alive_Civ = true and
+        Environment.dead_Civ = false and
+        Environment.loaded_Civ = false and
+        Environment.civ_area = area_1 and
+        Environment.at_area = area_1 and
+        Environment.refuge_area = area_1;
+end Evaluation
+
+InitStates
+    Environment.fb_area = area_1 and
+    Environment.at_area = area_1 and
+    Environment.civ_area = area_2 and
+    Environment.refuge_area = area_1 and
+
+    Environment.alive_Civ = true and
+    Environment.dead_Civ = false and
+    Environment.buriedness_value_Civ = 1 and
+    Environment.loaded_Civ = false and
+    Environment.delivered_Civ = false and
+    Environment.health_Civ = high and
+
+    Environment.building_1 = true and
+    Environment.building_2 = true and
+    Environment.building_3 = true and
+    Environment.brokenness_1 = healthy and
+    Environment.brokenness_2 = collapsed and
+    Environment.brokenness_3 = collapsed and
+
+    FireBrigade.dummy = false and
+    AmbulanceTeam.dummy = false;
+end InitStates
+
+Groups
+    fire_only = {FireBrigade};
+    rescue_team = {FireBrigade, AmbulanceTeam};
+end Groups
+
+Formulae
+    <fire_only> F surface_alive_Civ_eval;
+    <rescue_team> F delivered_alive_Civ_eval;
+end Formulae

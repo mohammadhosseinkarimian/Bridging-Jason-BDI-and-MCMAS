@@ -1,0 +1,270 @@
+{
+  "roles": {
+    "foothold": "User0",
+    "critical": "Op_Server0",
+    "gateway": "last_enterprise"
+  },
+  "subnets": {
+    "user": {
+      "prefix": "User",
+      "fixed": [],
+      "decoy": "user_decoy",
+      "discovery": "User",
+      "guard": ""
+    },
+    "enterprise": {
+      "prefix": "Enterprise",
+      "fixed": [
+        "Defender"
+      ],
+      "decoy": "enterprise_decoy",
+      "discovery": "Enterprise",
+      "guard": ""
+    },
+    "operational": {
+      "prefix": "Op_Host",
+      "fixed": [
+        "Op_Server0"
+      ],
+      "decoy": "operational_decoy",
+      "discovery": "Operational",
+      "guard": " and red_{gateway} = root and actual_{gateway} = root"
+    }
+  },
+  "state": {
+    "public": {
+      "turn": [
+        "blue_turn",
+        "red_turn"
+      ]
+    },
+    "private": {
+      "ot_service_running": "boolean"
+    },
+    "host": {
+      "actual": [
+        "clean",
+        "user",
+        "root",
+        "decoy"
+      ],
+      "red": [
+        "unknown",
+        "known",
+        "service",
+        "user",
+        "root"
+      ]
+    },
+    "decoy": "targets",
+    "observations": {
+      "activity": [
+        "none",
+        "suspicious"
+      ],
+      "compromised": [
+        "unknown",
+        "no",
+        "user",
+        "privileged"
+      ]
+    }
+  },
+  "initial": {
+    "public": {
+      "turn": "blue_turn"
+    },
+    "private": {
+      "ot_service_running": "true"
+    },
+    "decoy": "none",
+    "host": {
+      "actual": "clean",
+      "red": "unknown"
+    },
+    "agent": {
+      "dummy": "false"
+    },
+    "foothold": {
+      "actual": "root",
+      "red": "root"
+    },
+    "observations": {
+      "activity": "none",
+      "compromised": "no"
+    },
+    "foothold_observations": {
+      "activity": "suspicious",
+      "compromised": "privileged"
+    }
+  },
+  "actions": {
+    "environment": [
+      "env_idle",
+      "env_real_seen",
+      "env_real_missed",
+      "env_decoy"
+    ],
+    "blue": {
+      "common": [
+        "sleep",
+        "monitor"
+      ],
+      "host": [
+        "analyse",
+        "remove",
+        "misinform",
+        "restore"
+      ],
+      "wait": "blue_wait"
+    },
+    "red": {
+      "common": [
+        "Sleep"
+      ],
+      "discover": "DiscoverRemoteSystems",
+      "host": [
+        "DiscoverNetworkServices",
+        "ExploitRemoteService",
+        "PrivilegeEscalate"
+      ],
+      "impact": "Impact",
+      "wait": "RedWait"
+    }
+  },
+  "protocols": {
+    "environment": [
+      "turn = blue_turn : {env_idle};",
+      "turn = red_turn : {env_real_seen, env_real_missed, env_decoy};"
+    ],
+    "red_common": "Environment.turn = red_turn : {Sleep, DiscoverRemoteSystems_User, DiscoverRemoteSystems_Enterprise};",
+    "red_operational": "Environment.turn = red_turn and Environment.red_{gateway} = root : {DiscoverRemoteSystems_Operational};",
+    "red_host": [
+      "Environment.turn = red_turn and Environment.red_{host} = known : {DiscoverNetworkServices_{host}};",
+      "Environment.turn = red_turn and Environment.red_{host} = service : {ExploitRemoteService_{host}};",
+      "Environment.turn = red_turn and Environment.red_{host} = user : {PrivilegeEscalate_{host}};"
+    ],
+    "red_impact": "Environment.turn = red_turn and Environment.red_{server} = root : {Impact_{server}};"
+  },
+  "evolution": {
+    "turn": [
+      "turn = red_turn if turn = blue_turn;",
+      "turn = blue_turn if turn = red_turn;"
+    ],
+    "decoy_place": "{decoy} = d_{host} if turn = blue_turn and Blue.Action = misinform_{host};",
+    "decoy_clear": "{decoy} = none if turn = blue_turn and Blue.Action = restore_{host} and {decoy} = d_{host};",
+    "blue_host": [
+      "actual_{host} = clean if turn = blue_turn and Blue.Action = restore_{host};"
+    ],
+    "blue_analyse": [
+      "blue_alert = a_{host} if turn = blue_turn and Blue.Action = Analyse_{host} and (actual_{host} = user or actual_{host} = root or actual_{host} = decoy);",
+      "blue_alert = none if turn = blue_turn and Blue.Action = Analyse_{host} and actual_{host} = clean;"
+    ],
+    "red_discover": "red_{host} = known if turn = red_turn and Red.Action = DiscoverRemoteSystems_{discovery} and red_{host} = unknown{guard};",
+    "red_host": [
+      "red_{host} = service if turn = red_turn and Red.Action = DiscoverNetworkServices_{host} and red_{host} = known;",
+      "actual_{host} = user if turn = red_turn and Red.Action = ExploitRemoteService_{host} and red_{host} = service and (Action = env_real_seen or Action = env_real_missed);",
+      "actual_{host} = decoy if turn = red_turn and Red.Action = ExploitRemoteService_{host} and red_{host} = service and Action = env_decoy and {decoy} = d_{host};",
+      "actual_{host} = user if turn = red_turn and Red.Action = ExploitRemoteService_{host} and red_{host} = service and Action = env_decoy and !({decoy} = d_{host});",
+      "red_{host} = user if turn = red_turn and Red.Action = ExploitRemoteService_{host} and red_{host} = service;",
+      "actual_{host} = root if turn = red_turn and Red.Action = PrivilegeEscalate_{host} and red_{host} = user and actual_{host} = user;",
+      "red_{host} = root if turn = red_turn and Red.Action = PrivilegeEscalate_{host} and red_{host} = user and actual_{host} = user;",
+      "actual_{host} = clean if turn = red_turn and Red.Action = PrivilegeEscalate_{host} and red_{host} = user and actual_{host} = decoy;",
+      "red_{host} = service if turn = red_turn and Red.Action = PrivilegeEscalate_{host} and red_{host} = user and (actual_{host} = clean or actual_{host} = decoy);"
+    ],
+    "impact": [
+      "ot_service_running = true if turn = blue_turn and Blue.Action = restore_{server};",
+      "ot_service_running = false if turn = red_turn and Red.Action = Impact_{server} and red_{server} = root and actual_{server} = root;"
+    ],
+    "observe_blue": [
+      "compromised_{host} = no if turn = blue_turn and Blue.Action = restore_{host};",
+      "activity_{host} = none if turn = blue_turn and Blue.Action = restore_{host};",
+      "actual_{host} = clean if turn = blue_turn and Blue.Action = remove_{host} and actual_{host} = user and compromised_{host} = user;",
+      "compromised_{host} = no if turn = blue_turn and Blue.Action = remove_{host} and actual_{host} = user and compromised_{host} = user;",
+      "activity_{host} = none if turn = blue_turn and Blue.Action = remove_{host} and actual_{host} = user and compromised_{host} = user;",
+      "compromised_{host} = no if turn = blue_turn and Blue.Action = analyse_{host} and (actual_{host} = clean or actual_{host} = decoy);",
+      "compromised_{host} = user if turn = blue_turn and Blue.Action = analyse_{host} and actual_{host} = user;",
+      "compromised_{host} = privileged if turn = blue_turn and Blue.Action = analyse_{host} and actual_{host} = root;"
+    ],
+    "observe_red": [
+      "activity_{host} = suspicious if turn = red_turn and Red.Action = DiscoverNetworkServices_{host} and Action = env_real_seen;",
+      "activity_{host} = suspicious if turn = red_turn and Red.Action = ExploitRemoteService_{host} and red_{host} = service and (Action = env_real_seen or Action = env_decoy);",
+      "activity_{host} = none if turn = red_turn and Red.Action = ExploitRemoteService_{host} and red_{host} = service and Action = env_real_missed;",
+      "compromised_{host} = user if turn = red_turn and Red.Action = ExploitRemoteService_{host} and red_{host} = service and Action = env_real_seen;",
+      "compromised_{host} = user if turn = red_turn and Red.Action = ExploitRemoteService_{host} and red_{host} = service and Action = env_decoy and !({decoy} = d_{host});",
+      "compromised_{host} = no if turn = red_turn and Red.Action = ExploitRemoteService_{host} and red_{host} = service and Action = env_decoy and {decoy} = d_{host};",
+      "compromised_{host} = privileged if turn = red_turn and Red.Action = PrivilegeEscalate_{host} and red_{host} = user and actual_{host} = user and Action = env_real_seen;",
+      "activity_{host} = suspicious if turn = red_turn and Red.Action = PrivilegeEscalate_{host} and red_{host} = user and Action = env_real_seen;",
+      "compromised_{host} = no if turn = red_turn and Red.Action = PrivilegeEscalate_{host} and red_{host} = user and actual_{host} = decoy and Action = env_real_seen;"
+    ],
+    "observe_foothold": [
+      "compromised_{host} = no if turn = blue_turn and Blue.Action = analyse_{host} and (actual_{host} = clean or actual_{host} = decoy);",
+      "compromised_{host} = user if turn = blue_turn and Blue.Action = analyse_{host} and actual_{host} = user;",
+      "compromised_{host} = privileged if turn = blue_turn and Blue.Action = analyse_{host} and actual_{host} = root;"
+    ]
+  },
+  "evaluation": {
+    "{gateway}_root": "Environment.actual_{gateway} = root",
+    "OpServer_root": "Environment.actual_{server} = root",
+    "OTService_running": "Environment.ot_service_running = true",
+    "OTService_impacted": "Environment.ot_service_running = false"
+  },
+  "formulae": [
+    "EF {gateway}_root;",
+    "EF OpServer_root;",
+    "EF OTService_impacted;",
+    "<red_team> F OTService_impacted;",
+    "<blue_team> G OTService_running;"
+  ],
+  "jason": {
+    "entry_goal": "observe_network",
+    "goal_var": "blue_goal_level",
+    "vocabulary": {
+      "actions": {
+        "restore": [
+          "restore"
+        ],
+        "remove": [
+          "remove"
+        ],
+        "monitor": [
+          "monitor"
+        ]
+      },
+      "predicates": {}
+    },
+    "plan": {
+      "ground": {
+        "variable": "Host",
+        "values": [
+          "no",
+          "user",
+          "privileged"
+        ],
+        "signatures": {
+          "secure": [
+            0
+          ],
+          "initial_foothold": [
+            0
+          ],
+          "host_state": [
+            0,
+            2
+          ],
+          "restore": [
+            0
+          ],
+          "remove": [
+            0
+          ]
+        }
+      },
+      "pass_through": [
+        "blue_wait",
+        "restore_{server}"
+      ],
+      "fallback": "monitor"
+    }
+  }
+}

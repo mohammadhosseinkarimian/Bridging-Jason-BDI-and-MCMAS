@@ -1,0 +1,735 @@
+Semantics=SingleAssignment;
+
+Agent Environment
+    Obsvars:
+        turn : {blue_turn, red_turn};
+    end Obsvars
+    Vars:
+        user_decoy : {none, d_User0, d_User1, d_User2, d_User3, d_User4};
+        enterprise_decoy : {none, d_Enterprise0, d_Enterprise1, d_Enterprise2, d_Defender};
+        operational_decoy : {none, d_Op_Host0, d_Op_Host1, d_Op_Host2, d_Op_Server0};
+        ot_service_running : boolean;
+        actual_User0 : {clean, user, root, decoy};
+        red_User0 : {unknown, known, service, user, root};
+        actual_User1 : {clean, user, root, decoy};
+        red_User1 : {unknown, known, service, user, root};
+        actual_User2 : {clean, user, root, decoy};
+        red_User2 : {unknown, known, service, user, root};
+        actual_User3 : {clean, user, root, decoy};
+        red_User3 : {unknown, known, service, user, root};
+        actual_User4 : {clean, user, root, decoy};
+        red_User4 : {unknown, known, service, user, root};
+        actual_Enterprise0 : {clean, user, root, decoy};
+        red_Enterprise0 : {unknown, known, service, user, root};
+        actual_Enterprise1 : {clean, user, root, decoy};
+        red_Enterprise1 : {unknown, known, service, user, root};
+        actual_Enterprise2 : {clean, user, root, decoy};
+        red_Enterprise2 : {unknown, known, service, user, root};
+        actual_Defender : {clean, user, root, decoy};
+        red_Defender : {unknown, known, service, user, root};
+        actual_Op_Host0 : {clean, user, root, decoy};
+        red_Op_Host0 : {unknown, known, service, user, root};
+        actual_Op_Host1 : {clean, user, root, decoy};
+        red_Op_Host1 : {unknown, known, service, user, root};
+        actual_Op_Host2 : {clean, user, root, decoy};
+        red_Op_Host2 : {unknown, known, service, user, root};
+        actual_Op_Server0 : {clean, user, root, decoy};
+        red_Op_Server0 : {unknown, known, service, user, root};
+        activity_User0 : {none, suspicious};
+        compromised_User0 : {unknown, no, user, privileged};
+        activity_User1 : {none, suspicious};
+        compromised_User1 : {unknown, no, user, privileged};
+        activity_User2 : {none, suspicious};
+        compromised_User2 : {unknown, no, user, privileged};
+        activity_User3 : {none, suspicious};
+        compromised_User3 : {unknown, no, user, privileged};
+        activity_User4 : {none, suspicious};
+        compromised_User4 : {unknown, no, user, privileged};
+        activity_Enterprise0 : {none, suspicious};
+        compromised_Enterprise0 : {unknown, no, user, privileged};
+        activity_Enterprise1 : {none, suspicious};
+        compromised_Enterprise1 : {unknown, no, user, privileged};
+        activity_Enterprise2 : {none, suspicious};
+        compromised_Enterprise2 : {unknown, no, user, privileged};
+        activity_Defender : {none, suspicious};
+        compromised_Defender : {unknown, no, user, privileged};
+        activity_Op_Host0 : {none, suspicious};
+        compromised_Op_Host0 : {unknown, no, user, privileged};
+        activity_Op_Host1 : {none, suspicious};
+        compromised_Op_Host1 : {unknown, no, user, privileged};
+        activity_Op_Host2 : {none, suspicious};
+        compromised_Op_Host2 : {unknown, no, user, privileged};
+        activity_Op_Server0 : {none, suspicious};
+        compromised_Op_Server0 : {unknown, no, user, privileged};
+    end Vars
+
+    Actions = {env_idle, env_real_seen, env_real_missed, env_decoy};
+
+    Protocol:
+        turn = blue_turn : {env_idle};
+        turn = red_turn : {env_real_seen, env_real_missed, env_decoy};
+    end Protocol
+
+    Evolution:
+        turn = red_turn if turn = blue_turn;
+        turn = blue_turn if turn = red_turn;
+        user_decoy = d_User0 if turn = blue_turn and Blue.Action = misinform_User0;
+        user_decoy = none if turn = blue_turn and Blue.Action = restore_User0 and user_decoy = d_User0;
+        red_User0 = known if turn = red_turn and Red.Action = DiscoverRemoteSystems_User and red_User0 = unknown;
+        red_User0 = service if turn = red_turn and Red.Action = DiscoverNetworkServices_User0 and red_User0 = known;
+        actual_User0 = user if turn = red_turn and Red.Action = ExploitRemoteService_User0 and red_User0 = service and (Action = env_real_seen or Action = env_real_missed);
+        actual_User0 = decoy if turn = red_turn and Red.Action = ExploitRemoteService_User0 and red_User0 = service and Action = env_decoy and user_decoy = d_User0;
+        actual_User0 = user if turn = red_turn and Red.Action = ExploitRemoteService_User0 and red_User0 = service and Action = env_decoy and !(user_decoy = d_User0);
+        red_User0 = user if turn = red_turn and Red.Action = ExploitRemoteService_User0 and red_User0 = service;
+        actual_User0 = root if turn = red_turn and Red.Action = PrivilegeEscalate_User0 and red_User0 = user and actual_User0 = user;
+        red_User0 = root if turn = red_turn and Red.Action = PrivilegeEscalate_User0 and red_User0 = user and actual_User0 = user;
+        actual_User0 = clean if turn = red_turn and Red.Action = PrivilegeEscalate_User0 and red_User0 = user and actual_User0 = decoy;
+        red_User0 = service if turn = red_turn and Red.Action = PrivilegeEscalate_User0 and red_User0 = user and (actual_User0 = clean or actual_User0 = decoy);
+
+        user_decoy = d_User1 if turn = blue_turn and Blue.Action = misinform_User1;
+        user_decoy = none if turn = blue_turn and Blue.Action = restore_User1 and user_decoy = d_User1;
+        actual_User1 = clean if turn = blue_turn and Blue.Action = restore_User1;
+        red_User1 = known if turn = red_turn and Red.Action = DiscoverRemoteSystems_User and red_User1 = unknown;
+        red_User1 = service if turn = red_turn and Red.Action = DiscoverNetworkServices_User1 and red_User1 = known;
+        actual_User1 = user if turn = red_turn and Red.Action = ExploitRemoteService_User1 and red_User1 = service and (Action = env_real_seen or Action = env_real_missed);
+        actual_User1 = decoy if turn = red_turn and Red.Action = ExploitRemoteService_User1 and red_User1 = service and Action = env_decoy and user_decoy = d_User1;
+        actual_User1 = user if turn = red_turn and Red.Action = ExploitRemoteService_User1 and red_User1 = service and Action = env_decoy and !(user_decoy = d_User1);
+        red_User1 = user if turn = red_turn and Red.Action = ExploitRemoteService_User1 and red_User1 = service;
+        actual_User1 = root if turn = red_turn and Red.Action = PrivilegeEscalate_User1 and red_User1 = user and actual_User1 = user;
+        red_User1 = root if turn = red_turn and Red.Action = PrivilegeEscalate_User1 and red_User1 = user and actual_User1 = user;
+        actual_User1 = clean if turn = red_turn and Red.Action = PrivilegeEscalate_User1 and red_User1 = user and actual_User1 = decoy;
+        red_User1 = service if turn = red_turn and Red.Action = PrivilegeEscalate_User1 and red_User1 = user and (actual_User1 = clean or actual_User1 = decoy);
+
+        user_decoy = d_User2 if turn = blue_turn and Blue.Action = misinform_User2;
+        user_decoy = none if turn = blue_turn and Blue.Action = restore_User2 and user_decoy = d_User2;
+        actual_User2 = clean if turn = blue_turn and Blue.Action = restore_User2;
+        red_User2 = known if turn = red_turn and Red.Action = DiscoverRemoteSystems_User and red_User2 = unknown;
+        red_User2 = service if turn = red_turn and Red.Action = DiscoverNetworkServices_User2 and red_User2 = known;
+        actual_User2 = user if turn = red_turn and Red.Action = ExploitRemoteService_User2 and red_User2 = service and (Action = env_real_seen or Action = env_real_missed);
+        actual_User2 = decoy if turn = red_turn and Red.Action = ExploitRemoteService_User2 and red_User2 = service and Action = env_decoy and user_decoy = d_User2;
+        actual_User2 = user if turn = red_turn and Red.Action = ExploitRemoteService_User2 and red_User2 = service and Action = env_decoy and !(user_decoy = d_User2);
+        red_User2 = user if turn = red_turn and Red.Action = ExploitRemoteService_User2 and red_User2 = service;
+        actual_User2 = root if turn = red_turn and Red.Action = PrivilegeEscalate_User2 and red_User2 = user and actual_User2 = user;
+        red_User2 = root if turn = red_turn and Red.Action = PrivilegeEscalate_User2 and red_User2 = user and actual_User2 = user;
+        actual_User2 = clean if turn = red_turn and Red.Action = PrivilegeEscalate_User2 and red_User2 = user and actual_User2 = decoy;
+        red_User2 = service if turn = red_turn and Red.Action = PrivilegeEscalate_User2 and red_User2 = user and (actual_User2 = clean or actual_User2 = decoy);
+
+        user_decoy = d_User3 if turn = blue_turn and Blue.Action = misinform_User3;
+        user_decoy = none if turn = blue_turn and Blue.Action = restore_User3 and user_decoy = d_User3;
+        actual_User3 = clean if turn = blue_turn and Blue.Action = restore_User3;
+        red_User3 = known if turn = red_turn and Red.Action = DiscoverRemoteSystems_User and red_User3 = unknown;
+        red_User3 = service if turn = red_turn and Red.Action = DiscoverNetworkServices_User3 and red_User3 = known;
+        actual_User3 = user if turn = red_turn and Red.Action = ExploitRemoteService_User3 and red_User3 = service and (Action = env_real_seen or Action = env_real_missed);
+        actual_User3 = decoy if turn = red_turn and Red.Action = ExploitRemoteService_User3 and red_User3 = service and Action = env_decoy and user_decoy = d_User3;
+        actual_User3 = user if turn = red_turn and Red.Action = ExploitRemoteService_User3 and red_User3 = service and Action = env_decoy and !(user_decoy = d_User3);
+        red_User3 = user if turn = red_turn and Red.Action = ExploitRemoteService_User3 and red_User3 = service;
+        actual_User3 = root if turn = red_turn and Red.Action = PrivilegeEscalate_User3 and red_User3 = user and actual_User3 = user;
+        red_User3 = root if turn = red_turn and Red.Action = PrivilegeEscalate_User3 and red_User3 = user and actual_User3 = user;
+        actual_User3 = clean if turn = red_turn and Red.Action = PrivilegeEscalate_User3 and red_User3 = user and actual_User3 = decoy;
+        red_User3 = service if turn = red_turn and Red.Action = PrivilegeEscalate_User3 and red_User3 = user and (actual_User3 = clean or actual_User3 = decoy);
+
+        user_decoy = d_User4 if turn = blue_turn and Blue.Action = misinform_User4;
+        user_decoy = none if turn = blue_turn and Blue.Action = restore_User4 and user_decoy = d_User4;
+        actual_User4 = clean if turn = blue_turn and Blue.Action = restore_User4;
+        red_User4 = known if turn = red_turn and Red.Action = DiscoverRemoteSystems_User and red_User4 = unknown;
+        red_User4 = service if turn = red_turn and Red.Action = DiscoverNetworkServices_User4 and red_User4 = known;
+        actual_User4 = user if turn = red_turn and Red.Action = ExploitRemoteService_User4 and red_User4 = service and (Action = env_real_seen or Action = env_real_missed);
+        actual_User4 = decoy if turn = red_turn and Red.Action = ExploitRemoteService_User4 and red_User4 = service and Action = env_decoy and user_decoy = d_User4;
+        actual_User4 = user if turn = red_turn and Red.Action = ExploitRemoteService_User4 and red_User4 = service and Action = env_decoy and !(user_decoy = d_User4);
+        red_User4 = user if turn = red_turn and Red.Action = ExploitRemoteService_User4 and red_User4 = service;
+        actual_User4 = root if turn = red_turn and Red.Action = PrivilegeEscalate_User4 and red_User4 = user and actual_User4 = user;
+        red_User4 = root if turn = red_turn and Red.Action = PrivilegeEscalate_User4 and red_User4 = user and actual_User4 = user;
+        actual_User4 = clean if turn = red_turn and Red.Action = PrivilegeEscalate_User4 and red_User4 = user and actual_User4 = decoy;
+        red_User4 = service if turn = red_turn and Red.Action = PrivilegeEscalate_User4 and red_User4 = user and (actual_User4 = clean or actual_User4 = decoy);
+
+        enterprise_decoy = d_Enterprise0 if turn = blue_turn and Blue.Action = misinform_Enterprise0;
+        enterprise_decoy = none if turn = blue_turn and Blue.Action = restore_Enterprise0 and enterprise_decoy = d_Enterprise0;
+        actual_Enterprise0 = clean if turn = blue_turn and Blue.Action = restore_Enterprise0;
+        red_Enterprise0 = known if turn = red_turn and Red.Action = DiscoverRemoteSystems_Enterprise and red_Enterprise0 = unknown;
+        red_Enterprise0 = service if turn = red_turn and Red.Action = DiscoverNetworkServices_Enterprise0 and red_Enterprise0 = known;
+        actual_Enterprise0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise0 and red_Enterprise0 = service and (Action = env_real_seen or Action = env_real_missed);
+        actual_Enterprise0 = decoy if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise0 and red_Enterprise0 = service and Action = env_decoy and enterprise_decoy = d_Enterprise0;
+        actual_Enterprise0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise0 and red_Enterprise0 = service and Action = env_decoy and !(enterprise_decoy = d_Enterprise0);
+        red_Enterprise0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise0 and red_Enterprise0 = service;
+        actual_Enterprise0 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise0 and red_Enterprise0 = user and actual_Enterprise0 = user;
+        red_Enterprise0 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise0 and red_Enterprise0 = user and actual_Enterprise0 = user;
+        actual_Enterprise0 = clean if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise0 and red_Enterprise0 = user and actual_Enterprise0 = decoy;
+        red_Enterprise0 = service if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise0 and red_Enterprise0 = user and (actual_Enterprise0 = clean or actual_Enterprise0 = decoy);
+
+        enterprise_decoy = d_Enterprise1 if turn = blue_turn and Blue.Action = misinform_Enterprise1;
+        enterprise_decoy = none if turn = blue_turn and Blue.Action = restore_Enterprise1 and enterprise_decoy = d_Enterprise1;
+        actual_Enterprise1 = clean if turn = blue_turn and Blue.Action = restore_Enterprise1;
+        red_Enterprise1 = known if turn = red_turn and Red.Action = DiscoverRemoteSystems_Enterprise and red_Enterprise1 = unknown;
+        red_Enterprise1 = service if turn = red_turn and Red.Action = DiscoverNetworkServices_Enterprise1 and red_Enterprise1 = known;
+        actual_Enterprise1 = user if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise1 and red_Enterprise1 = service and (Action = env_real_seen or Action = env_real_missed);
+        actual_Enterprise1 = decoy if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise1 and red_Enterprise1 = service and Action = env_decoy and enterprise_decoy = d_Enterprise1;
+        actual_Enterprise1 = user if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise1 and red_Enterprise1 = service and Action = env_decoy and !(enterprise_decoy = d_Enterprise1);
+        red_Enterprise1 = user if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise1 and red_Enterprise1 = service;
+        actual_Enterprise1 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise1 and red_Enterprise1 = user and actual_Enterprise1 = user;
+        red_Enterprise1 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise1 and red_Enterprise1 = user and actual_Enterprise1 = user;
+        actual_Enterprise1 = clean if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise1 and red_Enterprise1 = user and actual_Enterprise1 = decoy;
+        red_Enterprise1 = service if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise1 and red_Enterprise1 = user and (actual_Enterprise1 = clean or actual_Enterprise1 = decoy);
+
+        enterprise_decoy = d_Enterprise2 if turn = blue_turn and Blue.Action = misinform_Enterprise2;
+        enterprise_decoy = none if turn = blue_turn and Blue.Action = restore_Enterprise2 and enterprise_decoy = d_Enterprise2;
+        actual_Enterprise2 = clean if turn = blue_turn and Blue.Action = restore_Enterprise2;
+        red_Enterprise2 = known if turn = red_turn and Red.Action = DiscoverRemoteSystems_Enterprise and red_Enterprise2 = unknown;
+        red_Enterprise2 = service if turn = red_turn and Red.Action = DiscoverNetworkServices_Enterprise2 and red_Enterprise2 = known;
+        actual_Enterprise2 = user if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise2 and red_Enterprise2 = service and (Action = env_real_seen or Action = env_real_missed);
+        actual_Enterprise2 = decoy if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise2 and red_Enterprise2 = service and Action = env_decoy and enterprise_decoy = d_Enterprise2;
+        actual_Enterprise2 = user if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise2 and red_Enterprise2 = service and Action = env_decoy and !(enterprise_decoy = d_Enterprise2);
+        red_Enterprise2 = user if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise2 and red_Enterprise2 = service;
+        actual_Enterprise2 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise2 and red_Enterprise2 = user and actual_Enterprise2 = user;
+        red_Enterprise2 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise2 and red_Enterprise2 = user and actual_Enterprise2 = user;
+        actual_Enterprise2 = clean if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise2 and red_Enterprise2 = user and actual_Enterprise2 = decoy;
+        red_Enterprise2 = service if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise2 and red_Enterprise2 = user and (actual_Enterprise2 = clean or actual_Enterprise2 = decoy);
+
+        enterprise_decoy = d_Defender if turn = blue_turn and Blue.Action = misinform_Defender;
+        enterprise_decoy = none if turn = blue_turn and Blue.Action = restore_Defender and enterprise_decoy = d_Defender;
+        actual_Defender = clean if turn = blue_turn and Blue.Action = restore_Defender;
+        red_Defender = known if turn = red_turn and Red.Action = DiscoverRemoteSystems_Enterprise and red_Defender = unknown;
+        red_Defender = service if turn = red_turn and Red.Action = DiscoverNetworkServices_Defender and red_Defender = known;
+        actual_Defender = user if turn = red_turn and Red.Action = ExploitRemoteService_Defender and red_Defender = service and (Action = env_real_seen or Action = env_real_missed);
+        actual_Defender = decoy if turn = red_turn and Red.Action = ExploitRemoteService_Defender and red_Defender = service and Action = env_decoy and enterprise_decoy = d_Defender;
+        actual_Defender = user if turn = red_turn and Red.Action = ExploitRemoteService_Defender and red_Defender = service and Action = env_decoy and !(enterprise_decoy = d_Defender);
+        red_Defender = user if turn = red_turn and Red.Action = ExploitRemoteService_Defender and red_Defender = service;
+        actual_Defender = root if turn = red_turn and Red.Action = PrivilegeEscalate_Defender and red_Defender = user and actual_Defender = user;
+        red_Defender = root if turn = red_turn and Red.Action = PrivilegeEscalate_Defender and red_Defender = user and actual_Defender = user;
+        actual_Defender = clean if turn = red_turn and Red.Action = PrivilegeEscalate_Defender and red_Defender = user and actual_Defender = decoy;
+        red_Defender = service if turn = red_turn and Red.Action = PrivilegeEscalate_Defender and red_Defender = user and (actual_Defender = clean or actual_Defender = decoy);
+
+        operational_decoy = d_Op_Host0 if turn = blue_turn and Blue.Action = misinform_Op_Host0;
+        operational_decoy = none if turn = blue_turn and Blue.Action = restore_Op_Host0 and operational_decoy = d_Op_Host0;
+        actual_Op_Host0 = clean if turn = blue_turn and Blue.Action = restore_Op_Host0;
+        red_Op_Host0 = known if turn = red_turn and Red.Action = DiscoverRemoteSystems_Operational and red_Op_Host0 = unknown and red_Enterprise2 = root and actual_Enterprise2 = root;
+        red_Op_Host0 = service if turn = red_turn and Red.Action = DiscoverNetworkServices_Op_Host0 and red_Op_Host0 = known;
+        actual_Op_Host0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host0 and red_Op_Host0 = service and (Action = env_real_seen or Action = env_real_missed);
+        actual_Op_Host0 = decoy if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host0 and red_Op_Host0 = service and Action = env_decoy and operational_decoy = d_Op_Host0;
+        actual_Op_Host0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host0 and red_Op_Host0 = service and Action = env_decoy and !(operational_decoy = d_Op_Host0);
+        red_Op_Host0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host0 and red_Op_Host0 = service;
+        actual_Op_Host0 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host0 and red_Op_Host0 = user and actual_Op_Host0 = user;
+        red_Op_Host0 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host0 and red_Op_Host0 = user and actual_Op_Host0 = user;
+        actual_Op_Host0 = clean if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host0 and red_Op_Host0 = user and actual_Op_Host0 = decoy;
+        red_Op_Host0 = service if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host0 and red_Op_Host0 = user and (actual_Op_Host0 = clean or actual_Op_Host0 = decoy);
+
+        operational_decoy = d_Op_Host1 if turn = blue_turn and Blue.Action = misinform_Op_Host1;
+        operational_decoy = none if turn = blue_turn and Blue.Action = restore_Op_Host1 and operational_decoy = d_Op_Host1;
+        actual_Op_Host1 = clean if turn = blue_turn and Blue.Action = restore_Op_Host1;
+        red_Op_Host1 = known if turn = red_turn and Red.Action = DiscoverRemoteSystems_Operational and red_Op_Host1 = unknown and red_Enterprise2 = root and actual_Enterprise2 = root;
+        red_Op_Host1 = service if turn = red_turn and Red.Action = DiscoverNetworkServices_Op_Host1 and red_Op_Host1 = known;
+        actual_Op_Host1 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host1 and red_Op_Host1 = service and (Action = env_real_seen or Action = env_real_missed);
+        actual_Op_Host1 = decoy if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host1 and red_Op_Host1 = service and Action = env_decoy and operational_decoy = d_Op_Host1;
+        actual_Op_Host1 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host1 and red_Op_Host1 = service and Action = env_decoy and !(operational_decoy = d_Op_Host1);
+        red_Op_Host1 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host1 and red_Op_Host1 = service;
+        actual_Op_Host1 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host1 and red_Op_Host1 = user and actual_Op_Host1 = user;
+        red_Op_Host1 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host1 and red_Op_Host1 = user and actual_Op_Host1 = user;
+        actual_Op_Host1 = clean if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host1 and red_Op_Host1 = user and actual_Op_Host1 = decoy;
+        red_Op_Host1 = service if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host1 and red_Op_Host1 = user and (actual_Op_Host1 = clean or actual_Op_Host1 = decoy);
+
+        operational_decoy = d_Op_Host2 if turn = blue_turn and Blue.Action = misinform_Op_Host2;
+        operational_decoy = none if turn = blue_turn and Blue.Action = restore_Op_Host2 and operational_decoy = d_Op_Host2;
+        actual_Op_Host2 = clean if turn = blue_turn and Blue.Action = restore_Op_Host2;
+        red_Op_Host2 = known if turn = red_turn and Red.Action = DiscoverRemoteSystems_Operational and red_Op_Host2 = unknown and red_Enterprise2 = root and actual_Enterprise2 = root;
+        red_Op_Host2 = service if turn = red_turn and Red.Action = DiscoverNetworkServices_Op_Host2 and red_Op_Host2 = known;
+        actual_Op_Host2 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host2 and red_Op_Host2 = service and (Action = env_real_seen or Action = env_real_missed);
+        actual_Op_Host2 = decoy if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host2 and red_Op_Host2 = service and Action = env_decoy and operational_decoy = d_Op_Host2;
+        actual_Op_Host2 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host2 and red_Op_Host2 = service and Action = env_decoy and !(operational_decoy = d_Op_Host2);
+        red_Op_Host2 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host2 and red_Op_Host2 = service;
+        actual_Op_Host2 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host2 and red_Op_Host2 = user and actual_Op_Host2 = user;
+        red_Op_Host2 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host2 and red_Op_Host2 = user and actual_Op_Host2 = user;
+        actual_Op_Host2 = clean if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host2 and red_Op_Host2 = user and actual_Op_Host2 = decoy;
+        red_Op_Host2 = service if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host2 and red_Op_Host2 = user and (actual_Op_Host2 = clean or actual_Op_Host2 = decoy);
+
+        operational_decoy = d_Op_Server0 if turn = blue_turn and Blue.Action = misinform_Op_Server0;
+        operational_decoy = none if turn = blue_turn and Blue.Action = restore_Op_Server0 and operational_decoy = d_Op_Server0;
+        actual_Op_Server0 = clean if turn = blue_turn and Blue.Action = restore_Op_Server0;
+        red_Op_Server0 = known if turn = red_turn and Red.Action = DiscoverRemoteSystems_Operational and red_Op_Server0 = unknown and red_Enterprise2 = root and actual_Enterprise2 = root;
+        red_Op_Server0 = service if turn = red_turn and Red.Action = DiscoverNetworkServices_Op_Server0 and red_Op_Server0 = known;
+        actual_Op_Server0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Server0 and red_Op_Server0 = service and (Action = env_real_seen or Action = env_real_missed);
+        actual_Op_Server0 = decoy if turn = red_turn and Red.Action = ExploitRemoteService_Op_Server0 and red_Op_Server0 = service and Action = env_decoy and operational_decoy = d_Op_Server0;
+        actual_Op_Server0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Server0 and red_Op_Server0 = service and Action = env_decoy and !(operational_decoy = d_Op_Server0);
+        red_Op_Server0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Server0 and red_Op_Server0 = service;
+        actual_Op_Server0 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Server0 and red_Op_Server0 = user and actual_Op_Server0 = user;
+        red_Op_Server0 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Server0 and red_Op_Server0 = user and actual_Op_Server0 = user;
+        actual_Op_Server0 = clean if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Server0 and red_Op_Server0 = user and actual_Op_Server0 = decoy;
+        red_Op_Server0 = service if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Server0 and red_Op_Server0 = user and (actual_Op_Server0 = clean or actual_Op_Server0 = decoy);
+
+        ot_service_running = true if turn = blue_turn and Blue.Action = restore_Op_Server0;
+        ot_service_running = false if turn = red_turn and Red.Action = Impact_Op_Server0 and red_Op_Server0 = root and actual_Op_Server0 = root;
+
+        compromised_User0 = no if turn = blue_turn and Blue.Action = analyse_User0 and (actual_User0 = clean or actual_User0 = decoy);
+        compromised_User0 = user if turn = blue_turn and Blue.Action = analyse_User0 and actual_User0 = user;
+        compromised_User0 = privileged if turn = blue_turn and Blue.Action = analyse_User0 and actual_User0 = root;
+        activity_User0 = suspicious if turn = red_turn and Red.Action = DiscoverNetworkServices_User0 and Action = env_real_seen;
+        activity_User0 = suspicious if turn = red_turn and Red.Action = ExploitRemoteService_User0 and red_User0 = service and (Action = env_real_seen or Action = env_decoy);
+        activity_User0 = none if turn = red_turn and Red.Action = ExploitRemoteService_User0 and red_User0 = service and Action = env_real_missed;
+        compromised_User0 = user if turn = red_turn and Red.Action = ExploitRemoteService_User0 and red_User0 = service and Action = env_real_seen;
+        compromised_User0 = user if turn = red_turn and Red.Action = ExploitRemoteService_User0 and red_User0 = service and Action = env_decoy and !(user_decoy = d_User0);
+        compromised_User0 = no if turn = red_turn and Red.Action = ExploitRemoteService_User0 and red_User0 = service and Action = env_decoy and user_decoy = d_User0;
+        compromised_User0 = privileged if turn = red_turn and Red.Action = PrivilegeEscalate_User0 and red_User0 = user and actual_User0 = user and Action = env_real_seen;
+        activity_User0 = suspicious if turn = red_turn and Red.Action = PrivilegeEscalate_User0 and red_User0 = user and Action = env_real_seen;
+        compromised_User0 = no if turn = red_turn and Red.Action = PrivilegeEscalate_User0 and red_User0 = user and actual_User0 = decoy and Action = env_real_seen;
+        compromised_User1 = no if turn = blue_turn and Blue.Action = restore_User1;
+        activity_User1 = none if turn = blue_turn and Blue.Action = restore_User1;
+        actual_User1 = clean if turn = blue_turn and Blue.Action = remove_User1 and actual_User1 = user and compromised_User1 = user;
+        compromised_User1 = no if turn = blue_turn and Blue.Action = remove_User1 and actual_User1 = user and compromised_User1 = user;
+        activity_User1 = none if turn = blue_turn and Blue.Action = remove_User1 and actual_User1 = user and compromised_User1 = user;
+        compromised_User1 = no if turn = blue_turn and Blue.Action = analyse_User1 and (actual_User1 = clean or actual_User1 = decoy);
+        compromised_User1 = user if turn = blue_turn and Blue.Action = analyse_User1 and actual_User1 = user;
+        compromised_User1 = privileged if turn = blue_turn and Blue.Action = analyse_User1 and actual_User1 = root;
+        activity_User1 = suspicious if turn = red_turn and Red.Action = DiscoverNetworkServices_User1 and Action = env_real_seen;
+        activity_User1 = suspicious if turn = red_turn and Red.Action = ExploitRemoteService_User1 and red_User1 = service and (Action = env_real_seen or Action = env_decoy);
+        activity_User1 = none if turn = red_turn and Red.Action = ExploitRemoteService_User1 and red_User1 = service and Action = env_real_missed;
+        compromised_User1 = user if turn = red_turn and Red.Action = ExploitRemoteService_User1 and red_User1 = service and Action = env_real_seen;
+        compromised_User1 = user if turn = red_turn and Red.Action = ExploitRemoteService_User1 and red_User1 = service and Action = env_decoy and !(user_decoy = d_User1);
+        compromised_User1 = no if turn = red_turn and Red.Action = ExploitRemoteService_User1 and red_User1 = service and Action = env_decoy and user_decoy = d_User1;
+        compromised_User1 = privileged if turn = red_turn and Red.Action = PrivilegeEscalate_User1 and red_User1 = user and actual_User1 = user and Action = env_real_seen;
+        activity_User1 = suspicious if turn = red_turn and Red.Action = PrivilegeEscalate_User1 and red_User1 = user and Action = env_real_seen;
+        compromised_User1 = no if turn = red_turn and Red.Action = PrivilegeEscalate_User1 and red_User1 = user and actual_User1 = decoy and Action = env_real_seen;
+        compromised_User2 = no if turn = blue_turn and Blue.Action = restore_User2;
+        activity_User2 = none if turn = blue_turn and Blue.Action = restore_User2;
+        actual_User2 = clean if turn = blue_turn and Blue.Action = remove_User2 and actual_User2 = user and compromised_User2 = user;
+        compromised_User2 = no if turn = blue_turn and Blue.Action = remove_User2 and actual_User2 = user and compromised_User2 = user;
+        activity_User2 = none if turn = blue_turn and Blue.Action = remove_User2 and actual_User2 = user and compromised_User2 = user;
+        compromised_User2 = no if turn = blue_turn and Blue.Action = analyse_User2 and (actual_User2 = clean or actual_User2 = decoy);
+        compromised_User2 = user if turn = blue_turn and Blue.Action = analyse_User2 and actual_User2 = user;
+        compromised_User2 = privileged if turn = blue_turn and Blue.Action = analyse_User2 and actual_User2 = root;
+        activity_User2 = suspicious if turn = red_turn and Red.Action = DiscoverNetworkServices_User2 and Action = env_real_seen;
+        activity_User2 = suspicious if turn = red_turn and Red.Action = ExploitRemoteService_User2 and red_User2 = service and (Action = env_real_seen or Action = env_decoy);
+        activity_User2 = none if turn = red_turn and Red.Action = ExploitRemoteService_User2 and red_User2 = service and Action = env_real_missed;
+        compromised_User2 = user if turn = red_turn and Red.Action = ExploitRemoteService_User2 and red_User2 = service and Action = env_real_seen;
+        compromised_User2 = user if turn = red_turn and Red.Action = ExploitRemoteService_User2 and red_User2 = service and Action = env_decoy and !(user_decoy = d_User2);
+        compromised_User2 = no if turn = red_turn and Red.Action = ExploitRemoteService_User2 and red_User2 = service and Action = env_decoy and user_decoy = d_User2;
+        compromised_User2 = privileged if turn = red_turn and Red.Action = PrivilegeEscalate_User2 and red_User2 = user and actual_User2 = user and Action = env_real_seen;
+        activity_User2 = suspicious if turn = red_turn and Red.Action = PrivilegeEscalate_User2 and red_User2 = user and Action = env_real_seen;
+        compromised_User2 = no if turn = red_turn and Red.Action = PrivilegeEscalate_User2 and red_User2 = user and actual_User2 = decoy and Action = env_real_seen;
+        compromised_User3 = no if turn = blue_turn and Blue.Action = restore_User3;
+        activity_User3 = none if turn = blue_turn and Blue.Action = restore_User3;
+        actual_User3 = clean if turn = blue_turn and Blue.Action = remove_User3 and actual_User3 = user and compromised_User3 = user;
+        compromised_User3 = no if turn = blue_turn and Blue.Action = remove_User3 and actual_User3 = user and compromised_User3 = user;
+        activity_User3 = none if turn = blue_turn and Blue.Action = remove_User3 and actual_User3 = user and compromised_User3 = user;
+        compromised_User3 = no if turn = blue_turn and Blue.Action = analyse_User3 and (actual_User3 = clean or actual_User3 = decoy);
+        compromised_User3 = user if turn = blue_turn and Blue.Action = analyse_User3 and actual_User3 = user;
+        compromised_User3 = privileged if turn = blue_turn and Blue.Action = analyse_User3 and actual_User3 = root;
+        activity_User3 = suspicious if turn = red_turn and Red.Action = DiscoverNetworkServices_User3 and Action = env_real_seen;
+        activity_User3 = suspicious if turn = red_turn and Red.Action = ExploitRemoteService_User3 and red_User3 = service and (Action = env_real_seen or Action = env_decoy);
+        activity_User3 = none if turn = red_turn and Red.Action = ExploitRemoteService_User3 and red_User3 = service and Action = env_real_missed;
+        compromised_User3 = user if turn = red_turn and Red.Action = ExploitRemoteService_User3 and red_User3 = service and Action = env_real_seen;
+        compromised_User3 = user if turn = red_turn and Red.Action = ExploitRemoteService_User3 and red_User3 = service and Action = env_decoy and !(user_decoy = d_User3);
+        compromised_User3 = no if turn = red_turn and Red.Action = ExploitRemoteService_User3 and red_User3 = service and Action = env_decoy and user_decoy = d_User3;
+        compromised_User3 = privileged if turn = red_turn and Red.Action = PrivilegeEscalate_User3 and red_User3 = user and actual_User3 = user and Action = env_real_seen;
+        activity_User3 = suspicious if turn = red_turn and Red.Action = PrivilegeEscalate_User3 and red_User3 = user and Action = env_real_seen;
+        compromised_User3 = no if turn = red_turn and Red.Action = PrivilegeEscalate_User3 and red_User3 = user and actual_User3 = decoy and Action = env_real_seen;
+        compromised_User4 = no if turn = blue_turn and Blue.Action = restore_User4;
+        activity_User4 = none if turn = blue_turn and Blue.Action = restore_User4;
+        actual_User4 = clean if turn = blue_turn and Blue.Action = remove_User4 and actual_User4 = user and compromised_User4 = user;
+        compromised_User4 = no if turn = blue_turn and Blue.Action = remove_User4 and actual_User4 = user and compromised_User4 = user;
+        activity_User4 = none if turn = blue_turn and Blue.Action = remove_User4 and actual_User4 = user and compromised_User4 = user;
+        compromised_User4 = no if turn = blue_turn and Blue.Action = analyse_User4 and (actual_User4 = clean or actual_User4 = decoy);
+        compromised_User4 = user if turn = blue_turn and Blue.Action = analyse_User4 and actual_User4 = user;
+        compromised_User4 = privileged if turn = blue_turn and Blue.Action = analyse_User4 and actual_User4 = root;
+        activity_User4 = suspicious if turn = red_turn and Red.Action = DiscoverNetworkServices_User4 and Action = env_real_seen;
+        activity_User4 = suspicious if turn = red_turn and Red.Action = ExploitRemoteService_User4 and red_User4 = service and (Action = env_real_seen or Action = env_decoy);
+        activity_User4 = none if turn = red_turn and Red.Action = ExploitRemoteService_User4 and red_User4 = service and Action = env_real_missed;
+        compromised_User4 = user if turn = red_turn and Red.Action = ExploitRemoteService_User4 and red_User4 = service and Action = env_real_seen;
+        compromised_User4 = user if turn = red_turn and Red.Action = ExploitRemoteService_User4 and red_User4 = service and Action = env_decoy and !(user_decoy = d_User4);
+        compromised_User4 = no if turn = red_turn and Red.Action = ExploitRemoteService_User4 and red_User4 = service and Action = env_decoy and user_decoy = d_User4;
+        compromised_User4 = privileged if turn = red_turn and Red.Action = PrivilegeEscalate_User4 and red_User4 = user and actual_User4 = user and Action = env_real_seen;
+        activity_User4 = suspicious if turn = red_turn and Red.Action = PrivilegeEscalate_User4 and red_User4 = user and Action = env_real_seen;
+        compromised_User4 = no if turn = red_turn and Red.Action = PrivilegeEscalate_User4 and red_User4 = user and actual_User4 = decoy and Action = env_real_seen;
+        compromised_Enterprise0 = no if turn = blue_turn and Blue.Action = restore_Enterprise0;
+        activity_Enterprise0 = none if turn = blue_turn and Blue.Action = restore_Enterprise0;
+        actual_Enterprise0 = clean if turn = blue_turn and Blue.Action = remove_Enterprise0 and actual_Enterprise0 = user and compromised_Enterprise0 = user;
+        compromised_Enterprise0 = no if turn = blue_turn and Blue.Action = remove_Enterprise0 and actual_Enterprise0 = user and compromised_Enterprise0 = user;
+        activity_Enterprise0 = none if turn = blue_turn and Blue.Action = remove_Enterprise0 and actual_Enterprise0 = user and compromised_Enterprise0 = user;
+        compromised_Enterprise0 = no if turn = blue_turn and Blue.Action = analyse_Enterprise0 and (actual_Enterprise0 = clean or actual_Enterprise0 = decoy);
+        compromised_Enterprise0 = user if turn = blue_turn and Blue.Action = analyse_Enterprise0 and actual_Enterprise0 = user;
+        compromised_Enterprise0 = privileged if turn = blue_turn and Blue.Action = analyse_Enterprise0 and actual_Enterprise0 = root;
+        activity_Enterprise0 = suspicious if turn = red_turn and Red.Action = DiscoverNetworkServices_Enterprise0 and Action = env_real_seen;
+        activity_Enterprise0 = suspicious if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise0 and red_Enterprise0 = service and (Action = env_real_seen or Action = env_decoy);
+        activity_Enterprise0 = none if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise0 and red_Enterprise0 = service and Action = env_real_missed;
+        compromised_Enterprise0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise0 and red_Enterprise0 = service and Action = env_real_seen;
+        compromised_Enterprise0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise0 and red_Enterprise0 = service and Action = env_decoy and !(enterprise_decoy = d_Enterprise0);
+        compromised_Enterprise0 = no if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise0 and red_Enterprise0 = service and Action = env_decoy and enterprise_decoy = d_Enterprise0;
+        compromised_Enterprise0 = privileged if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise0 and red_Enterprise0 = user and actual_Enterprise0 = user and Action = env_real_seen;
+        activity_Enterprise0 = suspicious if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise0 and red_Enterprise0 = user and Action = env_real_seen;
+        compromised_Enterprise0 = no if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise0 and red_Enterprise0 = user and actual_Enterprise0 = decoy and Action = env_real_seen;
+        compromised_Enterprise1 = no if turn = blue_turn and Blue.Action = restore_Enterprise1;
+        activity_Enterprise1 = none if turn = blue_turn and Blue.Action = restore_Enterprise1;
+        actual_Enterprise1 = clean if turn = blue_turn and Blue.Action = remove_Enterprise1 and actual_Enterprise1 = user and compromised_Enterprise1 = user;
+        compromised_Enterprise1 = no if turn = blue_turn and Blue.Action = remove_Enterprise1 and actual_Enterprise1 = user and compromised_Enterprise1 = user;
+        activity_Enterprise1 = none if turn = blue_turn and Blue.Action = remove_Enterprise1 and actual_Enterprise1 = user and compromised_Enterprise1 = user;
+        compromised_Enterprise1 = no if turn = blue_turn and Blue.Action = analyse_Enterprise1 and (actual_Enterprise1 = clean or actual_Enterprise1 = decoy);
+        compromised_Enterprise1 = user if turn = blue_turn and Blue.Action = analyse_Enterprise1 and actual_Enterprise1 = user;
+        compromised_Enterprise1 = privileged if turn = blue_turn and Blue.Action = analyse_Enterprise1 and actual_Enterprise1 = root;
+        activity_Enterprise1 = suspicious if turn = red_turn and Red.Action = DiscoverNetworkServices_Enterprise1 and Action = env_real_seen;
+        activity_Enterprise1 = suspicious if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise1 and red_Enterprise1 = service and (Action = env_real_seen or Action = env_decoy);
+        activity_Enterprise1 = none if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise1 and red_Enterprise1 = service and Action = env_real_missed;
+        compromised_Enterprise1 = user if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise1 and red_Enterprise1 = service and Action = env_real_seen;
+        compromised_Enterprise1 = user if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise1 and red_Enterprise1 = service and Action = env_decoy and !(enterprise_decoy = d_Enterprise1);
+        compromised_Enterprise1 = no if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise1 and red_Enterprise1 = service and Action = env_decoy and enterprise_decoy = d_Enterprise1;
+        compromised_Enterprise1 = privileged if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise1 and red_Enterprise1 = user and actual_Enterprise1 = user and Action = env_real_seen;
+        activity_Enterprise1 = suspicious if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise1 and red_Enterprise1 = user and Action = env_real_seen;
+        compromised_Enterprise1 = no if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise1 and red_Enterprise1 = user and actual_Enterprise1 = decoy and Action = env_real_seen;
+        compromised_Enterprise2 = no if turn = blue_turn and Blue.Action = restore_Enterprise2;
+        activity_Enterprise2 = none if turn = blue_turn and Blue.Action = restore_Enterprise2;
+        actual_Enterprise2 = clean if turn = blue_turn and Blue.Action = remove_Enterprise2 and actual_Enterprise2 = user and compromised_Enterprise2 = user;
+        compromised_Enterprise2 = no if turn = blue_turn and Blue.Action = remove_Enterprise2 and actual_Enterprise2 = user and compromised_Enterprise2 = user;
+        activity_Enterprise2 = none if turn = blue_turn and Blue.Action = remove_Enterprise2 and actual_Enterprise2 = user and compromised_Enterprise2 = user;
+        compromised_Enterprise2 = no if turn = blue_turn and Blue.Action = analyse_Enterprise2 and (actual_Enterprise2 = clean or actual_Enterprise2 = decoy);
+        compromised_Enterprise2 = user if turn = blue_turn and Blue.Action = analyse_Enterprise2 and actual_Enterprise2 = user;
+        compromised_Enterprise2 = privileged if turn = blue_turn and Blue.Action = analyse_Enterprise2 and actual_Enterprise2 = root;
+        activity_Enterprise2 = suspicious if turn = red_turn and Red.Action = DiscoverNetworkServices_Enterprise2 and Action = env_real_seen;
+        activity_Enterprise2 = suspicious if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise2 and red_Enterprise2 = service and (Action = env_real_seen or Action = env_decoy);
+        activity_Enterprise2 = none if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise2 and red_Enterprise2 = service and Action = env_real_missed;
+        compromised_Enterprise2 = user if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise2 and red_Enterprise2 = service and Action = env_real_seen;
+        compromised_Enterprise2 = user if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise2 and red_Enterprise2 = service and Action = env_decoy and !(enterprise_decoy = d_Enterprise2);
+        compromised_Enterprise2 = no if turn = red_turn and Red.Action = ExploitRemoteService_Enterprise2 and red_Enterprise2 = service and Action = env_decoy and enterprise_decoy = d_Enterprise2;
+        compromised_Enterprise2 = privileged if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise2 and red_Enterprise2 = user and actual_Enterprise2 = user and Action = env_real_seen;
+        activity_Enterprise2 = suspicious if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise2 and red_Enterprise2 = user and Action = env_real_seen;
+        compromised_Enterprise2 = no if turn = red_turn and Red.Action = PrivilegeEscalate_Enterprise2 and red_Enterprise2 = user and actual_Enterprise2 = decoy and Action = env_real_seen;
+        compromised_Defender = no if turn = blue_turn and Blue.Action = restore_Defender;
+        activity_Defender = none if turn = blue_turn and Blue.Action = restore_Defender;
+        actual_Defender = clean if turn = blue_turn and Blue.Action = remove_Defender and actual_Defender = user and compromised_Defender = user;
+        compromised_Defender = no if turn = blue_turn and Blue.Action = remove_Defender and actual_Defender = user and compromised_Defender = user;
+        activity_Defender = none if turn = blue_turn and Blue.Action = remove_Defender and actual_Defender = user and compromised_Defender = user;
+        compromised_Defender = no if turn = blue_turn and Blue.Action = analyse_Defender and (actual_Defender = clean or actual_Defender = decoy);
+        compromised_Defender = user if turn = blue_turn and Blue.Action = analyse_Defender and actual_Defender = user;
+        compromised_Defender = privileged if turn = blue_turn and Blue.Action = analyse_Defender and actual_Defender = root;
+        activity_Defender = suspicious if turn = red_turn and Red.Action = DiscoverNetworkServices_Defender and Action = env_real_seen;
+        activity_Defender = suspicious if turn = red_turn and Red.Action = ExploitRemoteService_Defender and red_Defender = service and (Action = env_real_seen or Action = env_decoy);
+        activity_Defender = none if turn = red_turn and Red.Action = ExploitRemoteService_Defender and red_Defender = service and Action = env_real_missed;
+        compromised_Defender = user if turn = red_turn and Red.Action = ExploitRemoteService_Defender and red_Defender = service and Action = env_real_seen;
+        compromised_Defender = user if turn = red_turn and Red.Action = ExploitRemoteService_Defender and red_Defender = service and Action = env_decoy and !(enterprise_decoy = d_Defender);
+        compromised_Defender = no if turn = red_turn and Red.Action = ExploitRemoteService_Defender and red_Defender = service and Action = env_decoy and enterprise_decoy = d_Defender;
+        compromised_Defender = privileged if turn = red_turn and Red.Action = PrivilegeEscalate_Defender and red_Defender = user and actual_Defender = user and Action = env_real_seen;
+        activity_Defender = suspicious if turn = red_turn and Red.Action = PrivilegeEscalate_Defender and red_Defender = user and Action = env_real_seen;
+        compromised_Defender = no if turn = red_turn and Red.Action = PrivilegeEscalate_Defender and red_Defender = user and actual_Defender = decoy and Action = env_real_seen;
+        compromised_Op_Host0 = no if turn = blue_turn and Blue.Action = restore_Op_Host0;
+        activity_Op_Host0 = none if turn = blue_turn and Blue.Action = restore_Op_Host0;
+        actual_Op_Host0 = clean if turn = blue_turn and Blue.Action = remove_Op_Host0 and actual_Op_Host0 = user and compromised_Op_Host0 = user;
+        compromised_Op_Host0 = no if turn = blue_turn and Blue.Action = remove_Op_Host0 and actual_Op_Host0 = user and compromised_Op_Host0 = user;
+        activity_Op_Host0 = none if turn = blue_turn and Blue.Action = remove_Op_Host0 and actual_Op_Host0 = user and compromised_Op_Host0 = user;
+        compromised_Op_Host0 = no if turn = blue_turn and Blue.Action = analyse_Op_Host0 and (actual_Op_Host0 = clean or actual_Op_Host0 = decoy);
+        compromised_Op_Host0 = user if turn = blue_turn and Blue.Action = analyse_Op_Host0 and actual_Op_Host0 = user;
+        compromised_Op_Host0 = privileged if turn = blue_turn and Blue.Action = analyse_Op_Host0 and actual_Op_Host0 = root;
+        activity_Op_Host0 = suspicious if turn = red_turn and Red.Action = DiscoverNetworkServices_Op_Host0 and Action = env_real_seen;
+        activity_Op_Host0 = suspicious if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host0 and red_Op_Host0 = service and (Action = env_real_seen or Action = env_decoy);
+        activity_Op_Host0 = none if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host0 and red_Op_Host0 = service and Action = env_real_missed;
+        compromised_Op_Host0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host0 and red_Op_Host0 = service and Action = env_real_seen;
+        compromised_Op_Host0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host0 and red_Op_Host0 = service and Action = env_decoy and !(operational_decoy = d_Op_Host0);
+        compromised_Op_Host0 = no if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host0 and red_Op_Host0 = service and Action = env_decoy and operational_decoy = d_Op_Host0;
+        compromised_Op_Host0 = privileged if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host0 and red_Op_Host0 = user and actual_Op_Host0 = user and Action = env_real_seen;
+        activity_Op_Host0 = suspicious if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host0 and red_Op_Host0 = user and Action = env_real_seen;
+        compromised_Op_Host0 = no if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host0 and red_Op_Host0 = user and actual_Op_Host0 = decoy and Action = env_real_seen;
+        compromised_Op_Host1 = no if turn = blue_turn and Blue.Action = restore_Op_Host1;
+        activity_Op_Host1 = none if turn = blue_turn and Blue.Action = restore_Op_Host1;
+        actual_Op_Host1 = clean if turn = blue_turn and Blue.Action = remove_Op_Host1 and actual_Op_Host1 = user and compromised_Op_Host1 = user;
+        compromised_Op_Host1 = no if turn = blue_turn and Blue.Action = remove_Op_Host1 and actual_Op_Host1 = user and compromised_Op_Host1 = user;
+        activity_Op_Host1 = none if turn = blue_turn and Blue.Action = remove_Op_Host1 and actual_Op_Host1 = user and compromised_Op_Host1 = user;
+        compromised_Op_Host1 = no if turn = blue_turn and Blue.Action = analyse_Op_Host1 and (actual_Op_Host1 = clean or actual_Op_Host1 = decoy);
+        compromised_Op_Host1 = user if turn = blue_turn and Blue.Action = analyse_Op_Host1 and actual_Op_Host1 = user;
+        compromised_Op_Host1 = privileged if turn = blue_turn and Blue.Action = analyse_Op_Host1 and actual_Op_Host1 = root;
+        activity_Op_Host1 = suspicious if turn = red_turn and Red.Action = DiscoverNetworkServices_Op_Host1 and Action = env_real_seen;
+        activity_Op_Host1 = suspicious if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host1 and red_Op_Host1 = service and (Action = env_real_seen or Action = env_decoy);
+        activity_Op_Host1 = none if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host1 and red_Op_Host1 = service and Action = env_real_missed;
+        compromised_Op_Host1 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host1 and red_Op_Host1 = service and Action = env_real_seen;
+        compromised_Op_Host1 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host1 and red_Op_Host1 = service and Action = env_decoy and !(operational_decoy = d_Op_Host1);
+        compromised_Op_Host1 = no if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host1 and red_Op_Host1 = service and Action = env_decoy and operational_decoy = d_Op_Host1;
+        compromised_Op_Host1 = privileged if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host1 and red_Op_Host1 = user and actual_Op_Host1 = user and Action = env_real_seen;
+        activity_Op_Host1 = suspicious if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host1 and red_Op_Host1 = user and Action = env_real_seen;
+        compromised_Op_Host1 = no if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host1 and red_Op_Host1 = user and actual_Op_Host1 = decoy and Action = env_real_seen;
+        compromised_Op_Host2 = no if turn = blue_turn and Blue.Action = restore_Op_Host2;
+        activity_Op_Host2 = none if turn = blue_turn and Blue.Action = restore_Op_Host2;
+        actual_Op_Host2 = clean if turn = blue_turn and Blue.Action = remove_Op_Host2 and actual_Op_Host2 = user and compromised_Op_Host2 = user;
+        compromised_Op_Host2 = no if turn = blue_turn and Blue.Action = remove_Op_Host2 and actual_Op_Host2 = user and compromised_Op_Host2 = user;
+        activity_Op_Host2 = none if turn = blue_turn and Blue.Action = remove_Op_Host2 and actual_Op_Host2 = user and compromised_Op_Host2 = user;
+        compromised_Op_Host2 = no if turn = blue_turn and Blue.Action = analyse_Op_Host2 and (actual_Op_Host2 = clean or actual_Op_Host2 = decoy);
+        compromised_Op_Host2 = user if turn = blue_turn and Blue.Action = analyse_Op_Host2 and actual_Op_Host2 = user;
+        compromised_Op_Host2 = privileged if turn = blue_turn and Blue.Action = analyse_Op_Host2 and actual_Op_Host2 = root;
+        activity_Op_Host2 = suspicious if turn = red_turn and Red.Action = DiscoverNetworkServices_Op_Host2 and Action = env_real_seen;
+        activity_Op_Host2 = suspicious if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host2 and red_Op_Host2 = service and (Action = env_real_seen or Action = env_decoy);
+        activity_Op_Host2 = none if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host2 and red_Op_Host2 = service and Action = env_real_missed;
+        compromised_Op_Host2 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host2 and red_Op_Host2 = service and Action = env_real_seen;
+        compromised_Op_Host2 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host2 and red_Op_Host2 = service and Action = env_decoy and !(operational_decoy = d_Op_Host2);
+        compromised_Op_Host2 = no if turn = red_turn and Red.Action = ExploitRemoteService_Op_Host2 and red_Op_Host2 = service and Action = env_decoy and operational_decoy = d_Op_Host2;
+        compromised_Op_Host2 = privileged if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host2 and red_Op_Host2 = user and actual_Op_Host2 = user and Action = env_real_seen;
+        activity_Op_Host2 = suspicious if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host2 and red_Op_Host2 = user and Action = env_real_seen;
+        compromised_Op_Host2 = no if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Host2 and red_Op_Host2 = user and actual_Op_Host2 = decoy and Action = env_real_seen;
+        compromised_Op_Server0 = no if turn = blue_turn and Blue.Action = restore_Op_Server0;
+        activity_Op_Server0 = none if turn = blue_turn and Blue.Action = restore_Op_Server0;
+        actual_Op_Server0 = clean if turn = blue_turn and Blue.Action = remove_Op_Server0 and actual_Op_Server0 = user and compromised_Op_Server0 = user;
+        compromised_Op_Server0 = no if turn = blue_turn and Blue.Action = remove_Op_Server0 and actual_Op_Server0 = user and compromised_Op_Server0 = user;
+        activity_Op_Server0 = none if turn = blue_turn and Blue.Action = remove_Op_Server0 and actual_Op_Server0 = user and compromised_Op_Server0 = user;
+        compromised_Op_Server0 = no if turn = blue_turn and Blue.Action = analyse_Op_Server0 and (actual_Op_Server0 = clean or actual_Op_Server0 = decoy);
+        compromised_Op_Server0 = user if turn = blue_turn and Blue.Action = analyse_Op_Server0 and actual_Op_Server0 = user;
+        compromised_Op_Server0 = privileged if turn = blue_turn and Blue.Action = analyse_Op_Server0 and actual_Op_Server0 = root;
+        activity_Op_Server0 = suspicious if turn = red_turn and Red.Action = DiscoverNetworkServices_Op_Server0 and Action = env_real_seen;
+        activity_Op_Server0 = suspicious if turn = red_turn and Red.Action = ExploitRemoteService_Op_Server0 and red_Op_Server0 = service and (Action = env_real_seen or Action = env_decoy);
+        activity_Op_Server0 = none if turn = red_turn and Red.Action = ExploitRemoteService_Op_Server0 and red_Op_Server0 = service and Action = env_real_missed;
+        compromised_Op_Server0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Server0 and red_Op_Server0 = service and Action = env_real_seen;
+        compromised_Op_Server0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Server0 and red_Op_Server0 = service and Action = env_decoy and !(operational_decoy = d_Op_Server0);
+        compromised_Op_Server0 = no if turn = red_turn and Red.Action = ExploitRemoteService_Op_Server0 and red_Op_Server0 = service and Action = env_decoy and operational_decoy = d_Op_Server0;
+        compromised_Op_Server0 = privileged if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Server0 and red_Op_Server0 = user and actual_Op_Server0 = user and Action = env_real_seen;
+        activity_Op_Server0 = suspicious if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Server0 and red_Op_Server0 = user and Action = env_real_seen;
+        compromised_Op_Server0 = no if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Server0 and red_Op_Server0 = user and actual_Op_Server0 = decoy and Action = env_real_seen;
+    end Evolution
+end Agent
+
+Agent Blue
+    Lobsvars = {user_decoy, enterprise_decoy, operational_decoy, activity_User0, activity_User1, activity_User2, activity_User3, activity_User4, activity_Enterprise0, activity_Enterprise1, activity_Enterprise2, activity_Defender, activity_Op_Host0, activity_Op_Host1, activity_Op_Host2, activity_Op_Server0, compromised_User0, compromised_User1, compromised_User2, compromised_User3, compromised_User4, compromised_Enterprise0, compromised_Enterprise1, compromised_Enterprise2, compromised_Defender, compromised_Op_Host0, compromised_Op_Host1, compromised_Op_Host2, compromised_Op_Server0};
+    Vars:
+        dummy : boolean;
+        blue_goal_level: {secure_network, secure_Op_Server0, secure_Enterprise0, secure_Enterprise1, secure_Enterprise2, secure_User0, secure_User1, secure_User2, secure_User3, secure_User4, secure_Defender, secure_Op_Host0, secure_Op_Host1, secure_Op_Host2, done};
+    end Vars
+
+    Actions = {
+        sleep, monitor, analyse_User0, remove_User0, misinform_User0,
+        restore_User0, analyse_User1, remove_User1, misinform_User1, restore_User1,
+        analyse_User2, remove_User2, misinform_User2, restore_User2, analyse_User3,
+        remove_User3, misinform_User3, restore_User3, analyse_User4, remove_User4,
+        misinform_User4, restore_User4, analyse_Enterprise0, remove_Enterprise0, misinform_Enterprise0,
+        restore_Enterprise0, analyse_Enterprise1, remove_Enterprise1, misinform_Enterprise1, restore_Enterprise1,
+        analyse_Enterprise2, remove_Enterprise2, misinform_Enterprise2, restore_Enterprise2, analyse_Defender,
+        remove_Defender, misinform_Defender, restore_Defender, analyse_Op_Host0, remove_Op_Host0,
+        misinform_Op_Host0, restore_Op_Host0, analyse_Op_Host1, remove_Op_Host1, misinform_Op_Host1,
+        restore_Op_Host1, analyse_Op_Host2, remove_Op_Host2, misinform_Op_Host2, restore_Op_Host2,
+        analyse_Op_Server0, remove_Op_Server0, misinform_Op_Server0, restore_Op_Server0, blue_wait
+    };
+    Protocol:
+        blue_goal_level = secure_network and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no and Environment.compromised_User1 = no and Environment.compromised_User2 = no and Environment.compromised_User3 = no and Environment.compromised_User4 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no and Environment.compromised_Op_Host0 = no and Environment.compromised_Op_Host1 = no and Environment.compromised_Op_Host2 = no and Environment.compromised_Op_Server0 = no and Environment.turn = blue_turn: {monitor};
+        blue_goal_level = secure_Op_Server0 and Environment.compromised_Op_Server0 = privileged and Environment.turn = blue_turn: {restore_Op_Server0};
+        blue_goal_level = secure_Op_Server0 and Environment.compromised_Op_Server0 = user and !(Environment.compromised_Op_Server0 = privileged) and Environment.turn = blue_turn: {remove_Op_Server0};
+        blue_goal_level = secure_Enterprise0 and Environment.compromised_Enterprise0 = privileged and Environment.turn = blue_turn: {restore_Enterprise0};
+        blue_goal_level = secure_Enterprise0 and Environment.compromised_Enterprise0 = user and !(Environment.compromised_Enterprise0 = privileged) and Environment.turn = blue_turn: {remove_Enterprise0};
+        blue_goal_level = secure_Enterprise1 and Environment.compromised_Enterprise1 = privileged and Environment.turn = blue_turn: {restore_Enterprise1};
+        blue_goal_level = secure_Enterprise1 and Environment.compromised_Enterprise1 = user and !(Environment.compromised_Enterprise1 = privileged) and Environment.turn = blue_turn: {remove_Enterprise1};
+        blue_goal_level = secure_Enterprise2 and Environment.compromised_Enterprise2 = privileged and Environment.turn = blue_turn: {restore_Enterprise2};
+        blue_goal_level = secure_Enterprise2 and Environment.compromised_Enterprise2 = user and !(Environment.compromised_Enterprise2 = privileged) and Environment.turn = blue_turn: {remove_Enterprise2};
+        blue_goal_level = secure_User1 and Environment.compromised_User1 = privileged and Environment.turn = blue_turn: {restore_User1};
+        blue_goal_level = secure_User1 and Environment.compromised_User1 = user and !(Environment.compromised_User1 = privileged) and Environment.turn = blue_turn: {remove_User1};
+        blue_goal_level = secure_User2 and Environment.compromised_User2 = privileged and Environment.turn = blue_turn: {restore_User2};
+        blue_goal_level = secure_User2 and Environment.compromised_User2 = user and !(Environment.compromised_User2 = privileged) and Environment.turn = blue_turn: {remove_User2};
+        blue_goal_level = secure_User3 and Environment.compromised_User3 = privileged and Environment.turn = blue_turn: {restore_User3};
+        blue_goal_level = secure_User3 and Environment.compromised_User3 = user and !(Environment.compromised_User3 = privileged) and Environment.turn = blue_turn: {remove_User3};
+        blue_goal_level = secure_User4 and Environment.compromised_User4 = privileged and Environment.turn = blue_turn: {restore_User4};
+        blue_goal_level = secure_User4 and Environment.compromised_User4 = user and !(Environment.compromised_User4 = privileged) and Environment.turn = blue_turn: {remove_User4};
+        blue_goal_level = secure_Op_Host0 and Environment.compromised_Op_Host0 = privileged and Environment.turn = blue_turn: {restore_Op_Host0};
+        blue_goal_level = secure_Op_Host0 and Environment.compromised_Op_Host0 = user and !(Environment.compromised_Op_Host0 = privileged) and Environment.turn = blue_turn: {remove_Op_Host0};
+        blue_goal_level = secure_Op_Host1 and Environment.compromised_Op_Host1 = privileged and Environment.turn = blue_turn: {restore_Op_Host1};
+        blue_goal_level = secure_Op_Host1 and Environment.compromised_Op_Host1 = user and !(Environment.compromised_Op_Host1 = privileged) and Environment.turn = blue_turn: {remove_Op_Host1};
+        blue_goal_level = secure_Op_Host2 and Environment.compromised_Op_Host2 = privileged and Environment.turn = blue_turn: {restore_Op_Host2};
+        blue_goal_level = secure_Op_Host2 and Environment.compromised_Op_Host2 = user and !(Environment.compromised_Op_Host2 = privileged) and Environment.turn = blue_turn: {remove_Op_Host2};
+        Environment.turn = red_turn: {blue_wait};
+        Environment.turn = blue_turn: {restore_Op_Server0};
+        Other: {monitor};
+    end Protocol
+    Evolution:
+        dummy = dummy if dummy = true;
+        dummy = dummy if dummy = false;
+        blue_goal_level = secure_Op_Server0 if blue_goal_level = secure_network and !(Environment.compromised_Op_Server0 = no);
+        blue_goal_level = secure_Enterprise0 if blue_goal_level = secure_network and !(Environment.compromised_Enterprise0 = no) and Environment.compromised_Op_Server0 = no;
+        blue_goal_level = secure_Enterprise1 if blue_goal_level = secure_network and !(Environment.compromised_Enterprise1 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no;
+        blue_goal_level = secure_Enterprise2 if blue_goal_level = secure_network and !(Environment.compromised_Enterprise2 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no;
+        blue_goal_level = secure_User1 if blue_goal_level = secure_network and !(Environment.compromised_User1 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no;
+        blue_goal_level = secure_User2 if blue_goal_level = secure_network and !(Environment.compromised_User2 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no and Environment.compromised_User1 = no;
+        blue_goal_level = secure_User3 if blue_goal_level = secure_network and !(Environment.compromised_User3 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no and Environment.compromised_User1 = no and Environment.compromised_User2 = no;
+        blue_goal_level = secure_User4 if blue_goal_level = secure_network and !(Environment.compromised_User4 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no and Environment.compromised_User1 = no and Environment.compromised_User2 = no and Environment.compromised_User3 = no;
+        blue_goal_level = secure_Enterprise0 if blue_goal_level = secure_network and !(Environment.compromised_Enterprise0 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no and Environment.compromised_User1 = no and Environment.compromised_User2 = no and Environment.compromised_User3 = no and Environment.compromised_User4 = no;
+        blue_goal_level = secure_Enterprise1 if blue_goal_level = secure_network and !(Environment.compromised_Enterprise1 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no and Environment.compromised_User1 = no and Environment.compromised_User2 = no and Environment.compromised_User3 = no and Environment.compromised_User4 = no and Environment.compromised_Enterprise0 = no;
+        blue_goal_level = secure_Enterprise2 if blue_goal_level = secure_network and !(Environment.compromised_Enterprise2 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no and Environment.compromised_User1 = no and Environment.compromised_User2 = no and Environment.compromised_User3 = no and Environment.compromised_User4 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no;
+        blue_goal_level = secure_Op_Host0 if blue_goal_level = secure_network and !(Environment.compromised_Op_Host0 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no and Environment.compromised_User1 = no and Environment.compromised_User2 = no and Environment.compromised_User3 = no and Environment.compromised_User4 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no;
+        blue_goal_level = secure_Op_Host1 if blue_goal_level = secure_network and !(Environment.compromised_Op_Host1 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no and Environment.compromised_User1 = no and Environment.compromised_User2 = no and Environment.compromised_User3 = no and Environment.compromised_User4 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no and Environment.compromised_Op_Host0 = no;
+        blue_goal_level = secure_Op_Host2 if blue_goal_level = secure_network and !(Environment.compromised_Op_Host2 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no and Environment.compromised_User1 = no and Environment.compromised_User2 = no and Environment.compromised_User3 = no and Environment.compromised_User4 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no and Environment.compromised_Op_Host0 = no and Environment.compromised_Op_Host1 = no;
+        blue_goal_level = secure_Op_Server0 if blue_goal_level = secure_network and !(Environment.compromised_Op_Server0 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no and Environment.compromised_User1 = no and Environment.compromised_User2 = no and Environment.compromised_User3 = no and Environment.compromised_User4 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise1 = no and Environment.compromised_Enterprise2 = no and Environment.compromised_Op_Host0 = no and Environment.compromised_Op_Host1 = no and Environment.compromised_Op_Host2 = no;
+        blue_goal_level = secure_network if blue_goal_level = secure_User1 and !(Environment.compromised_User1 = privileged) and !(Environment.compromised_User1 = user);
+        blue_goal_level = secure_network if blue_goal_level = secure_User2 and !(Environment.compromised_User2 = privileged) and !(Environment.compromised_User2 = user);
+        blue_goal_level = secure_network if blue_goal_level = secure_User3 and !(Environment.compromised_User3 = privileged) and !(Environment.compromised_User3 = user);
+        blue_goal_level = secure_network if blue_goal_level = secure_User4 and !(Environment.compromised_User4 = privileged) and !(Environment.compromised_User4 = user);
+        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise0 and !(Environment.compromised_Enterprise0 = privileged) and !(Environment.compromised_Enterprise0 = user);
+        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise1 and !(Environment.compromised_Enterprise1 = privileged) and !(Environment.compromised_Enterprise1 = user);
+        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise2 and !(Environment.compromised_Enterprise2 = privileged) and !(Environment.compromised_Enterprise2 = user);
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Host0 and !(Environment.compromised_Op_Host0 = privileged) and !(Environment.compromised_Op_Host0 = user);
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Host1 and !(Environment.compromised_Op_Host1 = privileged) and !(Environment.compromised_Op_Host1 = user);
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Host2 and !(Environment.compromised_Op_Host2 = privileged) and !(Environment.compromised_Op_Host2 = user);
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and !(Environment.compromised_Op_Server0 = privileged) and !(Environment.compromised_Op_Server0 = user);
+        blue_goal_level = secure_network if blue_goal_level = secure_User0 and Blue.Action = restore_User0;
+        blue_goal_level = secure_network if blue_goal_level = secure_User0 and Blue.Action = remove_User0;
+        blue_goal_level = secure_network if blue_goal_level = secure_User1 and Blue.Action = restore_User1;
+        blue_goal_level = secure_network if blue_goal_level = secure_User1 and Blue.Action = remove_User1;
+        blue_goal_level = secure_network if blue_goal_level = secure_User2 and Blue.Action = restore_User2;
+        blue_goal_level = secure_network if blue_goal_level = secure_User2 and Blue.Action = remove_User2;
+        blue_goal_level = secure_network if blue_goal_level = secure_User3 and Blue.Action = restore_User3;
+        blue_goal_level = secure_network if blue_goal_level = secure_User3 and Blue.Action = remove_User3;
+        blue_goal_level = secure_network if blue_goal_level = secure_User4 and Blue.Action = restore_User4;
+        blue_goal_level = secure_network if blue_goal_level = secure_User4 and Blue.Action = remove_User4;
+        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise0 and Blue.Action = restore_Enterprise0;
+        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise0 and Blue.Action = remove_Enterprise0;
+        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise1 and Blue.Action = restore_Enterprise1;
+        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise1 and Blue.Action = remove_Enterprise1;
+        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise2 and Blue.Action = restore_Enterprise2;
+        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise2 and Blue.Action = remove_Enterprise2;
+        blue_goal_level = secure_network if blue_goal_level = secure_Defender and Blue.Action = restore_Defender;
+        blue_goal_level = secure_network if blue_goal_level = secure_Defender and Blue.Action = remove_Defender;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Host0 and Blue.Action = restore_Op_Host0;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Host0 and Blue.Action = remove_Op_Host0;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Host1 and Blue.Action = restore_Op_Host1;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Host1 and Blue.Action = remove_Op_Host1;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Host2 and Blue.Action = restore_Op_Host2;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Host2 and Blue.Action = remove_Op_Host2;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and Blue.Action = restore_Op_Server0;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and Blue.Action = remove_Op_Server0;
+    end Evolution
+end Agent
+
+
+Agent Red
+    Lobsvars = {red_User0, red_User1, red_User2, red_User3, red_User4, red_Enterprise0, red_Enterprise1, red_Enterprise2, red_Defender, red_Op_Host0, red_Op_Host1, red_Op_Host2, red_Op_Server0};
+    Vars:
+        dummy : boolean;
+    end Vars
+
+    Actions = {
+        Sleep, DiscoverRemoteSystems_User, DiscoverRemoteSystems_Enterprise, DiscoverRemoteSystems_Operational, DiscoverNetworkServices_User0,
+        ExploitRemoteService_User0, PrivilegeEscalate_User0, DiscoverNetworkServices_User1, ExploitRemoteService_User1, PrivilegeEscalate_User1,
+        DiscoverNetworkServices_User2, ExploitRemoteService_User2, PrivilegeEscalate_User2, DiscoverNetworkServices_User3, ExploitRemoteService_User3,
+        PrivilegeEscalate_User3, DiscoverNetworkServices_User4, ExploitRemoteService_User4, PrivilegeEscalate_User4, DiscoverNetworkServices_Enterprise0,
+        ExploitRemoteService_Enterprise0, PrivilegeEscalate_Enterprise0, DiscoverNetworkServices_Enterprise1, ExploitRemoteService_Enterprise1, PrivilegeEscalate_Enterprise1,
+        DiscoverNetworkServices_Enterprise2, ExploitRemoteService_Enterprise2, PrivilegeEscalate_Enterprise2, DiscoverNetworkServices_Defender, ExploitRemoteService_Defender,
+        PrivilegeEscalate_Defender, DiscoverNetworkServices_Op_Host0, ExploitRemoteService_Op_Host0, PrivilegeEscalate_Op_Host0, DiscoverNetworkServices_Op_Host1,
+        ExploitRemoteService_Op_Host1, PrivilegeEscalate_Op_Host1, DiscoverNetworkServices_Op_Host2, ExploitRemoteService_Op_Host2, PrivilegeEscalate_Op_Host2,
+        DiscoverNetworkServices_Op_Server0, ExploitRemoteService_Op_Server0, PrivilegeEscalate_Op_Server0, Impact_Op_Server0, RedWait
+    };
+    Protocol:
+        Environment.turn = blue_turn : {RedWait};
+        Environment.turn = red_turn : {Sleep, DiscoverRemoteSystems_User, DiscoverRemoteSystems_Enterprise};
+        Environment.turn = red_turn and Environment.red_Enterprise2 = root : {DiscoverRemoteSystems_Operational};
+        Environment.turn = red_turn and Environment.red_User0 = known : {DiscoverNetworkServices_User0};
+        Environment.turn = red_turn and Environment.red_User0 = service : {ExploitRemoteService_User0};
+        Environment.turn = red_turn and Environment.red_User0 = user : {PrivilegeEscalate_User0};
+        Environment.turn = red_turn and Environment.red_User1 = known : {DiscoverNetworkServices_User1};
+        Environment.turn = red_turn and Environment.red_User1 = service : {ExploitRemoteService_User1};
+        Environment.turn = red_turn and Environment.red_User1 = user : {PrivilegeEscalate_User1};
+        Environment.turn = red_turn and Environment.red_User2 = known : {DiscoverNetworkServices_User2};
+        Environment.turn = red_turn and Environment.red_User2 = service : {ExploitRemoteService_User2};
+        Environment.turn = red_turn and Environment.red_User2 = user : {PrivilegeEscalate_User2};
+        Environment.turn = red_turn and Environment.red_User3 = known : {DiscoverNetworkServices_User3};
+        Environment.turn = red_turn and Environment.red_User3 = service : {ExploitRemoteService_User3};
+        Environment.turn = red_turn and Environment.red_User3 = user : {PrivilegeEscalate_User3};
+        Environment.turn = red_turn and Environment.red_User4 = known : {DiscoverNetworkServices_User4};
+        Environment.turn = red_turn and Environment.red_User4 = service : {ExploitRemoteService_User4};
+        Environment.turn = red_turn and Environment.red_User4 = user : {PrivilegeEscalate_User4};
+        Environment.turn = red_turn and Environment.red_Enterprise0 = known : {DiscoverNetworkServices_Enterprise0};
+        Environment.turn = red_turn and Environment.red_Enterprise0 = service : {ExploitRemoteService_Enterprise0};
+        Environment.turn = red_turn and Environment.red_Enterprise0 = user : {PrivilegeEscalate_Enterprise0};
+        Environment.turn = red_turn and Environment.red_Enterprise1 = known : {DiscoverNetworkServices_Enterprise1};
+        Environment.turn = red_turn and Environment.red_Enterprise1 = service : {ExploitRemoteService_Enterprise1};
+        Environment.turn = red_turn and Environment.red_Enterprise1 = user : {PrivilegeEscalate_Enterprise1};
+        Environment.turn = red_turn and Environment.red_Enterprise2 = known : {DiscoverNetworkServices_Enterprise2};
+        Environment.turn = red_turn and Environment.red_Enterprise2 = service : {ExploitRemoteService_Enterprise2};
+        Environment.turn = red_turn and Environment.red_Enterprise2 = user : {PrivilegeEscalate_Enterprise2};
+        Environment.turn = red_turn and Environment.red_Defender = known : {DiscoverNetworkServices_Defender};
+        Environment.turn = red_turn and Environment.red_Defender = service : {ExploitRemoteService_Defender};
+        Environment.turn = red_turn and Environment.red_Defender = user : {PrivilegeEscalate_Defender};
+        Environment.turn = red_turn and Environment.red_Op_Host0 = known : {DiscoverNetworkServices_Op_Host0};
+        Environment.turn = red_turn and Environment.red_Op_Host0 = service : {ExploitRemoteService_Op_Host0};
+        Environment.turn = red_turn and Environment.red_Op_Host0 = user : {PrivilegeEscalate_Op_Host0};
+        Environment.turn = red_turn and Environment.red_Op_Host1 = known : {DiscoverNetworkServices_Op_Host1};
+        Environment.turn = red_turn and Environment.red_Op_Host1 = service : {ExploitRemoteService_Op_Host1};
+        Environment.turn = red_turn and Environment.red_Op_Host1 = user : {PrivilegeEscalate_Op_Host1};
+        Environment.turn = red_turn and Environment.red_Op_Host2 = known : {DiscoverNetworkServices_Op_Host2};
+        Environment.turn = red_turn and Environment.red_Op_Host2 = service : {ExploitRemoteService_Op_Host2};
+        Environment.turn = red_turn and Environment.red_Op_Host2 = user : {PrivilegeEscalate_Op_Host2};
+        Environment.turn = red_turn and Environment.red_Op_Server0 = known : {DiscoverNetworkServices_Op_Server0};
+        Environment.turn = red_turn and Environment.red_Op_Server0 = service : {ExploitRemoteService_Op_Server0};
+        Environment.turn = red_turn and Environment.red_Op_Server0 = user : {PrivilegeEscalate_Op_Server0};
+        Environment.turn = red_turn and Environment.red_Op_Server0 = root : {Impact_Op_Server0};
+    end Protocol
+    Evolution:
+        dummy = dummy if dummy = true;
+        dummy = dummy if dummy = false;
+    end Evolution
+end Agent
+
+Evaluation
+    Enterprise2_root if Environment.actual_Enterprise2 = root;
+    OpServer_root if Environment.actual_Op_Server0 = root;
+    OTService_running if Environment.ot_service_running = true;
+    OTService_impacted if Environment.ot_service_running = false;
+end Evaluation
+
+InitStates
+    Environment.turn = blue_turn and
+    Environment.user_decoy = none and
+    Environment.enterprise_decoy = none and
+    Environment.operational_decoy = none and
+    Environment.ot_service_running = true and
+    Environment.activity_User0 = suspicious and
+    Environment.compromised_User0 = privileged and
+    Environment.activity_User1 = none and
+    Environment.compromised_User1 = no and
+    Environment.activity_User2 = none and
+    Environment.compromised_User2 = no and
+    Environment.activity_User3 = none and
+    Environment.compromised_User3 = no and
+    Environment.activity_User4 = none and
+    Environment.compromised_User4 = no and
+    Environment.activity_Enterprise0 = none and
+    Environment.compromised_Enterprise0 = no and
+    Environment.activity_Enterprise1 = none and
+    Environment.compromised_Enterprise1 = no and
+    Environment.activity_Enterprise2 = none and
+    Environment.compromised_Enterprise2 = no and
+    Environment.activity_Defender = none and
+    Environment.compromised_Defender = no and
+    Environment.activity_Op_Host0 = none and
+    Environment.compromised_Op_Host0 = no and
+    Environment.activity_Op_Host1 = none and
+    Environment.compromised_Op_Host1 = no and
+    Environment.activity_Op_Host2 = none and
+    Environment.compromised_Op_Host2 = no and
+    Environment.activity_Op_Server0 = none and
+    Environment.compromised_Op_Server0 = no and
+    Environment.actual_User0 = root and
+    Environment.red_User0 = root and
+    Environment.actual_User1 = clean and
+    Environment.red_User1 = unknown and
+    Environment.actual_User2 = clean and
+    Environment.red_User2 = unknown and
+    Environment.actual_User3 = clean and
+    Environment.red_User3 = unknown and
+    Environment.actual_User4 = clean and
+    Environment.red_User4 = unknown and
+    Environment.actual_Enterprise0 = clean and
+    Environment.red_Enterprise0 = unknown and
+    Environment.actual_Enterprise1 = clean and
+    Environment.red_Enterprise1 = unknown and
+    Environment.actual_Enterprise2 = clean and
+    Environment.red_Enterprise2 = unknown and
+    Environment.actual_Defender = clean and
+    Environment.red_Defender = unknown and
+    Environment.actual_Op_Host0 = clean and
+    Environment.red_Op_Host0 = unknown and
+    Environment.actual_Op_Host1 = clean and
+    Environment.red_Op_Host1 = unknown and
+    Environment.actual_Op_Host2 = clean and
+    Environment.red_Op_Host2 = unknown and
+    Environment.actual_Op_Server0 = clean and
+    Environment.red_Op_Server0 = unknown and
+    Blue.blue_goal_level = secure_network and
+    Blue.dummy = false and
+    Red.dummy = false;
+end InitStates
+
+Groups
+    blue_team = {Blue};
+    red_team = {Red};
+end Groups
+
+Formulae
+    EF Enterprise2_root;
+    EF OpServer_root;
+    EF OTService_impacted;
+    <red_team> F OTService_impacted;
+    <blue_team> G OTService_running;
+end Formulae

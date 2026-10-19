@@ -1,0 +1,27 @@
+{
+  "name": "3area",
+  "source": "examples/three_area/input/three_area_raw.ispl",
+  "areas": [
+    "area_1",
+    "area_2",
+    "area_3"
+  ],
+  "adjacency": {
+    "area_1": [
+      "area_2",
+      "area_3"
+    ],
+    "area_2": [
+      "area_1"
+    ],
+    "area_3": [
+      "area_1"
+    ]
+  },
+  "refuge": "area_1",
+  "status": {
+    "area_1": "healthy",
+    "area_2": "collapsed",
+    "area_3": "collapsed"
+  }
+}

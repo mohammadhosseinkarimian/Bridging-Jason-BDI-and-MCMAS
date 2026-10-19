@@ -1,0 +1,67 @@
+{
+  "name": "9area",
+  "source": "examples/abstract/input/abstract_raw.ispl",
+  "areas": [
+    "z_west_north",
+    "z_west_mid",
+    "z_west_south",
+    "z_central_north",
+    "z_central_mid",
+    "z_central_south",
+    "z_east_north",
+    "z_east_mid",
+    "z_east_south"
+  ],
+  "adjacency": {
+    "z_west_north": [
+      "z_west_mid",
+      "z_central_north"
+    ],
+    "z_west_mid": [
+      "z_west_north",
+      "z_west_south"
+    ],
+    "z_west_south": [
+      "z_west_mid",
+      "z_central_south"
+    ],
+    "z_central_north": [
+      "z_west_north",
+      "z_central_mid",
+      "z_east_north"
+    ],
+    "z_central_mid": [
+      "z_central_north",
+      "z_east_mid"
+    ],
+    "z_central_south": [
+      "z_west_south",
+      "z_east_south"
+    ],
+    "z_east_north": [
+      "z_central_north",
+      "z_east_mid"
+    ],
+    "z_east_mid": [
+      "z_central_mid",
+      "z_east_north",
+      "z_east_south"
+    ],
+    "z_east_south": [
+      "z_central_south",
+      "z_east_mid"
+    ]
+  },
+  "refuge": "z_west_mid",
+  "status": {
+    "z_west_north": "healthy",
+    "z_west_mid": "healthy",
+    "z_west_south": "healthy",
+    "z_central_north": "healthy",
+    "z_central_mid": "collapsed",
+    "z_central_south": "collapsed",
+    "z_east_north": "healthy",
+    "z_east_mid": "healthy",
+    "z_east_south": "healthy"
+  }
+}

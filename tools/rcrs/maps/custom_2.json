@@ -1,0 +1,21 @@
+{
+  "name": "custom_2",
+  "source": "examples/custom2/input/custom2_raw.ispl",
+  "areas": [
+    "area_1",
+    "area_2"
+  ],
+  "adjacency": {
+    "area_1": [
+      "area_2"
+    ],
+    "area_2": [
+      "area_1"
+    ]
+  },
+  "refuge": "area_1",
+  "status": {
+    "area_1": "healthy",
+    "area_2": "collapsed"
+  }
+}

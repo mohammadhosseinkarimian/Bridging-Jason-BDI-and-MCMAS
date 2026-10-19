@@ -1,0 +1,119 @@
+Semantics=SingleAssignment;
+
+Agent Environment
+    Obsvars:
+        turn : {blue_turn, red_turn};
+    end Obsvars
+    Vars:
+        actual_User0 : {clean, root};
+        compromised_User0 : {no, privileged};
+        actual_Op_Server0 : {clean, user, root};
+        compromised_Op_Server0 : {no, user, privileged};
+        red_Op_Server0 : {service, user, root};
+        ot_service_running : boolean;
+    end Vars
+    Actions = {env_idle, env_seen, env_missed};
+    Protocol:
+        turn = blue_turn : {env_idle};
+        turn = red_turn : {env_seen, env_missed};
+    end Protocol
+    Evolution:
+        turn = red_turn if turn = blue_turn;
+        turn = blue_turn if turn = red_turn;
+
+        actual_Op_Server0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Server0 and red_Op_Server0 = service;
+        red_Op_Server0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Server0 and red_Op_Server0 = service;
+        compromised_Op_Server0 = user if turn = red_turn and Red.Action = ExploitRemoteService_Op_Server0 and red_Op_Server0 = service and Action = env_seen;
+
+        actual_Op_Server0 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Server0 and red_Op_Server0 = user and actual_Op_Server0 = user;
+        red_Op_Server0 = root if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Server0 and red_Op_Server0 = user and actual_Op_Server0 = user;
+        compromised_Op_Server0 = privileged if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Server0 and red_Op_Server0 = user and actual_Op_Server0 = user and Action = env_seen;
+        red_Op_Server0 = service if turn = red_turn and Red.Action = PrivilegeEscalate_Op_Server0 and red_Op_Server0 = user and actual_Op_Server0 = clean;
+
+        ot_service_running = false if turn = red_turn and Red.Action = Impact_Op_Server0 and red_Op_Server0 = root and actual_Op_Server0 = root;
+        red_Op_Server0 = service if turn = red_turn and Red.Action = Impact_Op_Server0 and red_Op_Server0 = root and actual_Op_Server0 = clean;
+
+        actual_Op_Server0 = clean if turn = blue_turn and Blue.Action = restore_Op_Server0;
+        compromised_Op_Server0 = no if turn = blue_turn and Blue.Action = restore_Op_Server0;
+        ot_service_running = true if turn = blue_turn and Blue.Action = restore_Op_Server0;
+
+        actual_Op_Server0 = clean if turn = blue_turn and Blue.Action = remove_Op_Server0 and actual_Op_Server0 = user and compromised_Op_Server0 = user;
+        compromised_Op_Server0 = no if turn = blue_turn and Blue.Action = remove_Op_Server0 and actual_Op_Server0 = user and compromised_Op_Server0 = user;
+    end Evolution
+end Agent
+
+Agent Blue
+    Lobsvars = {compromised_User0, compromised_Op_Server0};
+    Vars:
+        dummy : boolean;
+        blue_goal_level: {secure_network, secure_Op_Server0, done};
+    end Vars
+    Actions = {monitor, remove_Op_Server0, restore_Op_Server0, blue_wait};
+    Protocol:
+        blue_goal_level = secure_network and Environment.compromised_Op_Server0 = no and Environment.compromised_Op_Server0 = no and Environment.turn = blue_turn: {monitor};
+        blue_goal_level = secure_Op_Server0 and Environment.compromised_Op_Server0 = privileged and Environment.turn = blue_turn: {restore_Op_Server0};
+        blue_goal_level = secure_Op_Server0 and Environment.compromised_Op_Server0 = user and !(Environment.compromised_Op_Server0 = privileged) and Environment.turn = blue_turn: {remove_Op_Server0};
+        Environment.turn = red_turn: {blue_wait};
+        Environment.turn = blue_turn: {restore_Op_Server0};
+        Other: {monitor};
+    end Protocol
+    Evolution:
+        dummy = dummy if dummy = true;
+        dummy = dummy if dummy = false;
+        blue_goal_level = secure_Op_Server0 if blue_goal_level = secure_network and !(Environment.compromised_Op_Server0 = no);
+        blue_goal_level = secure_Op_Server0 if blue_goal_level = secure_network and !(Environment.compromised_Op_Server0 = no) and Environment.compromised_Op_Server0 = no;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and !(Environment.compromised_Op_Server0 = privileged) and !(Environment.compromised_Op_Server0 = user);
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and Blue.Action = restore_Op_Server0;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and Blue.Action = remove_Op_Server0;
+    end Evolution
+end Agent
+
+
+Agent Red
+    Lobsvars = {red_Op_Server0};
+    Vars:
+        dummy : boolean;
+    end Vars
+    Actions = {ExploitRemoteService_Op_Server0, PrivilegeEscalate_Op_Server0, Impact_Op_Server0, RedWait};
+    Protocol:
+        Environment.turn = blue_turn : {RedWait};
+        Environment.turn = red_turn and Environment.red_Op_Server0 = service : {ExploitRemoteService_Op_Server0};
+        Environment.turn = red_turn and Environment.red_Op_Server0 = user : {PrivilegeEscalate_Op_Server0};
+        Environment.turn = red_turn and Environment.red_Op_Server0 = root : {Impact_Op_Server0};
+    end Protocol
+    Evolution:
+        dummy = dummy if dummy = true;
+        dummy = dummy if dummy = false;
+    end Evolution
+end Agent
+
+Evaluation
+    OpServer_root if Environment.actual_Op_Server0 = root;
+    OTService_running if Environment.ot_service_running = true;
+    OTService_impacted if Environment.ot_service_running = false;
+end Evaluation
+
+InitStates
+    Environment.turn = blue_turn and
+    Environment.actual_User0 = root and
+    Environment.compromised_User0 = privileged and
+    Environment.actual_Op_Server0 = clean and
+    Environment.compromised_Op_Server0 = no and
+    Environment.red_Op_Server0 = service and
+    Environment.ot_service_running = true and
+    Blue.blue_goal_level = secure_network and
+    Blue.dummy = false and
+    Red.dummy = false;
+end InitStates
+
+Groups
+    blue_team = {Blue};
+    red_team = {Red};
+end Groups
+
+Formulae
+    EF OpServer_root;
+    EF OTService_impacted;
+    <red_team> F OTService_impacted;
+    <blue_team> G OTService_running;
+end Formulae

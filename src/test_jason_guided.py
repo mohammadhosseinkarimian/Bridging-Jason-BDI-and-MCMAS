@@ -35,7 +35,7 @@ class JasonGuidedTests(unittest.TestCase):
             }
         }
 
-        control = jg.BuildGoalControl(plans, "saved", role, {})
+        control = jg.build_goal_control(plans, "saved", role, {})
 
         self.assertEqual(control.top, "saved")
         self.assertEqual(control.reachable, ["saved", "rescued", "notified"])
@@ -83,7 +83,7 @@ class JasonGuidedTests(unittest.TestCase):
         mapping = {"jason": {"roles": {"rescuer": role}}}
         baseline = [("true", ["move", "rescue", "rest"])]
 
-        generated = jg.GenerateProtocol(
+        generated = jg.generate_protocol(
             spec,
             mapping,
             baseline_protocol=baseline,
@@ -140,7 +140,7 @@ class JasonGuidedTests(unittest.TestCase):
         }
         mapping = {"jason": {"roles": {"rescuer": role}}}
 
-        generated = jg.GenerateEvolutionRules(
+        generated = jg.generate_evolution_rules(
             spec,
             mapping,
             environment_name="Environment",
@@ -214,7 +214,7 @@ Agent Observer
 end Agent
 """
 
-        generated = jg.ReplaceAgentDecisionModel(
+        generated = jg.replace_agent_decision_model(
             raw,
             {"Rescuer": replacement},
         )

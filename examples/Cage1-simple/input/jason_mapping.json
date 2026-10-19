@@ -1,0 +1,256 @@
+{
+  "files": {
+    "raw": "cage1_baseline.ispl",
+    "output": "../generated/cage1_jason_guided.ispl"
+  },
+  "model": {
+    "environment_agent": "Environment"
+  },
+  "jason": {
+    "vocabulary": {
+      "actions": {
+        "restore": [
+          "restore"
+        ],
+        "remove": [
+          "remove"
+        ],
+        "monitor": [
+          "monitor"
+        ]
+      },
+      "predicates": {}
+    },
+    "roles": {
+      "blue": {
+        "program": "../../../agents/blue_agent.asl",
+        "ispl_agent": "Blue",
+        "entry_goal": "observe_network",
+        "goal_var": "blue_goal_level",
+        "plan": {
+          "ground": {
+            "variable": "Host",
+            "members": [
+              "User0",
+              "Enterprise0",
+              "Defender",
+              "Op_Host0",
+              "Op_Server0"
+            ],
+            "values": [
+              "no",
+              "user",
+              "privileged"
+            ],
+            "signatures": {
+              "secure": [
+                0
+              ],
+              "initial_foothold": [
+                0
+              ],
+              "host_state": [
+                0,
+                2
+              ],
+              "restore": [
+                0
+              ],
+              "remove": [
+                0
+              ]
+            }
+          },
+          "actions": {
+            "monitor": "monitor",
+            "restore_User0": "restore_User0",
+            "remove_User0": "remove_User0",
+            "restore_Enterprise0": "restore_Enterprise0",
+            "remove_Enterprise0": "remove_Enterprise0",
+            "restore_Defender": "restore_Defender",
+            "remove_Defender": "remove_Defender",
+            "restore_Op_Host0": "restore_Op_Host0",
+            "remove_Op_Host0": "remove_Op_Host0",
+            "restore_Op_Server0": "restore_Op_Server0",
+            "remove_Op_Server0": "remove_Op_Server0"
+          },
+          "predicates": {
+            "secure_User0": true,
+            "initial_foothold_User0": true,
+            "host_state_User0_any": true,
+            "host_state_User0_user": {
+              "eq": [
+                {
+                  "env": "compromised_User0"
+                },
+                "user"
+              ]
+            },
+            "host_state_User0_privileged": {
+              "eq": [
+                {
+                  "env": "compromised_User0"
+                },
+                "privileged"
+              ]
+            },
+            "secure_Enterprise0": {
+              "eq": [
+                {
+                  "env": "compromised_Enterprise0"
+                },
+                "no"
+              ]
+            },
+            "initial_foothold_Enterprise0": false,
+            "host_state_Enterprise0_any": true,
+            "host_state_Enterprise0_user": {
+              "eq": [
+                {
+                  "env": "compromised_Enterprise0"
+                },
+                "user"
+              ]
+            },
+            "host_state_Enterprise0_privileged": {
+              "eq": [
+                {
+                  "env": "compromised_Enterprise0"
+                },
+                "privileged"
+              ]
+            },
+            "secure_Defender": true,
+            "initial_foothold_Defender": false,
+            "host_state_Defender_any": true,
+            "host_state_Defender_user": {
+              "eq": [
+                {
+                  "env": "compromised_Defender"
+                },
+                "user"
+              ]
+            },
+            "host_state_Defender_privileged": {
+              "eq": [
+                {
+                  "env": "compromised_Defender"
+                },
+                "privileged"
+              ]
+            },
+            "secure_Op_Host0": {
+              "eq": [
+                {
+                  "env": "compromised_Op_Host0"
+                },
+                "no"
+              ]
+            },
+            "initial_foothold_Op_Host0": false,
+            "host_state_Op_Host0_any": true,
+            "host_state_Op_Host0_user": {
+              "eq": [
+                {
+                  "env": "compromised_Op_Host0"
+                },
+                "user"
+              ]
+            },
+            "host_state_Op_Host0_privileged": {
+              "eq": [
+                {
+                  "env": "compromised_Op_Host0"
+                },
+                "privileged"
+              ]
+            },
+            "secure_Op_Server0": {
+              "eq": [
+                {
+                  "env": "compromised_Op_Server0"
+                },
+                "no"
+              ]
+            },
+            "initial_foothold_Op_Server0": false,
+            "host_state_Op_Server0_any": true,
+            "host_state_Op_Server0_user": {
+              "eq": [
+                {
+                  "env": "compromised_Op_Server0"
+                },
+                "user"
+              ]
+            },
+            "host_state_Op_Server0_privileged": {
+              "eq": [
+                {
+                  "env": "compromised_Op_Server0"
+                },
+                "privileged"
+              ]
+            }
+          },
+          "pass_through": [
+            "blue_wait",
+            "restore_Op_Server0"
+          ],
+          "transitions": [
+            {
+              "from": "secure_User0",
+              "to": "secure_network",
+              "action": "restore_User0"
+            },
+            {
+              "from": "secure_User0",
+              "to": "secure_network",
+              "action": "remove_User0"
+            },
+            {
+              "from": "secure_Enterprise0",
+              "to": "secure_network",
+              "action": "restore_Enterprise0"
+            },
+            {
+              "from": "secure_Enterprise0",
+              "to": "secure_network",
+              "action": "remove_Enterprise0"
+            },
+            {
+              "from": "secure_Defender",
+              "to": "secure_network",
+              "action": "restore_Defender"
+            },
+            {
+              "from": "secure_Defender",
+              "to": "secure_network",
+              "action": "remove_Defender"
+            },
+            {
+              "from": "secure_Op_Host0",
+              "to": "secure_network",
+              "action": "restore_Op_Host0"
+            },
+            {
+              "from": "secure_Op_Host0",
+              "to": "secure_network",
+              "action": "remove_Op_Host0"
+            },
+            {
+              "from": "secure_Op_Server0",
+              "to": "secure_network",
+              "action": "restore_Op_Server0"
+            },
+            {
+              "from": "secure_Op_Server0",
+              "to": "secure_network",
+              "action": "remove_Op_Server0"
+            }
+          ],
+          "fallback": "monitor"
+        }
+      }
+    }
+  }
+}

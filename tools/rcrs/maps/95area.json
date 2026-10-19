@@ -1,0 +1,589 @@
+{
+  "name": "95area",
+  "source": "examples/exact95/input/raw-test.ispl",
+  "areas": [
+    "area_247",
+    "area_248",
+    "area_249",
+    "area_250",
+    "area_251",
+    "area_253",
+    "area_254",
+    "area_255",
+    "area_256",
+    "area_257",
+    "area_258",
+    "area_259",
+    "area_262",
+    "area_263",
+    "area_266",
+    "area_268",
+    "area_269",
+    "area_270",
+    "area_271",
+    "area_273",
+    "area_274",
+    "area_275",
+    "area_278",
+    "area_279",
+    "area_280",
+    "area_281",
+    "area_296",
+    "area_297",
+    "area_298",
+    "area_314",
+    "area_330",
+    "area_336",
+    "area_349",
+    "area_896",
+    "area_899",
+    "area_902",
+    "area_903",
+    "area_904",
+    "area_905",
+    "area_910",
+    "area_911",
+    "area_912",
+    "area_913",
+    "area_914",
+    "area_915",
+    "area_916",
+    "area_917",
+    "area_918",
+    "area_919",
+    "area_920",
+    "area_921",
+    "area_922",
+    "area_923",
+    "area_924",
+    "area_925",
+    "area_926",
+    "area_927",
+    "area_928",
+    "area_929",
+    "area_932",
+    "area_933",
+    "area_934",
+    "area_935",
+    "area_936",
+    "area_937",
+    "area_938",
+    "area_939",
+    "area_940",
+    "area_941",
+    "area_942",
+    "area_943",
+    "area_944",
+    "area_945",
+    "area_946",
+    "area_947",
+    "area_948",
+    "area_949",
+    "area_950",
+    "area_951",
+    "area_952",
+    "area_953",
+    "area_954",
+    "area_955",
+    "area_956",
+    "area_957",
+    "area_958",
+    "area_959",
+    "area_960",
+    "area_968",
+    "area_969",
+    "area_970",
+    "area_971",
+    "area_974",
+    "area_975",
+    "area_976"
+  ],
+  "adjacency": {
+    "area_247": [
+      "area_330"
+    ],
+    "area_248": [
+      "area_349"
+    ],
+    "area_249": [
+      "area_314"
+    ],
+    "area_250": [
+      "area_336"
+    ],
+    "area_251": [
+      "area_968"
+    ],
+    "area_253": [
+      "area_297"
+    ],
+    "area_254": [
+      "area_974"
+    ],
+    "area_255": [
+      "area_274",
+      "area_976"
+    ],
+    "area_256": [
+      "area_271",
+      "area_281",
+      "area_912"
+    ],
+    "area_257": [
+      "area_270",
+      "area_280"
+    ],
+    "area_258": [
+      "area_269",
+      "area_275"
+    ],
+    "area_259": [
+      "area_280",
+      "area_297",
+      "area_336"
+    ],
+    "area_262": [
+      "area_280",
+      "area_917",
+      "area_974"
+    ],
+    "area_263": [
+      "area_270",
+      "area_278",
+      "area_913"
+    ],
+    "area_266": [
+      "area_269",
+      "area_279"
+    ],
+    "area_268": [
+      "area_275",
+      "area_278",
+      "area_933"
+    ],
+    "area_269": [
+      "area_258",
+      "area_266",
+      "area_932"
+    ],
+    "area_270": [
+      "area_257",
+      "area_263",
+      "area_916"
+    ],
+    "area_271": [
+      "area_256",
+      "area_278",
+      "area_910"
+    ],
+    "area_273": [
+      "area_281",
+      "area_314",
+      "area_330",
+      "area_902",
+      "area_903",
+      "area_904",
+      "area_969"
+    ],
+    "area_274": [
+      "area_255",
+      "area_279",
+      "area_976"
+    ],
+    "area_275": [
+      "area_258",
+      "area_268"
+    ],
+    "area_278": [
+      "area_263",
+      "area_268",
+      "area_271"
+    ],
+    "area_279": [
+      "area_266",
+      "area_274",
+      "area_971"
+    ],
+    "area_280": [
+      "area_257",
+      "area_259",
+      "area_262"
+    ],
+    "area_281": [
+      "area_256",
+      "area_273",
+      "area_296"
+    ],
+    "area_296": [
+      "area_281",
+      "area_297"
+    ],
+    "area_297": [
+      "area_253",
+      "area_259",
+      "area_296",
+      "area_298",
+      "area_911",
+      "area_914",
+      "area_915"
+    ],
+    "area_298": [
+      "area_297"
+    ],
+    "area_314": [
+      "area_249",
+      "area_273"
+    ],
+    "area_330": [
+      "area_247",
+      "area_273"
+    ],
+    "area_336": [
+      "area_250",
+      "area_259"
+    ],
+    "area_349": [
+      "area_248",
+      "area_969"
+    ],
+    "area_896": [
+      "area_960",
+      "area_970"
+    ],
+    "area_899": [
+      "area_959",
+      "area_971"
+    ],
+    "area_902": [
+      "area_273",
+      "area_934",
+      "area_969"
+    ],
+    "area_903": [
+      "area_273",
+      "area_935"
+    ],
+    "area_904": [
+      "area_273",
+      "area_936"
+    ],
+    "area_905": [
+      "area_910"
+    ],
+    "area_910": [
+      "area_271",
+      "area_905"
+    ],
+    "area_911": [
+      "area_297",
+      "area_938"
+    ],
+    "area_912": [
+      "area_256",
+      "area_940"
+    ],
+    "area_913": [
+      "area_263",
+      "area_941"
+    ],
+    "area_914": [
+      "area_297",
+      "area_942"
+    ],
+    "area_915": [
+      "area_297",
+      "area_943"
+    ],
+    "area_916": [
+      "area_270",
+      "area_944"
+    ],
+    "area_917": [
+      "area_262",
+      "area_945"
+    ],
+    "area_918": [
+      "area_946",
+      "area_974"
+    ],
+    "area_919": [
+      "area_947",
+      "area_975"
+    ],
+    "area_920": [
+      "area_948",
+      "area_975"
+    ],
+    "area_921": [
+      "area_949",
+      "area_976"
+    ],
+    "area_922": [
+      "area_950",
+      "area_976"
+    ],
+    "area_923": [
+      "area_951",
+      "area_976"
+    ],
+    "area_924": [
+      "area_952",
+      "area_976"
+    ],
+    "area_925": [
+      "area_954",
+      "area_976"
+    ],
+    "area_926": [
+      "area_955",
+      "area_976"
+    ],
+    "area_927": [
+      "area_956",
+      "area_976"
+    ],
+    "area_928": [
+      "area_957",
+      "area_976"
+    ],
+    "area_929": [
+      "area_958",
+      "area_976"
+    ],
+    "area_932": [
+      "area_269",
+      "area_953"
+    ],
+    "area_933": [
+      "area_268",
+      "area_937"
+    ],
+    "area_934": [
+      "area_902"
+    ],
+    "area_935": [
+      "area_903"
+    ],
+    "area_936": [
+      "area_904"
+    ],
+    "area_937": [
+      "area_933"
+    ],
+    "area_938": [
+      "area_911"
+    ],
+    "area_939": [
+      "area_940"
+    ],
+    "area_940": [
+      "area_912",
+      "area_939"
+    ],
+    "area_941": [
+      "area_913"
+    ],
+    "area_942": [
+      "area_914"
+    ],
+    "area_943": [
+      "area_915"
+    ],
+    "area_944": [
+      "area_916"
+    ],
+    "area_945": [
+      "area_917"
+    ],
+    "area_946": [
+      "area_918"
+    ],
+    "area_947": [
+      "area_919"
+    ],
+    "area_948": [
+      "area_920"
+    ],
+    "area_949": [
+      "area_921"
+    ],
+    "area_950": [
+      "area_922"
+    ],
+    "area_951": [
+      "area_923"
+    ],
+    "area_952": [
+      "area_924"
+    ],
+    "area_953": [
+      "area_932"
+    ],
+    "area_954": [
+      "area_925"
+    ],
+    "area_955": [
+      "area_926"
+    ],
+    "area_956": [
+      "area_927"
+    ],
+    "area_957": [
+      "area_928"
+    ],
+    "area_958": [
+      "area_929"
+    ],
+    "area_959": [
+      "area_899"
+    ],
+    "area_960": [
+      "area_896"
+    ],
+    "area_968": [
+      "area_251",
+      "area_969",
+      "area_970"
+    ],
+    "area_969": [
+      "area_273",
+      "area_349",
+      "area_902",
+      "area_968"
+    ],
+    "area_970": [
+      "area_896",
+      "area_968",
+      "area_971"
+    ],
+    "area_971": [
+      "area_279",
+      "area_899",
+      "area_970"
+    ],
+    "area_974": [
+      "area_254",
+      "area_262",
+      "area_918",
+      "area_975"
+    ],
+    "area_975": [
+      "area_919",
+      "area_920",
+      "area_974",
+      "area_976"
+    ],
+    "area_976": [
+      "area_255",
+      "area_274",
+      "area_921",
+      "area_922",
+      "area_923",
+      "area_924",
+      "area_925",
+      "area_926",
+      "area_927",
+      "area_928",
+      "area_929",
+      "area_975"
+    ]
+  },
+  "refuge": "area_249",
+  "status": {
+    "area_247": "healthy",
+    "area_248": "healthy",
+    "area_249": "healthy",
+    "area_250": "healthy",
+    "area_251": "healthy",
+    "area_253": "healthy",
+    "area_254": "healthy",
+    "area_255": "healthy",
+    "area_256": "road",
+    "area_257": "road",
+    "area_258": "road",
+    "area_259": "road",
+    "area_262": "road",
+    "area_263": "road",
+    "area_266": "road",
+    "area_268": "road",
+    "area_269": "road",
+    "area_270": "road",
+    "area_271": "road",
+    "area_273": "road",
+    "area_274": "road",
+    "area_275": "road",
+    "area_278": "road",
+    "area_279": "road",
+    "area_280": "road",
+    "area_281": "road",
+    "area_296": "road",
+    "area_297": "road",
+    "area_298": "healthy",
+    "area_314": "road",
+    "area_330": "road",
+    "area_336": "road",
+    "area_349": "road",
+    "area_896": "road",
+    "area_899": "road",
+    "area_902": "road",
+    "area_903": "road",
+    "area_904": "road",
+    "area_905": "healthy",
+    "area_910": "road",
+    "area_911": "road",
+    "area_912": "road",
+    "area_913": "road",
+    "area_914": "road",
+    "area_915": "road",
+    "area_916": "road",
+    "area_917": "road",
+    "area_918": "road",
+    "area_919": "road",
+    "area_920": "road",
+    "area_921": "road",
+    "area_922": "road",
+    "area_923": "road",
+    "area_924": "road",
+    "area_925": "road",
+    "area_926": "road",
+    "area_927": "road",
+    "area_928": "road",
+    "area_929": "road",
+    "area_932": "road",
+    "area_933": "road",
+    "area_934": "healthy",
+    "area_935": "healthy",
+    "area_936": "healthy",
+    "area_937": "collapsed",
+    "area_938": "healthy",
+    "area_939": "healthy",
+    "area_940": "healthy",
+    "area_941": "healthy",
+    "area_942": "healthy",
+    "area_943": "healthy",
+    "area_944": "healthy",
+    "area_945": "healthy",
+    "area_946": "healthy",
+    "area_947": "healthy",
+    "area_948": "healthy",
+    "area_949": "healthy",
+    "area_950": "healthy",
+    "area_951": "healthy",
+    "area_952": "healthy",
+    "area_953": "healthy",
+    "area_954": "healthy",
+    "area_955": "healthy",
+    "area_956": "healthy",
+    "area_957": "healthy",
+    "area_958": "healthy",
+    "area_959": "healthy",
+    "area_960": "collapsed",
+    "area_968": "road",
+    "area_969": "road",
+    "area_970": "road",
+    "area_971": "road",
+    "area_974": "road",
+    "area_975": "road",
+    "area_976": "road"
+  }
+}
