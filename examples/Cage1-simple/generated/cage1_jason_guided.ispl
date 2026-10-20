@@ -200,7 +200,7 @@ Agent Blue
     Lobsvars = {user_decoy, enterprise_decoy, operational_decoy, activity_User0, activity_Enterprise0, activity_Defender, activity_Op_Host0, activity_Op_Server0, compromised_User0, compromised_Enterprise0, compromised_Defender, compromised_Op_Host0, compromised_Op_Server0};
     Vars:
         dummy : boolean;
-        blue_goal_level: {secure_network, secure_Op_Server0, secure_Enterprise0, secure_User0, secure_Defender, secure_Op_Host0, done};
+        blue_goal_level: {secure_network, secure_Op_Server0, secure_Enterprise0, secure_Op_Host0, done};
     end Vars
 
     Actions = {
@@ -211,7 +211,7 @@ Agent Blue
         misinform_Op_Server0, restore_Op_Server0, blue_wait
     };
     Protocol:
-        blue_goal_level = secure_network and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Op_Host0 = no and Environment.compromised_Op_Server0 = no and Environment.turn = blue_turn: {monitor};
+        blue_goal_level = secure_network and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Op_Host0 = no and Environment.turn = blue_turn: {monitor};
         blue_goal_level = secure_Op_Server0 and Environment.compromised_Op_Server0 = privileged and Environment.turn = blue_turn: {restore_Op_Server0};
         blue_goal_level = secure_Op_Server0 and Environment.compromised_Op_Server0 = user and !(Environment.compromised_Op_Server0 = privileged) and Environment.turn = blue_turn: {remove_Op_Server0};
         blue_goal_level = secure_Enterprise0 and Environment.compromised_Enterprise0 = privileged and Environment.turn = blue_turn: {restore_Enterprise0};
@@ -227,18 +227,12 @@ Agent Blue
         dummy = dummy if dummy = false;
         blue_goal_level = secure_Op_Server0 if blue_goal_level = secure_network and !(Environment.compromised_Op_Server0 = no);
         blue_goal_level = secure_Enterprise0 if blue_goal_level = secure_network and !(Environment.compromised_Enterprise0 = no) and Environment.compromised_Op_Server0 = no;
-        blue_goal_level = secure_Enterprise0 if blue_goal_level = secure_network and !(Environment.compromised_Enterprise0 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no;
-        blue_goal_level = secure_Op_Host0 if blue_goal_level = secure_network and !(Environment.compromised_Op_Host0 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise0 = no;
-        blue_goal_level = secure_Op_Server0 if blue_goal_level = secure_network and !(Environment.compromised_Op_Server0 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Op_Host0 = no;
+        blue_goal_level = secure_Op_Host0 if blue_goal_level = secure_network and !(Environment.compromised_Op_Host0 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no;
         blue_goal_level = secure_network if blue_goal_level = secure_Enterprise0 and !(Environment.compromised_Enterprise0 = privileged) and !(Environment.compromised_Enterprise0 = user);
         blue_goal_level = secure_network if blue_goal_level = secure_Op_Host0 and !(Environment.compromised_Op_Host0 = privileged) and !(Environment.compromised_Op_Host0 = user);
         blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and !(Environment.compromised_Op_Server0 = privileged) and !(Environment.compromised_Op_Server0 = user);
-        blue_goal_level = secure_network if blue_goal_level = secure_User0 and Blue.Action = restore_User0;
-        blue_goal_level = secure_network if blue_goal_level = secure_User0 and Blue.Action = remove_User0;
         blue_goal_level = secure_network if blue_goal_level = secure_Enterprise0 and Blue.Action = restore_Enterprise0;
         blue_goal_level = secure_network if blue_goal_level = secure_Enterprise0 and Blue.Action = remove_Enterprise0;
-        blue_goal_level = secure_network if blue_goal_level = secure_Defender and Blue.Action = restore_Defender;
-        blue_goal_level = secure_network if blue_goal_level = secure_Defender and Blue.Action = remove_Defender;
         blue_goal_level = secure_network if blue_goal_level = secure_Op_Host0 and Blue.Action = restore_Op_Host0;
         blue_goal_level = secure_network if blue_goal_level = secure_Op_Host0 and Blue.Action = remove_Op_Host0;
         blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and Blue.Action = restore_Op_Server0;

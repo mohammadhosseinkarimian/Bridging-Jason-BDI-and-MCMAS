@@ -97,11 +97,12 @@ end InitStates
 Groups
     blue_team = {Blue};
     red_team = {Red};
+    all_agents = {Blue, Red, Environment};
 end Groups
 
 Formulae
-    EF OpServer_root;
-    EF OTService_impacted;
+    <all_agents> F OpServer_root;
+    <all_agents> F OTService_impacted;
     <red_team> F OTService_impacted;
     <blue_team> G OTService_running;
 end Formulae

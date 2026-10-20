@@ -264,7 +264,17 @@
         "blue_wait",
         "restore_{server}"
       ],
-      "fallback": "monitor"
+      "fallback": "monitor",
+      "skip_ground": [
+        "{foothold}",
+        "Defender"
+      ],
+      "priority_hosts": [
+        "{server}",
+        "Enterprise0",
+        "Enterprise1",
+        "Enterprise2"
+      ]
     }
   }
 }

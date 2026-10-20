@@ -22,10 +22,10 @@ def ask_choice():
 # Read bounded agent counts
 def ask_count(name):
     while True:
-        value = input(f"Number of {name} (2-5): ").strip()
-        if value.isdecimal() and 2 <= int(value) <= 5:
+        value = input(f"Number of {name} (1-5): ").strip()
+        if value.isdecimal() and 1 <= int(value) <= 5:
             return int(value)
-        print("Enter an integer between 2 and 5.")
+        print("Enter an integer between 1 and 5.")
 
 
 # Read valid map positions
@@ -263,8 +263,8 @@ def main():
     for number, title in ((args.fire_brigades, "fire brigades"), (args.ambulances, "ambulances"), (args.civilians, "civilians")):
         if number is None:
             number = ask_count(title)
-        if not 2 <= number <= 5:
-            parser.error(f"{title} must be between 2 and 5")
+        if not 1 <= number <= 5:
+            parser.error(f"{title} must be between 1 and 5")
         counts.append(number)
     nf, na, nc = counts
     print(f"\n{len(layout['areas'])} available areas (number = actual map identifier):")

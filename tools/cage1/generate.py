@@ -166,19 +166,24 @@ def render_jason(mapping, counts, baseline_name, program):
     actions = {"monitor": "monitor"}
     predicates = {}
     transitions = []
+    substitutions = {"foothold": foothold, "server": server}
+    skipped = {expand(name, substitutions) for name in plan.get("skip_ground", [])}
+    priority = {expand(name, substitutions) for name in plan.get("priority_hosts", [])}
+    grounded = [host for host in hosts if host not in skipped]
     for host in hosts:
         for action in ("restore", "remove"):
             actions[f"{action}_{host}"] = f"{action}_{host}"
-            transitions.append({"from": f"secure_{host}", "to": "secure_network", "action": f"{action}_{host}"})
+            if host in grounded:
+                transitions.append({"from": f"secure_{host}", "to": "secure_network", "action": f"{action}_{host}"})
         predicates[f"secure_{host}"] = (True if host in (foothold, "Defender") else
                                            {"eq": [{"env": f"compromised_{host}"}, "no"]})
         predicates[f"initial_foothold_{host}"] = host == foothold
-        predicates[f"host_state_{host}_any"] = True
+        predicates[f"host_state_{host}_any"] = host not in priority or host in skipped
         for level in ("user", "privileged"):
             predicates[f"host_state_{host}_{level}"] = {"eq": [{"env": f"compromised_{host}"}, level]}
     role = {"program": program, "ispl_agent": "Blue", "entry_goal": source["entry_goal"],
             "goal_var": source["goal_var"],
-            "plan": {"ground": plan["ground"] | {"members": hosts}, "actions": actions,
+            "plan": {"ground": plan["ground"] | {"members": grounded}, "actions": actions,
                      "predicates": predicates, "pass_through": plan["pass_through"],
                      "transitions": transitions, "fallback": plan["fallback"]}}
     role["plan"]["pass_through"] = [x.replace("{server}", server) for x in plan["pass_through"]]

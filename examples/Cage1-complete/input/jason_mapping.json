@@ -54,7 +54,6 @@
               ]
             },
             "members": [
-              "User0",
               "User1",
               "User2",
               "User3",
@@ -62,7 +61,6 @@
               "Enterprise0",
               "Enterprise1",
               "Enterprise2",
-              "Defender",
               "Op_Host0",
               "Op_Host1",
               "Op_Host2",
@@ -231,7 +229,7 @@
               ]
             },
             "initial_foothold_Enterprise0": false,
-            "host_state_Enterprise0_any": true,
+            "host_state_Enterprise0_any": false,
             "host_state_Enterprise0_user": {
               "eq": [
                 {
@@ -257,7 +255,7 @@
               ]
             },
             "initial_foothold_Enterprise1": false,
-            "host_state_Enterprise1_any": true,
+            "host_state_Enterprise1_any": false,
             "host_state_Enterprise1_user": {
               "eq": [
                 {
@@ -283,7 +281,7 @@
               ]
             },
             "initial_foothold_Enterprise2": false,
-            "host_state_Enterprise2_any": true,
+            "host_state_Enterprise2_any": false,
             "host_state_Enterprise2_user": {
               "eq": [
                 {
@@ -406,7 +404,7 @@
               ]
             },
             "initial_foothold_Op_Server0": false,
-            "host_state_Op_Server0_any": true,
+            "host_state_Op_Server0_any": false,
             "host_state_Op_Server0_user": {
               "eq": [
                 {
@@ -429,16 +427,6 @@
             "restore_Op_Server0"
           ],
           "transitions": [
-            {
-              "from": "secure_User0",
-              "to": "secure_network",
-              "action": "restore_User0"
-            },
-            {
-              "from": "secure_User0",
-              "to": "secure_network",
-              "action": "remove_User0"
-            },
             {
               "from": "secure_User1",
               "to": "secure_network",
@@ -508,16 +496,6 @@
               "from": "secure_Enterprise2",
               "to": "secure_network",
               "action": "remove_Enterprise2"
-            },
-            {
-              "from": "secure_Defender",
-              "to": "secure_network",
-              "action": "restore_Defender"
-            },
-            {
-              "from": "secure_Defender",
-              "to": "secure_network",
-              "action": "remove_Defender"
             },
             {
               "from": "secure_Op_Host0",
