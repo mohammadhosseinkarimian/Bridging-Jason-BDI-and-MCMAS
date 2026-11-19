@@ -46,7 +46,3 @@ The translator does not execute `.print`, wait for simulator observations, or up
 ## How these files connect to the examples
 
 Each `examples/<name>/input/jason_mapping.json` identifies the source program under `jason.roles.<role>.program`, the MCMAS agent under `ispl_agent`, and the entry event under `entry_goal`. The translator reads the specified source, finds reachable achievement goals, builds the task-control states, and uses the mapped plans to restrict legal baseline actions. For the meaning of every mapping field, see [`examples/MAPPING_GUIDE.md`](../examples/MAPPING_GUIDE.md). For the implementation, start with [`src/jason_guided.md`](../src/jason_guided.md).
-
-## Test-goal cleanup
-
-The cleanup removed 68 redundant trailing tests while retaining the four tests after loading or unloading. All seven outputs were verified identical before and after that cleanup, before the CAGE changes. See [the cleanup record](../docs/asl_cleanup_verification.json).
