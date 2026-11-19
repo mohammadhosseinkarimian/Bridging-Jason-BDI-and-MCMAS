@@ -1,0 +1,82 @@
+{
+  "scope": "ASL test-goal cleanup only; measured before any CAGE baseline or mapping changes",
+  "method": "Regenerated every example to temporary files before and after cleanup; SHA-256 compares exact output bytes from the same Python runtime. Checked-in output text matched after normalizing platform line endings; checked-in generated files were not rewritten.",
+  "examples": [
+    {
+      "example": "abstract",
+      "config": "examples/abstract/input/jason_mapping.json",
+      "generated": "examples/abstract/generated/abstract_jason_guided.ispl",
+      "sha256_before": "168f38ff4dfc2a00615fd1386ad7dcb8dafbf27df78fa9175013d3261ca30ca0",
+      "checked_in_byte_identical": false,
+      "text_identical": true,
+      "sha256_after": "168f38ff4dfc2a00615fd1386ad7dcb8dafbf27df78fa9175013d3261ca30ca0",
+      "identical_before_after": true
+    },
+    {
+      "example": "Cage1-complete",
+      "config": "examples/Cage1-complete/input/jason_mapping.json",
+      "generated": "examples/Cage1-complete/generated/cage1_jason_guided.ispl",
+      "sha256_before": "036e21adf4316a384d51aa7e281cd34293bc3c39b79290599edf16d3538321a9",
+      "checked_in_byte_identical": false,
+      "text_identical": true,
+      "sha256_after": "036e21adf4316a384d51aa7e281cd34293bc3c39b79290599edf16d3538321a9",
+      "identical_before_after": true
+    },
+    {
+      "example": "Cage1-simple",
+      "config": "examples/Cage1-simple/input/jason_mapping.json",
+      "generated": "examples/Cage1-simple/generated/cage1_jason_guided.ispl",
+      "sha256_before": "3468bde2395b3b005268c670498b5085f861d9e9a239b138c2d1bdf961c3c7f7",
+      "checked_in_byte_identical": false,
+      "text_identical": true,
+      "sha256_after": "3468bde2395b3b005268c670498b5085f861d9e9a239b138c2d1bdf961c3c7f7",
+      "identical_before_after": true
+    },
+    {
+      "example": "Cage1-small",
+      "config": "examples/Cage1-small/input/jason_mapping.json",
+      "generated": "examples/Cage1-small/generated/cage1_jason_guided.ispl",
+      "sha256_before": "b61b2d6d21103fb2f9b5c3bb14a02ea65db66d4494aae165a407e419450b4837",
+      "checked_in_byte_identical": false,
+      "text_identical": true,
+      "sha256_after": "b61b2d6d21103fb2f9b5c3bb14a02ea65db66d4494aae165a407e419450b4837",
+      "identical_before_after": true
+    },
+    {
+      "example": "custom2",
+      "config": "examples/custom2/input/jason_mapping.json",
+      "generated": "examples/custom2/generated/custom2_jason_guided.ispl",
+      "sha256_before": "e8a6588d2fed933a4bb73fb0faaa7c08eec2be3d49020d975a24aeb18016d713",
+      "checked_in_byte_identical": false,
+      "text_identical": true,
+      "sha256_after": "e8a6588d2fed933a4bb73fb0faaa7c08eec2be3d49020d975a24aeb18016d713",
+      "identical_before_after": true
+    },
+    {
+      "example": "exact95",
+      "config": "examples/exact95/input/jason_mapping.json",
+      "generated": "examples/exact95/generated/raw-test_jason_guided.ispl",
+      "sha256_before": "62e8b6ca857de2c4cd088a54aed6f21d3bfeab3ba169431d608afd77175e784b",
+      "checked_in_byte_identical": false,
+      "text_identical": true,
+      "sha256_after": "62e8b6ca857de2c4cd088a54aed6f21d3bfeab3ba169431d608afd77175e784b",
+      "identical_before_after": true
+    },
+    {
+      "example": "three_area",
+      "config": "examples/three_area/input/jason_mapping.json",
+      "generated": "examples/three_area/generated/three_area_jason_guided.ispl",
+      "sha256_before": "25b43e91a8eb88e90874f17eef0436048ba62741714c063705ab016f55120297",
+      "checked_in_byte_identical": false,
+      "text_identical": true,
+      "sha256_after": "25b43e91a8eb88e90874f17eef0436048ba62741714c063705ab016f55120297",
+      "identical_before_after": true
+    }
+  ],
+  "redundant_tests_removed": {
+    "fire_brigade": 25,
+    "ambulance_team": 43
+  },
+  "effect_tests_retained": 4,
+  "all_outputs_identical": true
+}

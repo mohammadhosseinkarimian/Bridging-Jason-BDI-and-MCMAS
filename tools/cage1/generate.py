@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 from pathlib import Path
 
 
@@ -125,10 +126,13 @@ def render(mapping, counts):
     red_actions += [f"{red['impact']}_{server}", red["wait"]]
     lines += ["    Actions = " + action_set(red_actions) + ";", "    Protocol:",
               f"        Environment.turn = blue_turn : {{{red['wait']}}};"]
-    add_rules(lines, protocols["red_common"], context)
-    add_rules(lines, protocols["red_operational"], context)
-    for host in hosts:
-        add_rules(lines, protocols["red_host"], context | {"host": host})
+    # B-line abstraction: commit to the gateway, then the operational server.
+    # Decisions depend on Red's recorded progress, never hidden actual access.
+    for phase in mapping["attacker"]["route"]:
+        target = expand(phase["target"], context)
+        guard = expand(phase["guard"], context)
+        values = context | {"host": target, "phase_guard": guard, "discovery": phase["discovery"]}
+        add_rules(lines, protocols["red_directed"], values)
     add_rules(lines, protocols["red_impact"], context)
     lines += ["    end Protocol", "    Evolution:",
               "        dummy = dummy if dummy = true;", "        dummy = dummy if dummy = false;",
@@ -159,21 +163,24 @@ def render(mapping, counts):
 
 # Build Jason translator mapping
 def render_jason(mapping, counts, baseline_name, program):
-    groups, hosts, _, server = build_hosts(mapping, counts)
+    groups, hosts, gateway, server = build_hosts(mapping, counts)
     foothold = mapping["roles"]["foothold"]
     source = mapping["jason"]
     plan = source["plan"]
     actions = {"monitor": "monitor"}
     predicates = {}
     transitions = []
-    substitutions = {"foothold": foothold, "server": server}
+    substitutions = {"foothold": foothold, "server": server, "gateway": gateway}
     skipped = {expand(name, substitutions) for name in plan.get("skip_ground", [])}
     priority = {expand(name, substitutions) for name in plan.get("priority_hosts", [])}
-    grounded = [host for host in hosts if host not in skipped]
+    selected = {expand(host, substitutions) for host in plan.get("selected_hosts", hosts)}
+    fixed = {expand(host, substitutions) for host in plan.get("fixed_hosts", [])}
+    grounded = sorted((host for host in hosts if host not in skipped and host in selected and host not in fixed),
+                      key=lambda host: (host != server, not host.startswith("Enterprise"), hosts.index(host)))
     for host in hosts:
         for action in ("restore", "remove"):
             actions[f"{action}_{host}"] = f"{action}_{host}"
-            if host in grounded:
+            if host in grounded and not plan.get("elide_constant_goal"):
                 transitions.append({"from": f"secure_{host}", "to": "secure_network", "action": f"{action}_{host}"})
         predicates[f"secure_{host}"] = (True if host in (foothold, "Defender") else
                                            {"eq": [{"env": f"compromised_{host}"}, "no"]})
@@ -186,6 +193,9 @@ def render_jason(mapping, counts, baseline_name, program):
             "plan": {"ground": plan["ground"] | {"members": grounded}, "actions": actions,
                      "predicates": predicates, "pass_through": plan["pass_through"],
                      "transitions": transitions, "fallback": plan["fallback"]}}
+    if plan.get("elide_constant_goal"):
+        role["plan"]["elide_constant_goal"] = True
+    role["plan"]["ground"]["values"] = plan["ground"]["values"] + sorted(fixed)
     role["plan"]["pass_through"] = [x.replace("{server}", server) for x in plan["pass_through"]]
     return {"files": {"raw": baseline_name, "output": "../generated/cage1_jason_guided.ispl"},
             "model": {"environment_agent": "Environment"},
@@ -201,7 +211,7 @@ def main():
     parser.add_argument("--mapping", type=Path, default=Path(__file__).with_name("mapping.json"))
     parser.add_argument("--output-dir", type=Path, default=Path("."))
     parser.add_argument("--baseline-name", default="cage1_baseline.ispl")
-    parser.add_argument("--program", default="../../../agents/blue_agent.asl")
+    parser.add_argument("--program", help="ASL path relative to the generated mapping")
     args = parser.parse_args()
     try:
         counts = {"user": read_count("users", args.users), "enterprise": read_count("enterprises", args.enterprises),
@@ -212,8 +222,11 @@ def main():
     args.output_dir.mkdir(parents=True, exist_ok=True)
     baseline = args.output_dir / args.baseline_name
     jason = args.output_dir / "jason_mapping.json"
+    program = args.program or Path(os.path.relpath(
+        Path(__file__).resolve().parents[2] / "agents/blue_agent_reactive.asl",
+        args.output_dir.resolve())).as_posix()
     baseline.write_text(render(mapping, counts), encoding="utf-8")
-    jason.write_text(json.dumps(render_jason(mapping, counts, baseline.name, args.program), indent=2) + "\n", encoding="utf-8")
+    jason.write_text(json.dumps(render_jason(mapping, counts, baseline.name, program), indent=2) + "\n", encoding="utf-8")
     print(f"Created {baseline}")
     print(f"Created {jason}")
 

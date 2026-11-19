@@ -17,89 +17,89 @@ ready_for_ambulance(Civ, Pos) :-
     !saved_civilians.
 
 +!saved_civilians : buried_civilian(Civ, Pos, Level) & not found_civilian(Civ, Pos) <-
-    !found_civilian(Civ, Pos); !rescued_buried_civilian(Civ); ?saved_civilians.
+    !found_civilian(Civ, Pos); !rescued_buried_civilian(Civ).
 
 +!saved_civilians : found_civilian(Civ, Pos) & buried_civilian(Civ, Pos, Level) <-
-    !rescued_buried_civilian(Civ); ?saved_civilians.
+    !rescued_buried_civilian(Civ).
 
 +!saved_civilians : buried_civilian_reported(Civ, Pos) & not found_civilian(Civ, Pos) <-
-    !found_civilian(Civ, Pos); !rescued_buried_civilian(Civ); ?saved_civilians.
+    !found_civilian(Civ, Pos); !rescued_buried_civilian(Civ).
 
 +!saved_civilians : ready_for_ambulance(Civ, Pos) & not told_ambulance(Civ) <-
-    !told_ambulance(Civ); ?saved_civilians.
+    !told_ambulance(Civ).
 
 +!saved_civilians : rescued(Civ) & at(Civ, Pos) & not found_civilian(Civ, Pos) <-
-    !found_civilian(Civ, Pos); !told_ambulance(Civ); ?saved_civilians.
+    !found_civilian(Civ, Pos); !told_ambulance(Civ).
 
 +!saved_civilians : refuge(Ref) & not told_refuge(Ref) <-
-    +told_refuge(Ref); notify_ambulance_ready(Ref); !patrol; ?saved_civilians.
+    +told_refuge(Ref); notify_ambulance_ready(Ref); !patrol.
 
 +!saved_civilians : at_area(Pos) & not visited(Pos) <-
-    +visited(Pos); !patrol; ?saved_civilians.
+    +visited(Pos); !patrol.
 
 +!saved_civilians : true <- !patrol.
 
 -!saved_civilians : true <- true.
 
-+!found_civilian(Civ, Pos) : found_civilian(Civ, Pos) <- ?found_civilian(Civ, Pos).
++!found_civilian(Civ, Pos) : found_civilian(Civ, Pos) <- true.
 
 +!found_civilian(Civ, Pos) : true <-
-    +found_civilian(Civ, Pos); ?found_civilian(Civ, Pos).
+    +found_civilian(Civ, Pos).
 
 -!found_civilian(Civ, Pos) : true <- true.
 
-+!told_ambulance(Civ) : told_ambulance(Civ) <- ?told_ambulance(Civ).
++!told_ambulance(Civ) : told_ambulance(Civ) <- true.
 
 +!told_ambulance(Civ) : ready_for_ambulance(Civ, Pos) <-
-    +told_ambulance(Civ); radio_done(Civ); notify_ambulance_ready(Civ, Pos); ?told_ambulance(Civ).
+    +told_ambulance(Civ); radio_done(Civ); notify_ambulance_ready(Civ, Pos).
 
 -!told_ambulance(Civ) : true <- true.
 
 +!rescued_buried_civilian(Civ) : rescued(Civ) & not told_ambulance(Civ) <-
-    !told_ambulance(Civ); ?rescued_buried_civilian(Civ).
+    !told_ambulance(Civ).
 
-+!rescued_buried_civilian(Civ) : rescued(Civ) <- ?rescued_buried_civilian(Civ).
++!rescued_buried_civilian(Civ) : rescued(Civ) <- true.
 
 +!rescued_buried_civilian(Civ) : found_civilian(Civ, Pos) & not at_area(Pos) <-
-    log("FIRE: go to found civilian ", Civ, " at ", Pos); move_to(Pos); ?rescued_buried_civilian(Civ).
+    log("FIRE: go to found civilian ", Civ, " at ", Pos); move_to(Pos).
 
 +!rescued_buried_civilian(Civ) : buried_civilian(Civ, Pos, Level) & at_area(Pos) <-
-    radio_busy(Civ); log("FIRE: rescue civilian ", Civ, " at ", Pos, " buriedness=", Level); rescue(Civ); ?rescued_buried_civilian(Civ).
+    radio_busy(Civ); log("FIRE: rescue civilian ", Civ, " at ", Pos, " buriedness=", Level); rescue(Civ).
 
 -!rescued_buried_civilian(Civ) : true <- true.
 
 
 +!patrol : found_civilian(Civ, Pos) & buried_civilian(Civ, Pos, Level) & area(Pos) & not at_area(Pos) <-
-    log("FIRE: patrol to found civilian ", Civ, " at ", Pos, " buriedness=", Level); move_to(Pos); ?patrol.
+    log("FIRE: patrol to found civilian ", Civ, " at ", Pos, " buriedness=", Level); move_to(Pos).
 
 +!patrol : buried_civilian(Civ, Pos, Level) & area(Pos) & not at_area(Pos) <-
-    log("FIRE: patrol to buried civilian ", Civ, " at ", Pos, " buriedness=", Level); move_to(Pos); ?patrol.
+    log("FIRE: patrol to buried civilian ", Civ, " at ", Pos, " buriedness=", Level); move_to(Pos).
 
 +!patrol : collapsed(Pos) & building(Pos) & not visited(Pos) & not at_area(Pos) <-
-    !visited(Pos); ?patrol.
+    !visited(Pos).
 
 +!patrol : damaged(Pos) & building(Pos) & not visited(Pos) & not at_area(Pos) <-
-    !visited(Pos); ?patrol.
+    !visited(Pos).
 
 +!patrol : building(Pos) & not visited(Pos) & not at_area(Pos) <-
-    !visited(Pos); ?patrol.
+    !visited(Pos).
 
 +!patrol : road(Pos) & not visited(Pos) & not at_area(Pos) <-
-    !visited(Pos); ?patrol.
+    !visited(Pos).
 
 +!patrol : road(Pos) & not at_area(Pos) <-
-    log("FIRE: continue patrol through road ", Pos); move_to(Pos); ?patrol.
+    log("FIRE: continue patrol through road ", Pos); move_to(Pos).
 
 +!patrol : true <- rest.
 
 -!patrol : true <- true.
 
-+!visited(Pos) : visited(Pos) <- true; ?visited(Pos).
++!visited(Pos) : visited(Pos) <- true.
 
 +!visited(Pos) : at_area(Pos) & not visited(Pos) <-
-    +visited(Pos); ?visited(Pos).
+    +visited(Pos).
 
 +!visited(Pos) : not at_area(Pos) <-
-    log("FIRE: patrol area ", Pos); move_to(Pos); ?visited(Pos).
+    log("FIRE: patrol area ", Pos); move_to(Pos).
 
 -!visited(Pos) : true <- true.

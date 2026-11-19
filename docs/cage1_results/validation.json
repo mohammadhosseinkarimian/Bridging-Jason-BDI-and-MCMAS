@@ -1,0 +1,492 @@
+{
+  "Cage1-complete": {
+    "baseline": {
+      "reachable_states": 32559,
+      "mcmas_seconds": 2.244,
+      "bdd_bytes": 18970736,
+      "formulae": [
+        {
+          "number": 1,
+          "formula": "(EF Enterprise2_root)",
+          "holds": true
+        },
+        {
+          "number": 2,
+          "formula": "(EF OpServer_root)",
+          "holds": true
+        },
+        {
+          "number": 3,
+          "formula": "(EF OTService_impacted)",
+          "holds": true
+        },
+        {
+          "number": 4,
+          "formula": "(<red_team>F OTService_impacted)",
+          "holds": false
+        },
+        {
+          "number": 5,
+          "formula": "(<blue_team>G OTService_running)",
+          "holds": true
+        }
+      ],
+      "command": [
+        "/home/mhmd/.local/bin/mcmas",
+        "-k",
+        "examples/Cage1-complete/input/cage1_baseline.ispl"
+      ],
+      "wall_seconds": 4.501754826000251,
+      "stdout": "************************************************************************\n                       MCMAS v1.3.0 \n\n This software comes with ABSOLUTELY NO WARRANTY, to the extent\n permitted by applicable law. \n\n Please check http://vas.doc.ic.ac.uk/tools/mcmas/ for the latest release.\n Please send any feedback to <mcmas@imperial.ac.uk>\n************************************************************************\n\nCommand line: /home/mhmd/.local/bin/mcmas -k examples/Cage1-complete/input/cage1_baseline.ispl\n\nexamples/Cage1-complete/input/cage1_baseline.ispl has been parsed successfully.\nGlobal syntax checking...\n1\n1\n1\nDone\nEncoding BDD parameters...\nBuilding partial transition relation...\nBuilding BDD for initial states...\nBuilding reachable state space...\nThere is no deadlock state in the model!\nChecking formulae...\nVerifying properties...\n  Formula number 1: (EF Enterprise2_root), is TRUE in the model\n  Formula number 2: (EF OpServer_root), is TRUE in the model\n  Formula number 3: (EF OTService_impacted), is TRUE in the model\n  Formula number 4: (<red_team>F OTService_impacted), is FALSE in the model\n  Formula number 5: (<blue_team>G OTService_running), is TRUE in the model\ndone, 5 formulae successfully read and checked\nexecution time = 2.244\nnumber of reachable states = 32559\nBDD memory in use = 18970736\n",
+      "stderr": "\tCommand being timed: \"/home/mhmd/.local/bin/mcmas -k examples/Cage1-complete/input/cage1_baseline.ispl\"\n\tUser time (seconds): 3.95\n\tSystem time (seconds): 0.13\n\tPercent of CPU this job got: 180%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:02.26\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 24220\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 45\n\tMinor (reclaiming a frame) page faults: 5050\n\tVoluntary context switches: 131\n\tInvoluntary context switches: 23\n\tSwaps: 0\n\tFile system inputs: 2321\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "peak_rss_kib": 24220
+    },
+    "guided": {
+      "reachable_states": 75,
+      "mcmas_seconds": 4.118,
+      "bdd_bytes": 14479440,
+      "formulae": [
+        {
+          "number": 1,
+          "formula": "(EF Enterprise2_root)",
+          "holds": true
+        },
+        {
+          "number": 2,
+          "formula": "(EF OpServer_root)",
+          "holds": true
+        },
+        {
+          "number": 3,
+          "formula": "(EF OTService_impacted)",
+          "holds": true
+        },
+        {
+          "number": 4,
+          "formula": "(<red_team>F OTService_impacted)",
+          "holds": false
+        },
+        {
+          "number": 5,
+          "formula": "(<blue_team>G OTService_running)",
+          "holds": true
+        }
+      ],
+      "command": [
+        "/home/mhmd/.local/bin/mcmas",
+        "-k",
+        "examples/Cage1-complete/generated/cage1_jason_guided.ispl"
+      ],
+      "wall_seconds": 4.1406853849985055,
+      "stdout": "************************************************************************\n                       MCMAS v1.3.0 \n\n This software comes with ABSOLUTELY NO WARRANTY, to the extent\n permitted by applicable law. \n\n Please check http://vas.doc.ic.ac.uk/tools/mcmas/ for the latest release.\n Please send any feedback to <mcmas@imperial.ac.uk>\n************************************************************************\n\nCommand line: /home/mhmd/.local/bin/mcmas -k examples/Cage1-complete/generated/cage1_jason_guided.ispl\n\nexamples/Cage1-complete/generated/cage1_jason_guided.ispl has been parsed successfully.\nGlobal syntax checking...\n1\n1\n1\nDone\nEncoding BDD parameters...\nBuilding partial transition relation...\nBuilding BDD for initial states...\nBuilding reachable state space...\nThere is no deadlock state in the model!\nChecking formulae...\nVerifying properties...\n  Formula number 1: (EF Enterprise2_root), is TRUE in the model\n  Formula number 2: (EF OpServer_root), is TRUE in the model\n  Formula number 3: (EF OTService_impacted), is TRUE in the model\n  Formula number 4: (<red_team>F OTService_impacted), is FALSE in the model\n  Formula number 5: (<blue_team>G OTService_running), is TRUE in the model\ndone, 5 formulae successfully read and checked\nexecution time = 4.118\nnumber of reachable states = 75\nBDD memory in use = 14479440\n",
+      "stderr": "\tCommand being timed: \"/home/mhmd/.local/bin/mcmas -k examples/Cage1-complete/generated/cage1_jason_guided.ispl\"\n\tUser time (seconds): 3.70\n\tSystem time (seconds): 0.07\n\tPercent of CPU this job got: 91%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:04.13\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 19808\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 43\n\tMinor (reclaiming a frame) page faults: 3939\n\tVoluntary context switches: 128\n\tInvoluntary context switches: 31\n\tSwaps: 0\n\tFile system inputs: 138\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "peak_rss_kib": 19808
+    }
+  },
+  "Cage1-simple": {
+    "baseline": {
+      "reachable_states": 3903,
+      "mcmas_seconds": 0.261,
+      "bdd_bytes": 11405232,
+      "formulae": [
+        {
+          "number": 1,
+          "formula": "(EF Enterprise0_root)",
+          "holds": true
+        },
+        {
+          "number": 2,
+          "formula": "(EF OpServer_root)",
+          "holds": true
+        },
+        {
+          "number": 3,
+          "formula": "(EF OTService_impacted)",
+          "holds": true
+        },
+        {
+          "number": 4,
+          "formula": "(<red_team>F OTService_impacted)",
+          "holds": false
+        },
+        {
+          "number": 5,
+          "formula": "(<blue_team>G OTService_running)",
+          "holds": true
+        }
+      ],
+      "command": [
+        "/home/mhmd/.local/bin/mcmas",
+        "-k",
+        "examples/Cage1-simple/input/cage1_baseline.ispl"
+      ],
+      "wall_seconds": 0.2779829810024239,
+      "stdout": "************************************************************************\n                       MCMAS v1.3.0 \n\n This software comes with ABSOLUTELY NO WARRANTY, to the extent\n permitted by applicable law. \n\n Please check http://vas.doc.ic.ac.uk/tools/mcmas/ for the latest release.\n Please send any feedback to <mcmas@imperial.ac.uk>\n************************************************************************\n\nCommand line: /home/mhmd/.local/bin/mcmas -k examples/Cage1-simple/input/cage1_baseline.ispl\n\nexamples/Cage1-simple/input/cage1_baseline.ispl has been parsed successfully.\nGlobal syntax checking...\n1\n1\n1\nDone\nEncoding BDD parameters...\nBuilding partial transition relation...\nBuilding BDD for initial states...\nBuilding reachable state space...\nThere is no deadlock state in the model!\nChecking formulae...\nVerifying properties...\n  Formula number 1: (EF Enterprise0_root), is TRUE in the model\n  Formula number 2: (EF OpServer_root), is TRUE in the model\n  Formula number 3: (EF OTService_impacted), is TRUE in the model\n  Formula number 4: (<red_team>F OTService_impacted), is FALSE in the model\n  Formula number 5: (<blue_team>G OTService_running), is TRUE in the model\ndone, 5 formulae successfully read and checked\nexecution time = 0.261\nnumber of reachable states = 3903\nBDD memory in use = 11405232\n",
+      "stderr": "\tCommand being timed: \"/home/mhmd/.local/bin/mcmas -k examples/Cage1-simple/input/cage1_baseline.ispl\"\n\tUser time (seconds): 0.21\n\tSystem time (seconds): 0.02\n\tPercent of CPU this job got: 84%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.27\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 16284\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 43\n\tMinor (reclaiming a frame) page faults: 3050\n\tVoluntary context switches: 123\n\tInvoluntary context switches: 0\n\tSwaps: 0\n\tFile system inputs: 59\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "peak_rss_kib": 16284
+    },
+    "guided": {
+      "reachable_states": 75,
+      "mcmas_seconds": 0.298,
+      "bdd_bytes": 10361712,
+      "formulae": [
+        {
+          "number": 1,
+          "formula": "(EF Enterprise0_root)",
+          "holds": true
+        },
+        {
+          "number": 2,
+          "formula": "(EF OpServer_root)",
+          "holds": true
+        },
+        {
+          "number": 3,
+          "formula": "(EF OTService_impacted)",
+          "holds": true
+        },
+        {
+          "number": 4,
+          "formula": "(<red_team>F OTService_impacted)",
+          "holds": false
+        },
+        {
+          "number": 5,
+          "formula": "(<blue_team>G OTService_running)",
+          "holds": true
+        }
+      ],
+      "command": [
+        "/home/mhmd/.local/bin/mcmas",
+        "-k",
+        "examples/Cage1-simple/generated/cage1_jason_guided.ispl"
+      ],
+      "wall_seconds": 0.313298789998953,
+      "stdout": "************************************************************************\n                       MCMAS v1.3.0 \n\n This software comes with ABSOLUTELY NO WARRANTY, to the extent\n permitted by applicable law. \n\n Please check http://vas.doc.ic.ac.uk/tools/mcmas/ for the latest release.\n Please send any feedback to <mcmas@imperial.ac.uk>\n************************************************************************\n\nCommand line: /home/mhmd/.local/bin/mcmas -k examples/Cage1-simple/generated/cage1_jason_guided.ispl\n\nexamples/Cage1-simple/generated/cage1_jason_guided.ispl has been parsed successfully.\nGlobal syntax checking...\n1\n1\n1\nDone\nEncoding BDD parameters...\nBuilding partial transition relation...\nBuilding BDD for initial states...\nBuilding reachable state space...\nThere is no deadlock state in the model!\nChecking formulae...\nVerifying properties...\n  Formula number 1: (EF Enterprise0_root), is TRUE in the model\n  Formula number 2: (EF OpServer_root), is TRUE in the model\n  Formula number 3: (EF OTService_impacted), is TRUE in the model\n  Formula number 4: (<red_team>F OTService_impacted), is FALSE in the model\n  Formula number 5: (<blue_team>G OTService_running), is TRUE in the model\ndone, 5 formulae successfully read and checked\nexecution time = 0.298\nnumber of reachable states = 75\nBDD memory in use = 10361712\n",
+      "stderr": "\tCommand being timed: \"/home/mhmd/.local/bin/mcmas -k examples/Cage1-simple/generated/cage1_jason_guided.ispl\"\n\tUser time (seconds): 0.22\n\tSystem time (seconds): 0.03\n\tPercent of CPU this job got: 85%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.31\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 15232\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 43\n\tMinor (reclaiming a frame) page faults: 2791\n\tVoluntary context switches: 123\n\tInvoluntary context switches: 1\n\tSwaps: 0\n\tFile system inputs: 61\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "peak_rss_kib": 15232
+    }
+  },
+  "Cage1-small": {
+    "baseline": {
+      "reachable_states": 20,
+      "mcmas_seconds": 0.039,
+      "bdd_bytes": 9176656,
+      "formulae": [
+        {
+          "number": 1,
+          "formula": "(<all_agents>F OpServer_root)",
+          "holds": true
+        },
+        {
+          "number": 2,
+          "formula": "(<all_agents>F OTService_impacted)",
+          "holds": true
+        },
+        {
+          "number": 3,
+          "formula": "(<red_team>F OTService_impacted)",
+          "holds": false
+        },
+        {
+          "number": 4,
+          "formula": "(<blue_team>G OTService_running)",
+          "holds": true
+        }
+      ],
+      "command": [
+        "/home/mhmd/.local/bin/mcmas",
+        "-k",
+        "examples/Cage1-small/input/cage1_baseline.ispl"
+      ],
+      "wall_seconds": 0.05551605000073323,
+      "stdout": "************************************************************************\n                       MCMAS v1.3.0 \n\n This software comes with ABSOLUTELY NO WARRANTY, to the extent\n permitted by applicable law. \n\n Please check http://vas.doc.ic.ac.uk/tools/mcmas/ for the latest release.\n Please send any feedback to <mcmas@imperial.ac.uk>\n************************************************************************\n\nCommand line: /home/mhmd/.local/bin/mcmas -k examples/Cage1-small/input/cage1_baseline.ispl\n\nexamples/Cage1-small/input/cage1_baseline.ispl has been parsed successfully.\nGlobal syntax checking...\n1\n1\n1\nDone\nEncoding BDD parameters...\nBuilding partial transition relation...\nBuilding BDD for initial states...\nBuilding reachable state space...\nThere is no deadlock state in the model!\nChecking formulae...\nVerifying properties...\n  Formula number 1: (<all_agents>F OpServer_root), is TRUE in the model\n  Formula number 2: (<all_agents>F OTService_impacted), is TRUE in the model\n  Formula number 3: (<red_team>F OTService_impacted), is FALSE in the model\n  Formula number 4: (<blue_team>G OTService_running), is TRUE in the model\ndone, 4 formulae successfully read and checked\nexecution time = 0.039\nnumber of reachable states = 20\nBDD memory in use = 9176656\n",
+      "stderr": "\tCommand being timed: \"/home/mhmd/.local/bin/mcmas -k examples/Cage1-small/input/cage1_baseline.ispl\"\n\tUser time (seconds): 0.00\n\tSystem time (seconds): 0.02\n\tPercent of CPU this job got: 48%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.05\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 13788\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 41\n\tMinor (reclaiming a frame) page faults: 2435\n\tVoluntary context switches: 116\n\tInvoluntary context switches: 0\n\tSwaps: 0\n\tFile system inputs: 11\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "peak_rss_kib": 13788
+    },
+    "guided": {
+      "reachable_states": 12,
+      "mcmas_seconds": 0.04,
+      "bdd_bytes": 9176656,
+      "formulae": [
+        {
+          "number": 1,
+          "formula": "(<all_agents>F OpServer_root)",
+          "holds": true
+        },
+        {
+          "number": 2,
+          "formula": "(<all_agents>F OTService_impacted)",
+          "holds": true
+        },
+        {
+          "number": 3,
+          "formula": "(<red_team>F OTService_impacted)",
+          "holds": false
+        },
+        {
+          "number": 4,
+          "formula": "(<blue_team>G OTService_running)",
+          "holds": true
+        }
+      ],
+      "command": [
+        "/home/mhmd/.local/bin/mcmas",
+        "-k",
+        "examples/Cage1-small/generated/cage1_jason_guided.ispl"
+      ],
+      "wall_seconds": 0.05661160100135021,
+      "stdout": "************************************************************************\n                       MCMAS v1.3.0 \n\n This software comes with ABSOLUTELY NO WARRANTY, to the extent\n permitted by applicable law. \n\n Please check http://vas.doc.ic.ac.uk/tools/mcmas/ for the latest release.\n Please send any feedback to <mcmas@imperial.ac.uk>\n************************************************************************\n\nCommand line: /home/mhmd/.local/bin/mcmas -k examples/Cage1-small/generated/cage1_jason_guided.ispl\n\nexamples/Cage1-small/generated/cage1_jason_guided.ispl has been parsed successfully.\nGlobal syntax checking...\n1\n1\n1\nDone\nEncoding BDD parameters...\nBuilding partial transition relation...\nBuilding BDD for initial states...\nBuilding reachable state space...\nThere is no deadlock state in the model!\nChecking formulae...\nVerifying properties...\n  Formula number 1: (<all_agents>F OpServer_root), is TRUE in the model\n  Formula number 2: (<all_agents>F OTService_impacted), is TRUE in the model\n  Formula number 3: (<red_team>F OTService_impacted), is FALSE in the model\n  Formula number 4: (<blue_team>G OTService_running), is TRUE in the model\ndone, 4 formulae successfully read and checked\nexecution time = 0.04\nnumber of reachable states = 12\nBDD memory in use = 9176656\n",
+      "stderr": "\tCommand being timed: \"/home/mhmd/.local/bin/mcmas -k examples/Cage1-small/generated/cage1_jason_guided.ispl\"\n\tUser time (seconds): 0.00\n\tSystem time (seconds): 0.02\n\tPercent of CPU this job got: 53%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.05\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 13868\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 41\n\tMinor (reclaiming a frame) page faults: 2430\n\tVoluntary context switches: 117\n\tInvoluntary context switches: 0\n\tSwaps: 0\n\tFile system inputs: 12\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "peak_rss_kib": 13868
+    }
+  },
+  "abstract": {
+    "baseline": {
+      "reachable_states": 559881,
+      "mcmas_seconds": 1.697,
+      "bdd_bytes": 15201952,
+      "formulae": [
+        {
+          "number": 1,
+          "formula": "(<fire_only>F surface_Civ_eval)",
+          "holds": true
+        },
+        {
+          "number": 2,
+          "formula": "(<ambulance_only>F loaded_Civ_eval)",
+          "holds": false
+        },
+        {
+          "number": 3,
+          "formula": "(<rescue_team>F delivered_alive_Civ_eval)",
+          "holds": true
+        }
+      ],
+      "command": [
+        "/home/mhmd/.local/bin/mcmas",
+        "examples/abstract/input/abstract_raw.ispl"
+      ],
+      "wall_seconds": 1.7151826139997866,
+      "stdout": "************************************************************************\n                       MCMAS v1.3.0 \n\n This software comes with ABSOLUTELY NO WARRANTY, to the extent\n permitted by applicable law. \n\n Please check http://vas.doc.ic.ac.uk/tools/mcmas/ for the latest release.\n Please send any feedback to <mcmas@imperial.ac.uk>\n************************************************************************\n\nCommand line: /home/mhmd/.local/bin/mcmas examples/abstract/input/abstract_raw.ispl\n\nexamples/abstract/input/abstract_raw.ispl has been parsed successfully.\nGlobal syntax checking...\n1\n1\n1\nDone\nEncoding BDD parameters...\nBuilding partial transition relation...\nBuilding BDD for initial states...\nBuilding reachable state space...\nChecking formulae...\nVerifying properties...\n  Formula number 1: (<fire_only>F surface_Civ_eval), is TRUE in the model\n  Formula number 2: (<ambulance_only>F loaded_Civ_eval), is FALSE in the model\n  Formula number 3: (<rescue_team>F delivered_alive_Civ_eval), is TRUE in the model\ndone, 3 formulae successfully read and checked\nexecution time = 1.697\nnumber of reachable states = 559881\nBDD memory in use = 15201952\n",
+      "stderr": "\tCommand being timed: \"/home/mhmd/.local/bin/mcmas examples/abstract/input/abstract_raw.ispl\"\n\tUser time (seconds): 1.50\n\tSystem time (seconds): 0.04\n\tPercent of CPU this job got: 90%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:01.71\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 21820\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 43\n\tMinor (reclaiming a frame) page faults: 4475\n\tVoluntary context switches: 150\n\tInvoluntary context switches: 8\n\tSwaps: 0\n\tFile system inputs: 483\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "peak_rss_kib": 21820
+    },
+    "guided": {
+      "reachable_states": 452,
+      "mcmas_seconds": 1.227,
+      "bdd_bytes": 15951232,
+      "formulae": [
+        {
+          "number": 1,
+          "formula": "(<fire_only>F surface_Civ_eval)",
+          "holds": true
+        },
+        {
+          "number": 2,
+          "formula": "(<ambulance_only>F loaded_Civ_eval)",
+          "holds": true
+        },
+        {
+          "number": 3,
+          "formula": "(<rescue_team>F delivered_alive_Civ_eval)",
+          "holds": true
+        }
+      ],
+      "command": [
+        "/home/mhmd/.local/bin/mcmas",
+        "examples/abstract/generated/abstract_jason_guided.ispl"
+      ],
+      "wall_seconds": 1.248986529000831,
+      "stdout": "************************************************************************\n                       MCMAS v1.3.0 \n\n This software comes with ABSOLUTELY NO WARRANTY, to the extent\n permitted by applicable law. \n\n Please check http://vas.doc.ic.ac.uk/tools/mcmas/ for the latest release.\n Please send any feedback to <mcmas@imperial.ac.uk>\n************************************************************************\n\nCommand line: /home/mhmd/.local/bin/mcmas examples/abstract/generated/abstract_jason_guided.ispl\n\nexamples/abstract/generated/abstract_jason_guided.ispl has been parsed successfully.\nGlobal syntax checking...\n1\n1\n1\nDone\nEncoding BDD parameters...\nBuilding partial transition relation...\nBuilding BDD for initial states...\nBuilding reachable state space...\nChecking formulae...\nVerifying properties...\n  Formula number 1: (<fire_only>F surface_Civ_eval), is TRUE in the model\n  Formula number 2: (<ambulance_only>F loaded_Civ_eval), is TRUE in the model\n  Formula number 3: (<rescue_team>F delivered_alive_Civ_eval), is TRUE in the model\ndone, 3 formulae successfully read and checked\nexecution time = 1.227\nnumber of reachable states = 452\nBDD memory in use = 15951232\n",
+      "stderr": "\tCommand being timed: \"/home/mhmd/.local/bin/mcmas examples/abstract/generated/abstract_jason_guided.ispl\"\n\tUser time (seconds): 1.03\n\tSystem time (seconds): 0.08\n\tPercent of CPU this job got: 89%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:01.24\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 22640\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 43\n\tMinor (reclaiming a frame) page faults: 4641\n\tVoluntary context switches: 154\n\tInvoluntary context switches: 11\n\tSwaps: 0\n\tFile system inputs: 534\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "peak_rss_kib": 22640
+    }
+  },
+  "custom2": {
+    "baseline": {
+      "reachable_states": 25,
+      "mcmas_seconds": 0.324,
+      "bdd_bytes": 14699184,
+      "formulae": [
+        {
+          "number": 1,
+          "formula": "(<fire_only>F surface_alive_Civ_eval)",
+          "holds": true
+        },
+        {
+          "number": 2,
+          "formula": "(<rescue_team>F surface_alive_Civ_eval)",
+          "holds": true
+        },
+        {
+          "number": 3,
+          "formula": "(<rescue_team>F delivered_alive_Civ_eval)",
+          "holds": true
+        },
+        {
+          "number": 4,
+          "formula": "(<ambulance_only>F illegal_buried_load_eval)",
+          "holds": false
+        }
+      ],
+      "command": [
+        "/home/mhmd/.local/bin/mcmas",
+        "examples/custom2/input/custom2_raw.ispl"
+      ],
+      "wall_seconds": 0.3397834099996544,
+      "stdout": "************************************************************************\n                       MCMAS v1.3.0 \n\n This software comes with ABSOLUTELY NO WARRANTY, to the extent\n permitted by applicable law. \n\n Please check http://vas.doc.ic.ac.uk/tools/mcmas/ for the latest release.\n Please send any feedback to <mcmas@imperial.ac.uk>\n************************************************************************\n\nCommand line: /home/mhmd/.local/bin/mcmas examples/custom2/input/custom2_raw.ispl\n\nexamples/custom2/input/custom2_raw.ispl has been parsed successfully.\nGlobal syntax checking...\n1\n1\n1\nDone\nEncoding BDD parameters...\nBuilding partial transition relation...\nBuilding BDD for initial states...\nBuilding reachable state space...\nChecking formulae...\nVerifying properties...\n  Formula number 1: (<fire_only>F surface_alive_Civ_eval), is TRUE in the model\n  Formula number 2: (<rescue_team>F surface_alive_Civ_eval), is TRUE in the model\n  Formula number 3: (<rescue_team>F delivered_alive_Civ_eval), is TRUE in the model\n  Formula number 4: (<ambulance_only>F illegal_buried_load_eval), is FALSE in the model\ndone, 4 formulae successfully read and checked\nexecution time = 0.324\nnumber of reachable states = 25\nBDD memory in use = 14699184\n",
+      "stderr": "\tCommand being timed: \"/home/mhmd/.local/bin/mcmas examples/custom2/input/custom2_raw.ispl\"\n\tUser time (seconds): 0.25\n\tSystem time (seconds): 0.03\n\tPercent of CPU this job got: 85%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.33\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 20400\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 43\n\tMinor (reclaiming a frame) page faults: 4082\n\tVoluntary context switches: 120\n\tInvoluntary context switches: 1\n\tSwaps: 0\n\tFile system inputs: 35\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "peak_rss_kib": 20400
+    },
+    "guided": {
+      "reachable_states": 6,
+      "mcmas_seconds": 0.36,
+      "bdd_bytes": 16430432,
+      "formulae": [
+        {
+          "number": 1,
+          "formula": "(<fire_only>F surface_alive_Civ_eval)",
+          "holds": true
+        },
+        {
+          "number": 2,
+          "formula": "(<rescue_team>F surface_alive_Civ_eval)",
+          "holds": true
+        },
+        {
+          "number": 3,
+          "formula": "(<rescue_team>F delivered_alive_Civ_eval)",
+          "holds": true
+        },
+        {
+          "number": 4,
+          "formula": "(<ambulance_only>F illegal_buried_load_eval)",
+          "holds": false
+        }
+      ],
+      "command": [
+        "/home/mhmd/.local/bin/mcmas",
+        "examples/custom2/generated/custom2_jason_guided.ispl"
+      ],
+      "wall_seconds": 0.37772933499945793,
+      "stdout": "************************************************************************\n                       MCMAS v1.3.0 \n\n This software comes with ABSOLUTELY NO WARRANTY, to the extent\n permitted by applicable law. \n\n Please check http://vas.doc.ic.ac.uk/tools/mcmas/ for the latest release.\n Please send any feedback to <mcmas@imperial.ac.uk>\n************************************************************************\n\nCommand line: /home/mhmd/.local/bin/mcmas examples/custom2/generated/custom2_jason_guided.ispl\n\nexamples/custom2/generated/custom2_jason_guided.ispl has been parsed successfully.\nGlobal syntax checking...\n1\n1\n1\nDone\nEncoding BDD parameters...\nBuilding partial transition relation...\nBuilding BDD for initial states...\nBuilding reachable state space...\nChecking formulae...\nVerifying properties...\n  Formula number 1: (<fire_only>F surface_alive_Civ_eval), is TRUE in the model\n  Formula number 2: (<rescue_team>F surface_alive_Civ_eval), is TRUE in the model\n  Formula number 3: (<rescue_team>F delivered_alive_Civ_eval), is TRUE in the model\n  Formula number 4: (<ambulance_only>F illegal_buried_load_eval), is FALSE in the model\ndone, 4 formulae successfully read and checked\nexecution time = 0.36\nnumber of reachable states = 6\nBDD memory in use = 16430432\n",
+      "stderr": "\tCommand being timed: \"/home/mhmd/.local/bin/mcmas examples/custom2/generated/custom2_jason_guided.ispl\"\n\tUser time (seconds): 0.28\n\tSystem time (seconds): 0.03\n\tPercent of CPU this job got: 85%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.37\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 22080\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 43\n\tMinor (reclaiming a frame) page faults: 4549\n\tVoluntary context switches: 122\n\tInvoluntary context switches: 0\n\tSwaps: 0\n\tFile system inputs: 51\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "peak_rss_kib": 22080
+    }
+  },
+  "exact95": {
+    "baseline": {
+      "reachable_states": 8041370,
+      "mcmas_seconds": 18.254,
+      "bdd_bytes": 49710080,
+      "formulae": [
+        {
+          "number": 1,
+          "formula": "(<fire_only>F surface_Civ_eval)",
+          "holds": true
+        },
+        {
+          "number": 2,
+          "formula": "(<ambulance_only>F loaded_Civ_eval)",
+          "holds": false
+        },
+        {
+          "number": 3,
+          "formula": "(<rescue_team>F delivered_alive_Civ_eval)",
+          "holds": true
+        }
+      ],
+      "command": [
+        "/home/mhmd/.local/bin/mcmas",
+        "examples/exact95/input/raw-test.ispl"
+      ],
+      "wall_seconds": 18.281089544998395,
+      "stdout": "************************************************************************\n                       MCMAS v1.3.0 \n\n This software comes with ABSOLUTELY NO WARRANTY, to the extent\n permitted by applicable law. \n\n Please check http://vas.doc.ic.ac.uk/tools/mcmas/ for the latest release.\n Please send any feedback to <mcmas@imperial.ac.uk>\n************************************************************************\n\nCommand line: /home/mhmd/.local/bin/mcmas examples/exact95/input/raw-test.ispl\n\nexamples/exact95/input/raw-test.ispl has been parsed successfully.\nGlobal syntax checking...\n1\n1\n1\nDone\nEncoding BDD parameters...\nBuilding partial transition relation...\nBuilding BDD for initial states...\nBuilding reachable state space...\nChecking formulae...\nVerifying properties...\n  Formula number 1: (<fire_only>F surface_Civ_eval), is TRUE in the model\n  Formula number 2: (<ambulance_only>F loaded_Civ_eval), is FALSE in the model\n  Formula number 3: (<rescue_team>F delivered_alive_Civ_eval), is TRUE in the model\ndone, 3 formulae successfully read and checked\nexecution time = 18.254\nnumber of reachable states = 8.04137e+06\nBDD memory in use = 49710080\n",
+      "stderr": "\tCommand being timed: \"/home/mhmd/.local/bin/mcmas examples/exact95/input/raw-test.ispl\"\n\tUser time (seconds): 16.50\n\tSystem time (seconds): 0.31\n\tPercent of CPU this job got: 92%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:18.27\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 58852\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 43\n\tMinor (reclaiming a frame) page faults: 15768\n\tVoluntary context switches: 187\n\tInvoluntary context switches: 113\n\tSwaps: 0\n\tFile system inputs: 1084\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "peak_rss_kib": 58852
+    },
+    "guided": {
+      "reachable_states": 19312,
+      "mcmas_seconds": 6.557,
+      "bdd_bytes": 41980064,
+      "formulae": [
+        {
+          "number": 1,
+          "formula": "(<fire_only>F surface_Civ_eval)",
+          "holds": true
+        },
+        {
+          "number": 2,
+          "formula": "(<ambulance_only>F loaded_Civ_eval)",
+          "holds": false
+        },
+        {
+          "number": 3,
+          "formula": "(<rescue_team>F delivered_alive_Civ_eval)",
+          "holds": true
+        }
+      ],
+      "command": [
+        "/home/mhmd/.local/bin/mcmas",
+        "examples/exact95/generated/raw-test_jason_guided.ispl"
+      ],
+      "wall_seconds": 9.057629950999399,
+      "stdout": "************************************************************************\n                       MCMAS v1.3.0 \n\n This software comes with ABSOLUTELY NO WARRANTY, to the extent\n permitted by applicable law. \n\n Please check http://vas.doc.ic.ac.uk/tools/mcmas/ for the latest release.\n Please send any feedback to <mcmas@imperial.ac.uk>\n************************************************************************\n\nCommand line: /home/mhmd/.local/bin/mcmas examples/exact95/generated/raw-test_jason_guided.ispl\n\nexamples/exact95/generated/raw-test_jason_guided.ispl has been parsed successfully.\nGlobal syntax checking...\n1\n1\n1\nDone\nEncoding BDD parameters...\nBuilding partial transition relation...\nBuilding BDD for initial states...\nBuilding reachable state space...\nChecking formulae...\nVerifying properties...\n  Formula number 1: (<fire_only>F surface_Civ_eval), is TRUE in the model\n  Formula number 2: (<ambulance_only>F loaded_Civ_eval), is FALSE in the model\n  Formula number 3: (<rescue_team>F delivered_alive_Civ_eval), is TRUE in the model\ndone, 3 formulae successfully read and checked\nexecution time = 6.557\nnumber of reachable states = 19312\nBDD memory in use = 41980064\n",
+      "stderr": "\tCommand being timed: \"/home/mhmd/.local/bin/mcmas examples/exact95/generated/raw-test_jason_guided.ispl\"\n\tUser time (seconds): 8.17\n\tSystem time (seconds): 0.35\n\tPercent of CPU this job got: 129%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:06.57\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 51092\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 43\n\tMinor (reclaiming a frame) page faults: 13876\n\tVoluntary context switches: 190\n\tInvoluntary context switches: 50\n\tSwaps: 0\n\tFile system inputs: 1108\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "peak_rss_kib": 51092
+    }
+  },
+  "three_area": {
+    "baseline": {
+      "reachable_states": 52,
+      "mcmas_seconds": 0.05,
+      "bdd_bytes": 9279616,
+      "formulae": [
+        {
+          "number": 1,
+          "formula": "(<fire_only>F surface_alive_Civ_eval)",
+          "holds": true
+        },
+        {
+          "number": 2,
+          "formula": "(<rescue_team>F delivered_alive_Civ_eval)",
+          "holds": true
+        }
+      ],
+      "command": [
+        "/home/mhmd/.local/bin/mcmas",
+        "examples/three_area/input/three_area_raw.ispl"
+      ],
+      "wall_seconds": 0.06102464899959159,
+      "stdout": "************************************************************************\n                       MCMAS v1.3.0 \n\n This software comes with ABSOLUTELY NO WARRANTY, to the extent\n permitted by applicable law. \n\n Please check http://vas.doc.ic.ac.uk/tools/mcmas/ for the latest release.\n Please send any feedback to <mcmas@imperial.ac.uk>\n************************************************************************\n\nCommand line: /home/mhmd/.local/bin/mcmas examples/three_area/input/three_area_raw.ispl\n\nexamples/three_area/input/three_area_raw.ispl has been parsed successfully.\nGlobal syntax checking...\n1\n1\n1\nDone\nEncoding BDD parameters...\nBuilding partial transition relation...\nBuilding BDD for initial states...\nBuilding reachable state space...\nChecking formulae...\nVerifying properties...\n  Formula number 1: (<fire_only>F surface_alive_Civ_eval), is TRUE in the model\n  Formula number 2: (<rescue_team>F delivered_alive_Civ_eval), is TRUE in the model\ndone, 2 formulae successfully read and checked\nexecution time = 0.05\nnumber of reachable states = 52\nBDD memory in use = 9279616\n",
+      "stderr": "\tCommand being timed: \"/home/mhmd/.local/bin/mcmas examples/three_area/input/three_area_raw.ispl\"\n\tUser time (seconds): 0.02\n\tSystem time (seconds): 0.01\n\tPercent of CPU this job got: 61%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.05\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 13924\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 43\n\tMinor (reclaiming a frame) page faults: 2473\n\tVoluntary context switches: 120\n\tInvoluntary context switches: 1\n\tSwaps: 0\n\tFile system inputs: 17\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "peak_rss_kib": 13924
+    },
+    "guided": {
+      "reachable_states": 22,
+      "mcmas_seconds": 0.095,
+      "bdd_bytes": 9609600,
+      "formulae": [
+        {
+          "number": 1,
+          "formula": "(<fire_only>F surface_alive_Civ_eval)",
+          "holds": true
+        },
+        {
+          "number": 2,
+          "formula": "(<rescue_team>F delivered_alive_Civ_eval)",
+          "holds": true
+        }
+      ],
+      "command": [
+        "/home/mhmd/.local/bin/mcmas",
+        "examples/three_area/generated/three_area_jason_guided.ispl"
+      ],
+      "wall_seconds": 0.10831372200118494,
+      "stdout": "************************************************************************\n                       MCMAS v1.3.0 \n\n This software comes with ABSOLUTELY NO WARRANTY, to the extent\n permitted by applicable law. \n\n Please check http://vas.doc.ic.ac.uk/tools/mcmas/ for the latest release.\n Please send any feedback to <mcmas@imperial.ac.uk>\n************************************************************************\n\nCommand line: /home/mhmd/.local/bin/mcmas examples/three_area/generated/three_area_jason_guided.ispl\n\nexamples/three_area/generated/three_area_jason_guided.ispl has been parsed successfully.\nGlobal syntax checking...\n1\n1\n1\nDone\nEncoding BDD parameters...\nBuilding partial transition relation...\nBuilding BDD for initial states...\nBuilding reachable state space...\nChecking formulae...\nVerifying properties...\n  Formula number 1: (<fire_only>F surface_alive_Civ_eval), is TRUE in the model\n  Formula number 2: (<rescue_team>F delivered_alive_Civ_eval), is TRUE in the model\ndone, 2 formulae successfully read and checked\nexecution time = 0.095\nnumber of reachable states = 22\nBDD memory in use = 9609600\n",
+      "stderr": "\tCommand being timed: \"/home/mhmd/.local/bin/mcmas examples/three_area/generated/three_area_jason_guided.ispl\"\n\tUser time (seconds): 0.05\n\tSystem time (seconds): 0.02\n\tPercent of CPU this job got: 75%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:00.10\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 14268\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 43\n\tMinor (reclaiming a frame) page faults: 2578\n\tVoluntary context switches: 123\n\tInvoluntary context switches: 0\n\tSwaps: 0\n\tFile system inputs: 42\n\tFile system outputs: 0\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tPage size (bytes): 4096\n\tExit status: 0\n",
+      "peak_rss_kib": 14268
+    }
+  }
+}

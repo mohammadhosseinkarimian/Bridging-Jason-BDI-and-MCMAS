@@ -23,7 +23,7 @@ python3 src/jason_guided.py \
   --config examples/Cage1-small/input/jason_mapping.json \
   --raw /path/to/other_baseline.ispl \
   --output /path/to/new_guided.ispl \
-  --program blue=/path/to/blue_agent.asl
+  --program blue=/path/to/blue_agent_reactive.asl
 ```
 
 `--program` takes `ROLE=PATH`, where `ROLE` must match a key in `jason.roles`. It may be repeated for multiple roles. An override changes the source used by this run, not the JSON on disk.
@@ -84,6 +84,8 @@ When the role uses `plan.relation`, evolution generation is delegated to `relati
 
 This function starts with the baseline text and replaces each translated `Agent ... end Agent` block with the assembled guided block. It does not replace unselected agents. In the plain branch, `formatting.build_plain_agent_block` adds the goal variable, optional extra actions, the new protocol, and the task evolution rules. `formatting.rewrite_plain_init` inserts the initial goal state into `InitStates`.
 
+The reactive CAGE mappings enable `plan.elide_constant_goal`. They have one active decision goal and no control transitions, so the formatter can substitute the constant goal value and omit its state variable and initialization. The option rejects mappings that need multiple active stages or any task transition. It is disabled for the original rescue mappings, whose output remains unchanged.
+
 In the relation-aware branch, the program additionally uses `relation_translation.inspect_model` to read the movement domain, `patch_environment` to insert shared memory and communication rules, `rewrite_init` to initialize those variables and visited markers, and `build_agent_block` to assemble the role-specific agents. These extra environment changes implement **mapped knowledge and task state**; the original physical effects are not redefined from Jason.
 
 ## `translate`: the orchestration function
@@ -112,12 +114,12 @@ It processes relation-aware roles first and ordinary roles afterwards. The direc
 
 The parser and context mapper handle the supported subset of AgentSpeak syntax, not the entire Jason language. In particular, grounding is configured, plan priority is approximated through mapped source order, and unrecognized contexts are not translated automatically. The output can include fallback and pass-through decisions outside the selected plans. A successful run confirms that the generated ISPL file was written; it does not confirm an ATL property or that every behavior of the actual Jason interpreter was reproduced.
 
-There is also a separate `test_jason_guided.py` file in this directory. It uses four unit tests to check the four main translation phases on small constructed inputs. Run it with:
+`test_jason_guided.py` checks the four main translation phases on small constructed inputs. `test_cage1.py` adds regeneration checks for all seven examples, generator reproducibility, directed-attacker and pair-preservation checks, host-count validation, and rejection of unsafe constant-goal elimination. Run all nine tests with:
 
 ```bash
 python3 -m unittest discover -s src -p 'test_*.py' -v
 ```
 
-Those tests cover the basic phase behavior. For complete experiments, I also compare the generated ISPL with the intended baseline and run MCMAS on both versions.
+For complete experiments, `tools/cage1/benchmark.py` measures repeated baseline/guided runs and checks unchanged CAGE property results. `tools/cage1/validate.py` model-checks every supplied example and checks CAGE deadlock freedom. Results and reproduction commands are in [`../docs/cage1_results.md`](../docs/cage1_results.md).
 
 See [`formatting.md`](formatting.md) for parser and ISPL assembly details, [`relation_translation.md`](relation_translation.md) for map-aware behavior, and [`../examples/MAPPING_GUIDE.md`](../examples/MAPPING_GUIDE.md) for the meaning of configuration fields.

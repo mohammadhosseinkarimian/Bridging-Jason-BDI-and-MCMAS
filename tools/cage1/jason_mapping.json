@@ -1,7 +1,7 @@
 {
   "files": {
     "raw": "cage1_baseline.ispl",
-    "output": "../generated/cage1_jason_guided.ispl"
+    "output": "generated/cage1_jason_guided.ispl"
   },
   "model": {
     "environment_agent": "Environment"
@@ -23,7 +23,7 @@
     },
     "roles": {
       "blue": {
-        "program": "../../../agents/blue_agent.asl",
+        "program": "../../agents/blue_agent_reactive.asl",
         "ispl_agent": "Blue",
         "entry_goal": "observe_network",
         "goal_var": "blue_goal_level",
@@ -33,7 +33,8 @@
             "values": [
               "no",
               "user",
-              "privileged"
+              "privileged",
+              "Op_Server0"
             ],
             "signatures": {
               "secure": [
@@ -54,19 +55,7 @@
               ]
             },
             "members": [
-              "User0",
-              "User1",
-              "User2",
-              "User3",
-              "User4",
-              "Enterprise0",
-              "Enterprise1",
-              "Enterprise2",
-              "Defender",
-              "Op_Host0",
-              "Op_Host1",
-              "Op_Host2",
-              "Op_Server0"
+              "Enterprise2"
             ]
           },
           "actions": {
@@ -231,7 +220,7 @@
               ]
             },
             "initial_foothold_Enterprise0": false,
-            "host_state_Enterprise0_any": true,
+            "host_state_Enterprise0_any": false,
             "host_state_Enterprise0_user": {
               "eq": [
                 {
@@ -257,7 +246,7 @@
               ]
             },
             "initial_foothold_Enterprise1": false,
-            "host_state_Enterprise1_any": true,
+            "host_state_Enterprise1_any": false,
             "host_state_Enterprise1_user": {
               "eq": [
                 {
@@ -283,7 +272,7 @@
               ]
             },
             "initial_foothold_Enterprise2": false,
-            "host_state_Enterprise2_any": true,
+            "host_state_Enterprise2_any": false,
             "host_state_Enterprise2_user": {
               "eq": [
                 {
@@ -406,7 +395,7 @@
               ]
             },
             "initial_foothold_Op_Server0": false,
-            "host_state_Op_Server0_any": true,
+            "host_state_Op_Server0_any": false,
             "host_state_Op_Server0_user": {
               "eq": [
                 {
@@ -428,139 +417,9 @@
             "blue_wait",
             "restore_Op_Server0"
           ],
-          "transitions": [
-            {
-              "from": "secure_User0",
-              "to": "secure_network",
-              "action": "restore_User0"
-            },
-            {
-              "from": "secure_User0",
-              "to": "secure_network",
-              "action": "remove_User0"
-            },
-            {
-              "from": "secure_User1",
-              "to": "secure_network",
-              "action": "restore_User1"
-            },
-            {
-              "from": "secure_User1",
-              "to": "secure_network",
-              "action": "remove_User1"
-            },
-            {
-              "from": "secure_User2",
-              "to": "secure_network",
-              "action": "restore_User2"
-            },
-            {
-              "from": "secure_User2",
-              "to": "secure_network",
-              "action": "remove_User2"
-            },
-            {
-              "from": "secure_User3",
-              "to": "secure_network",
-              "action": "restore_User3"
-            },
-            {
-              "from": "secure_User3",
-              "to": "secure_network",
-              "action": "remove_User3"
-            },
-            {
-              "from": "secure_User4",
-              "to": "secure_network",
-              "action": "restore_User4"
-            },
-            {
-              "from": "secure_User4",
-              "to": "secure_network",
-              "action": "remove_User4"
-            },
-            {
-              "from": "secure_Enterprise0",
-              "to": "secure_network",
-              "action": "restore_Enterprise0"
-            },
-            {
-              "from": "secure_Enterprise0",
-              "to": "secure_network",
-              "action": "remove_Enterprise0"
-            },
-            {
-              "from": "secure_Enterprise1",
-              "to": "secure_network",
-              "action": "restore_Enterprise1"
-            },
-            {
-              "from": "secure_Enterprise1",
-              "to": "secure_network",
-              "action": "remove_Enterprise1"
-            },
-            {
-              "from": "secure_Enterprise2",
-              "to": "secure_network",
-              "action": "restore_Enterprise2"
-            },
-            {
-              "from": "secure_Enterprise2",
-              "to": "secure_network",
-              "action": "remove_Enterprise2"
-            },
-            {
-              "from": "secure_Defender",
-              "to": "secure_network",
-              "action": "restore_Defender"
-            },
-            {
-              "from": "secure_Defender",
-              "to": "secure_network",
-              "action": "remove_Defender"
-            },
-            {
-              "from": "secure_Op_Host0",
-              "to": "secure_network",
-              "action": "restore_Op_Host0"
-            },
-            {
-              "from": "secure_Op_Host0",
-              "to": "secure_network",
-              "action": "remove_Op_Host0"
-            },
-            {
-              "from": "secure_Op_Host1",
-              "to": "secure_network",
-              "action": "restore_Op_Host1"
-            },
-            {
-              "from": "secure_Op_Host1",
-              "to": "secure_network",
-              "action": "remove_Op_Host1"
-            },
-            {
-              "from": "secure_Op_Host2",
-              "to": "secure_network",
-              "action": "restore_Op_Host2"
-            },
-            {
-              "from": "secure_Op_Host2",
-              "to": "secure_network",
-              "action": "remove_Op_Host2"
-            },
-            {
-              "from": "secure_Op_Server0",
-              "to": "secure_network",
-              "action": "restore_Op_Server0"
-            },
-            {
-              "from": "secure_Op_Server0",
-              "to": "secure_network",
-              "action": "remove_Op_Server0"
-            }
-          ],
-          "fallback": "monitor"
+          "transitions": [],
+          "fallback": "monitor",
+          "elide_constant_goal": true
         }
       }
     }

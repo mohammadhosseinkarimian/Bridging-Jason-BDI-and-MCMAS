@@ -45,19 +45,19 @@ Files: `input/raw-test.ispl`, `input/jason_mapping.json`, and `generated/raw-tes
 
 ### `Cage1-small/`
 
-The smallest cyber-defence example, with `User0` and `Op_Server0`. The baseline contains Blue, Red, and Environment. Its recorded Blue compromise status is separate from the actual server access. The Environment can report or miss attacker activity. The mapping selects a small part of Blue's Jason program and retains a recovery action through `pass_through`, so the output should be interpreted as a partially guided policy.
+The smallest cyber-defence example, with `User0` and `Op_Server0`. Its original baseline is unchanged: Red exploits, escalates, impacts the service, and retries after losing access. Recorded compromise remains separate from actual access, and Environment can report or miss activity. The reactive mapping retains server restoration as a recovery choice. Reachable states decrease from 20 to 12, but BDD memory is unchanged and runtime does not improve reliably.
 
 Files: `input/cage1_baseline.ispl`, `input/jason_mapping.json`, and `generated/cage1_jason_guided.ispl`.
 
 ### `Cage1-simple/`
 
-A generated CAGE network with a larger set of host types than `Cage1-small`, but still convenient for inspecting the ISPL code. Its mapping contains grounded host-specific actions and compromise predicates. The input and output models are compared under the same attacker and Environment rules.
+A five-host network. Its directed Red policy attacks `Enterprise0` and then `Op_Server0`. Blue's reactive mapping selects those two targets. The input and output preserve identical attacker and Environment blocks. Reachable states decrease from 3,903 to 75.
 
 Files: `input/cage1_baseline.ispl`, `input/jason_mapping.json`, and `generated/cage1_jason_guided.ispl`.
 
 ### `Cage1-complete/`
 
-The larger generated CAGE network. Its mapping covers user, enterprise, operational, defender, and server hosts, with corresponding Blue actions and observations. It demonstrates how the baseline generator and grounding configuration scale to more hosts. A generated file is **not** evidence that the complete model has been successfully model-checked within a particular resource budget; measured results still require MCMAS output.
+The 13-host network: five users, three enterprises, three operational hosts, Defender, and the server. Red follows the directed route through `Enterprise2` to `Op_Server0`; the other hosts remain in the physical model. Blue's mapping focuses on the two attacked targets. Both models have been checked with MCMAS 1.3.0, including deadlock freedom and the five unchanged properties. Reachable states decrease from 32,559 to 75. Full timing, memory, logs, and limitations are in [`../docs/cage1_results.md`](../docs/cage1_results.md).
 
 Files: `input/cage1_baseline.ispl`, `input/jason_mapping.json`, and `generated/cage1_jason_guided.ispl`.
 
@@ -65,7 +65,7 @@ Files: `input/cage1_baseline.ispl`, `input/jason_mapping.json`, and `generated/c
 
 Every scenario has its own mapping because the same Jason source can be translated against different ISPL variables, action names, and host or location sets. The mapping specifies the source and output files, names the translated agent roles, chooses the Jason entry goal, defines the goal-control variable, and connects Jason terms to conditions and actions that exist in the baseline.
 
-For example, the CAGE mappings use `roles.blue` to connect `agents/blue_agent.asl` to `Agent Blue`, while the three-area rescue mapping uses `roles.role_a` and `roles.role_b` for FireBrigade and AmbulanceTeam. The name `role_a` is a **configuration identifier**, not an MCMAS agent type. It lets the program find the correct role-specific settings.
+For example, the CAGE mappings use `roles.blue` to connect `agents/blue_agent_reactive.asl` to `Agent Blue`, while the three-area rescue mapping uses `roles.role_a` and `roles.role_b` for FireBrigade and AmbulanceTeam. The name `role_a` is a **configuration identifier**, not an MCMAS agent type. It lets the program find the correct role-specific settings.
 
 The mapping also controls **how much of the Jason policy is represented**. `plan.actions` and `plan.predicates` describe directly translated decisions. `pass_through` preserves configured baseline actions even if they are not selected by a translated plan. `fallback` gives an action for otherwise unmatched states. `plan.relation` selects the relation-aware RCRS path. Consequently, two mappings pointing at the same `.asl` file can produce different guided decision models.
 

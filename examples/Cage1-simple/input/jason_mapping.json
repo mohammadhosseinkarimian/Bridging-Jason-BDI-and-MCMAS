@@ -23,22 +23,18 @@
     },
     "roles": {
       "blue": {
-        "program": "../../../agents/blue_agent.asl",
+        "program": "../../../agents/blue_agent_reactive.asl",
         "ispl_agent": "Blue",
         "entry_goal": "observe_network",
         "goal_var": "blue_goal_level",
         "plan": {
           "ground": {
             "variable": "Host",
-            "members": [
-              "Enterprise0",
-              "Op_Host0",
-              "Op_Server0"
-            ],
             "values": [
               "no",
               "user",
-              "privileged"
+              "privileged",
+              "Op_Server0"
             ],
             "signatures": {
               "secure": [
@@ -57,7 +53,10 @@
               "remove": [
                 0
               ]
-            }
+            },
+            "members": [
+              "Enterprise0"
+            ]
           },
           "actions": {
             "monitor": "monitor",
@@ -194,39 +193,9 @@
             "blue_wait",
             "restore_Op_Server0"
           ],
-          "transitions": [
-            {
-              "from": "secure_Enterprise0",
-              "to": "secure_network",
-              "action": "restore_Enterprise0"
-            },
-            {
-              "from": "secure_Enterprise0",
-              "to": "secure_network",
-              "action": "remove_Enterprise0"
-            },
-            {
-              "from": "secure_Op_Host0",
-              "to": "secure_network",
-              "action": "restore_Op_Host0"
-            },
-            {
-              "from": "secure_Op_Host0",
-              "to": "secure_network",
-              "action": "remove_Op_Host0"
-            },
-            {
-              "from": "secure_Op_Server0",
-              "to": "secure_network",
-              "action": "restore_Op_Server0"
-            },
-            {
-              "from": "secure_Op_Server0",
-              "to": "secure_network",
-              "action": "remove_Op_Server0"
-            }
-          ],
-          "fallback": "monitor"
+          "transitions": [],
+          "fallback": "monitor",
+          "elide_constant_goal": true
         }
       }
     }

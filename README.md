@@ -13,7 +13,8 @@ A baseline ISPL model specifies the environment, action availability, physical t
 ├── agents/
 │   ├── fire_brigade.asl
 │   ├── ambulance_team.asl
-│   └── blue_agent.asl
+│   ├── blue_agent.asl
+│   └── blue_agent_reactive.asl
 ├── src/
 │   ├── jason_guided.py
 │   ├── formatting.py
@@ -26,6 +27,7 @@ A baseline ISPL model specifies the environment, action availability, physical t
 │   ├── exact95/
 │   ├── Cage1-simple/
 │   ├── Cage1-complete/
+│   ├── Cage1-small/
 │   └── <generated RCRS examples>/
 └── tools/
     ├── cage1/
@@ -131,6 +133,12 @@ python3 src/jason_guided.py --config examples/Cage1-complete/input/jason_mapping
 
 The CAGE abstraction includes Blue and Red action models, a separate hidden host-compromise state, Red knowledge, Blue observations, and nondeterministic Environment outcomes. The exact variables, action inventory, and translation scope depend on the chosen scenario and mapping.
 
+The generated baselines use a directed B-line attacker: discover and compromise the last numbered enterprise host, then discover and attack `Op_Server0`. Red retries after failed access instead of retaining a stale root session indefinitely. The two-host `Cage1-small` example already follows the direct server attack sequence and keeps its baseline unchanged.
+
+Current CAGE mappings select `agents/blue_agent_reactive.asl`, a reactive version of the original security sweep using the same report and remediation vocabulary. It responds to server reports before gateway reports in one defensive decision, without an extra turn just to enter a remediation subgoal. The mapping keeps server restoration as a recovery choice and selects only hosts on the directed attack route. Its sole active goal is constant, so `plan.elide_constant_goal` avoids allocating unnecessary task-control state. The original `blue_agent.asl` remains available.
+
+Measured CAGE states are **20 -> 12**, **3,903 -> 75**, and **32,559 -> 75** for small, simple, and complete. See [the CAGE results and limitations](docs/cage1_results.md) for repeated timing, BDD memory, property results, and reproduction commands. Strict reductions in states, memory, and runtime are not achieved for the two-host example.
+
 ## What the translator does
 
 The configurable translation follows the approach used in the paper:
@@ -174,6 +182,13 @@ python3 -m unittest discover -s src -p 'test_*.py'
 ```
 
 For regression testing, regenerate unchanged examples and compare the output ISPL files against known snapshots. For generated scenarios, test both input boundaries and translator output, then use MCMAS to validate syntax and strategic properties. Translation success alone is not a substitute for model checking.
+
+The suite covers all seven checked-in guided models, generator reproducibility, directed-attacker constraints, preservation of the unselected model blocks, and the safety conditions for constant-goal elimination. The [ASL cleanup record](docs/asl_cleanup_verification.json) confirms exact regeneration equivalence before any CAGE changes. Reproduce the CAGE measurements and all-example model checks in Linux/WSL with:
+
+```bash
+python3 tools/cage1/benchmark.py --mcmas mcmas --repeats 11
+python3 tools/cage1/validate.py --mcmas mcmas
+```
 
 ## Citation
 

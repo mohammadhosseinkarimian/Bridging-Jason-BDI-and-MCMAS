@@ -137,14 +137,13 @@
       "turn = blue_turn : {env_idle};",
       "turn = red_turn : {env_real_seen, env_real_missed, env_decoy};"
     ],
-    "red_common": "Environment.turn = red_turn : {Sleep, DiscoverRemoteSystems_User, DiscoverRemoteSystems_Enterprise};",
-    "red_operational": "Environment.turn = red_turn and Environment.red_{gateway} = root : {DiscoverRemoteSystems_Operational};",
-    "red_host": [
-      "Environment.turn = red_turn and Environment.red_{host} = known : {DiscoverNetworkServices_{host}};",
-      "Environment.turn = red_turn and Environment.red_{host} = service : {ExploitRemoteService_{host}};",
-      "Environment.turn = red_turn and Environment.red_{host} = user : {PrivilegeEscalate_{host}};"
-    ],
-    "red_impact": "Environment.turn = red_turn and Environment.red_{server} = root : {Impact_{server}};"
+    "red_impact": "Environment.turn = red_turn and Environment.red_{server} = root : {Impact_{server}};",
+    "red_directed": [
+      "Environment.turn = red_turn and {phase_guard} and Environment.red_{host} = unknown : {DiscoverRemoteSystems_{discovery}};",
+      "Environment.turn = red_turn and {phase_guard} and Environment.red_{host} = known : {DiscoverNetworkServices_{host}};",
+      "Environment.turn = red_turn and {phase_guard} and Environment.red_{host} = service : {ExploitRemoteService_{host}};",
+      "Environment.turn = red_turn and {phase_guard} and Environment.red_{host} = user : {PrivilegeEscalate_{host}};"
+    ]
   },
   "evolution": {
     "turn": [
@@ -174,7 +173,9 @@
     ],
     "impact": [
       "ot_service_running = true if turn = blue_turn and Blue.Action = restore_{server};",
-      "ot_service_running = false if turn = red_turn and Red.Action = Impact_{server} and red_{server} = root and actual_{server} = root;"
+      "ot_service_running = false if turn = red_turn and Red.Action = Impact_{server} and red_{server} = root and actual_{server} = root;",
+      "red_{server} = service if turn = red_turn and Red.Action = Impact_{server} and red_{server} = root and actual_{server} = clean;",
+      "red_{gateway} = service if turn = red_turn and Red.Action = DiscoverRemoteSystems_Operational and red_{gateway} = root and actual_{gateway} = clean;"
     ],
     "observe_blue": [
       "compromised_{host} = no if turn = blue_turn and Blue.Action = restore_{host};",
@@ -274,7 +275,30 @@
         "Enterprise0",
         "Enterprise1",
         "Enterprise2"
+      ],
+      "elide_constant_goal": true,
+      "selected_hosts": [
+        "{server}",
+        "{gateway}"
+      ],
+      "fixed_hosts": [
+        "{server}"
       ]
     }
+  },
+  "attacker": {
+    "policy": "b_line",
+    "route": [
+      {
+        "target": "{gateway}",
+        "discovery": "Enterprise",
+        "guard": "!(Environment.red_{gateway} = root)"
+      },
+      {
+        "target": "{server}",
+        "discovery": "Operational",
+        "guard": "Environment.red_{gateway} = root"
+      }
+    ]
   }
 }

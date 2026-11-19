@@ -112,6 +112,8 @@ Agent Environment
 
         ot_service_running = true if turn = blue_turn and Blue.Action = restore_Op_Server0;
         ot_service_running = false if turn = red_turn and Red.Action = Impact_Op_Server0 and red_Op_Server0 = root and actual_Op_Server0 = root;
+        red_Op_Server0 = service if turn = red_turn and Red.Action = Impact_Op_Server0 and red_Op_Server0 = root and actual_Op_Server0 = clean;
+        red_Enterprise0 = service if turn = red_turn and Red.Action = DiscoverRemoteSystems_Operational and red_Enterprise0 = root and actual_Enterprise0 = clean;
 
         compromised_User0 = no if turn = blue_turn and Blue.Action = analyse_User0 and (actual_User0 = clean or actual_User0 = decoy);
         compromised_User0 = user if turn = blue_turn and Blue.Action = analyse_User0 and actual_User0 = user;
@@ -200,7 +202,6 @@ Agent Blue
     Lobsvars = {user_decoy, enterprise_decoy, operational_decoy, activity_User0, activity_Enterprise0, activity_Defender, activity_Op_Host0, activity_Op_Server0, compromised_User0, compromised_Enterprise0, compromised_Defender, compromised_Op_Host0, compromised_Op_Server0};
     Vars:
         dummy : boolean;
-        blue_goal_level: {secure_network, secure_Op_Server0, secure_Enterprise0, secure_Op_Host0, done};
     end Vars
 
     Actions = {
@@ -211,13 +212,11 @@ Agent Blue
         misinform_Op_Server0, restore_Op_Server0, blue_wait
     };
     Protocol:
-        blue_goal_level = secure_network and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no and Environment.compromised_Op_Host0 = no and Environment.turn = blue_turn: {monitor};
-        blue_goal_level = secure_Op_Server0 and Environment.compromised_Op_Server0 = privileged and Environment.turn = blue_turn: {restore_Op_Server0};
-        blue_goal_level = secure_Op_Server0 and Environment.compromised_Op_Server0 = user and !(Environment.compromised_Op_Server0 = privileged) and Environment.turn = blue_turn: {remove_Op_Server0};
-        blue_goal_level = secure_Enterprise0 and Environment.compromised_Enterprise0 = privileged and Environment.turn = blue_turn: {restore_Enterprise0};
-        blue_goal_level = secure_Enterprise0 and Environment.compromised_Enterprise0 = user and !(Environment.compromised_Enterprise0 = privileged) and Environment.turn = blue_turn: {remove_Enterprise0};
-        blue_goal_level = secure_Op_Host0 and Environment.compromised_Op_Host0 = privileged and Environment.turn = blue_turn: {restore_Op_Host0};
-        blue_goal_level = secure_Op_Host0 and Environment.compromised_Op_Host0 = user and !(Environment.compromised_Op_Host0 = privileged) and Environment.turn = blue_turn: {remove_Op_Host0};
+        Environment.compromised_Op_Server0 = privileged and Environment.turn = blue_turn: {restore_Op_Server0};
+        Environment.compromised_Op_Server0 = user and !(Environment.compromised_Op_Server0 = privileged) and Environment.turn = blue_turn: {remove_Op_Server0};
+        Environment.compromised_Enterprise0 = privileged and !(Environment.compromised_Op_Server0 = privileged) and !(Environment.compromised_Op_Server0 = user) and Environment.turn = blue_turn: {restore_Enterprise0};
+        Environment.compromised_Enterprise0 = user and !(Environment.compromised_Op_Server0 = privileged) and !(Environment.compromised_Op_Server0 = user) and !(Environment.compromised_Enterprise0 = privileged) and Environment.turn = blue_turn: {remove_Enterprise0};
+        !(Environment.compromised_Op_Server0 = privileged) and !(Environment.compromised_Op_Server0 = user) and !(Environment.compromised_Enterprise0 = privileged) and !(Environment.compromised_Enterprise0 = user) and Environment.turn = blue_turn: {monitor};
         Environment.turn = red_turn: {blue_wait};
         Environment.turn = blue_turn: {restore_Op_Server0};
         Other: {monitor};
@@ -225,18 +224,6 @@ Agent Blue
     Evolution:
         dummy = dummy if dummy = true;
         dummy = dummy if dummy = false;
-        blue_goal_level = secure_Op_Server0 if blue_goal_level = secure_network and !(Environment.compromised_Op_Server0 = no);
-        blue_goal_level = secure_Enterprise0 if blue_goal_level = secure_network and !(Environment.compromised_Enterprise0 = no) and Environment.compromised_Op_Server0 = no;
-        blue_goal_level = secure_Op_Host0 if blue_goal_level = secure_network and !(Environment.compromised_Op_Host0 = no) and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise0 = no;
-        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise0 and !(Environment.compromised_Enterprise0 = privileged) and !(Environment.compromised_Enterprise0 = user);
-        blue_goal_level = secure_network if blue_goal_level = secure_Op_Host0 and !(Environment.compromised_Op_Host0 = privileged) and !(Environment.compromised_Op_Host0 = user);
-        blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and !(Environment.compromised_Op_Server0 = privileged) and !(Environment.compromised_Op_Server0 = user);
-        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise0 and Blue.Action = restore_Enterprise0;
-        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise0 and Blue.Action = remove_Enterprise0;
-        blue_goal_level = secure_network if blue_goal_level = secure_Op_Host0 and Blue.Action = restore_Op_Host0;
-        blue_goal_level = secure_network if blue_goal_level = secure_Op_Host0 and Blue.Action = remove_Op_Host0;
-        blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and Blue.Action = restore_Op_Server0;
-        blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and Blue.Action = remove_Op_Server0;
     end Evolution
 end Agent
 
@@ -256,23 +243,14 @@ Agent Red
     };
     Protocol:
         Environment.turn = blue_turn : {RedWait};
-        Environment.turn = red_turn : {Sleep, DiscoverRemoteSystems_User, DiscoverRemoteSystems_Enterprise};
-        Environment.turn = red_turn and Environment.red_Enterprise0 = root : {DiscoverRemoteSystems_Operational};
-        Environment.turn = red_turn and Environment.red_User0 = known : {DiscoverNetworkServices_User0};
-        Environment.turn = red_turn and Environment.red_User0 = service : {ExploitRemoteService_User0};
-        Environment.turn = red_turn and Environment.red_User0 = user : {PrivilegeEscalate_User0};
-        Environment.turn = red_turn and Environment.red_Enterprise0 = known : {DiscoverNetworkServices_Enterprise0};
-        Environment.turn = red_turn and Environment.red_Enterprise0 = service : {ExploitRemoteService_Enterprise0};
-        Environment.turn = red_turn and Environment.red_Enterprise0 = user : {PrivilegeEscalate_Enterprise0};
-        Environment.turn = red_turn and Environment.red_Defender = known : {DiscoverNetworkServices_Defender};
-        Environment.turn = red_turn and Environment.red_Defender = service : {ExploitRemoteService_Defender};
-        Environment.turn = red_turn and Environment.red_Defender = user : {PrivilegeEscalate_Defender};
-        Environment.turn = red_turn and Environment.red_Op_Host0 = known : {DiscoverNetworkServices_Op_Host0};
-        Environment.turn = red_turn and Environment.red_Op_Host0 = service : {ExploitRemoteService_Op_Host0};
-        Environment.turn = red_turn and Environment.red_Op_Host0 = user : {PrivilegeEscalate_Op_Host0};
-        Environment.turn = red_turn and Environment.red_Op_Server0 = known : {DiscoverNetworkServices_Op_Server0};
-        Environment.turn = red_turn and Environment.red_Op_Server0 = service : {ExploitRemoteService_Op_Server0};
-        Environment.turn = red_turn and Environment.red_Op_Server0 = user : {PrivilegeEscalate_Op_Server0};
+        Environment.turn = red_turn and !(Environment.red_Enterprise0 = root) and Environment.red_Enterprise0 = unknown : {DiscoverRemoteSystems_Enterprise};
+        Environment.turn = red_turn and !(Environment.red_Enterprise0 = root) and Environment.red_Enterprise0 = known : {DiscoverNetworkServices_Enterprise0};
+        Environment.turn = red_turn and !(Environment.red_Enterprise0 = root) and Environment.red_Enterprise0 = service : {ExploitRemoteService_Enterprise0};
+        Environment.turn = red_turn and !(Environment.red_Enterprise0 = root) and Environment.red_Enterprise0 = user : {PrivilegeEscalate_Enterprise0};
+        Environment.turn = red_turn and Environment.red_Enterprise0 = root and Environment.red_Op_Server0 = unknown : {DiscoverRemoteSystems_Operational};
+        Environment.turn = red_turn and Environment.red_Enterprise0 = root and Environment.red_Op_Server0 = known : {DiscoverNetworkServices_Op_Server0};
+        Environment.turn = red_turn and Environment.red_Enterprise0 = root and Environment.red_Op_Server0 = service : {ExploitRemoteService_Op_Server0};
+        Environment.turn = red_turn and Environment.red_Enterprise0 = root and Environment.red_Op_Server0 = user : {PrivilegeEscalate_Op_Server0};
         Environment.turn = red_turn and Environment.red_Op_Server0 = root : {Impact_Op_Server0};
     end Protocol
     Evolution:
@@ -314,7 +292,6 @@ InitStates
     Environment.red_Op_Host0 = unknown and
     Environment.actual_Op_Server0 = clean and
     Environment.red_Op_Server0 = unknown and
-    Blue.blue_goal_level = secure_network and
     Blue.dummy = false and
     Red.dummy = false;
 end InitStates
