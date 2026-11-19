@@ -17,7 +17,7 @@ The JSON mapping provides those decisions without hard-coding a separate transla
   "model": {"environment_agent": "Environment"},
   "jason": {
     "vocabulary": {"actions": {}, "predicates": {}},
-    "roles": {"blue": {"program": "../../../agents/blue_agent_reactive.asl"}}
+    "roles": {"blue": {"program": "../../../agents/blue_agent.asl"}}
   }
 }
 ```
@@ -62,15 +62,15 @@ Here is a reduced version of the current `Cage1-small` mapping:
   "jason": {
     "roles": {
       "blue": {
-        "program": "../../../agents/blue_agent_reactive.asl",
+        "program": "../../../agents/blue_agent.asl",
         "ispl_agent": "Blue",
         "entry_goal": "observe_network",
         "goal_var": "blue_goal_level",
         "plan": {
           "ground": {
             "variable": "Host",
-            "members": [],
-            "values": ["no", "user", "privileged", "Op_Server0"],
+            "members": ["User0", "Op_Server0"],
+            "values": ["no", "user", "privileged"],
             "signatures": {
               "secure": [0],
               "host_state": [0, 2],
@@ -90,8 +90,9 @@ Here is a reduced version of the current `Cage1-small` mapping:
           },
           "pass_through": ["blue_wait", "restore_Op_Server0"],
           "fallback": "monitor",
-          "transitions": [],
-          "elide_constant_goal": true
+          "transitions": [
+            {"from": "secure_Op_Server0", "to": "secure_network", "action": "restore_Op_Server0"}
+          ]
         }
       }
     }
@@ -103,7 +104,7 @@ This example shows the meaning of the keys but omits some mappings and transitio
 
 ### `plan.ground`
 
-The Jason policy uses a parameter such as `Host`. `ground.variable` tells the code which variable to substitute, and `members` lists the concrete values to expand in parameterized plans. The current reactive policy already has literal server-response plans, so `Op_Server0` is included in `values` for normalization rather than duplicated through `members`. `Cage1-small` has no additional target and uses an empty member list; simple and complete expand their enterprise gateway. The translator normalizes configured predicates and actions into names it can match.
+The Jason policy uses a parameter such as `Host`. `ground.variable` tells the code which variable to substitute, and `members` lists the concrete values to use in the selected model. In `Cage1-small`, this is `User0` and `Op_Server0`. The translator expands relevant `+!` plans and normalizes configured predicates and actions into names it can match.
 
 `signatures` maps a predicate or action name to **argument indexes counted from zero**. For example, `host_state: [0,2]` means the host argument and the reported compromise argument, while `restore: [0]` means the host argument only. The generated normalized names resemble `host_state_Op_Server0_privileged` and `restore_Op_Server0`. `values` lists additional non-host values that are allowed while normalizing arguments, here `no`, `user`, and `privileged`.
 
@@ -123,9 +124,7 @@ becomes `Environment.compromised_Op_Server0 = privileged`. The formatter also su
 
 ### `plan.transitions`, `fallback`, and pass-through choices
 
-A `transitions` entry gives a task-stage update. Its `from` and `to` are values of the new goal-control variable. Its optional `action` requires a matching agent action, and `when` adds a condition if supplied. For a hierarchical mapping, restoring a server can move control from `secure_Op_Server0` back to `secure_network`. The current reactive CAGE mapping has one active goal and no task transitions.
-
-`elide_constant_goal: true` is an optional encoding optimization for this last case. It requires exactly one active goal plus an unreachable terminal `done`, no generated control transitions, and no pre-existing baseline variable with the configured goal name. The formatter substitutes the constant goal guard and omits its declaration and initialization. A mapping with real task progress is rejected instead of silently losing its control state. Existing mappings without this option keep their original output.
+A `transitions` entry gives a task-stage update. Its `from` and `to` are values of the new goal-control variable. Its optional `action` requires a matching agent action, and `when` adds a condition if supplied. For example, after `restore_Op_Server0`, Blue can move from `secure_Op_Server0` back to `secure_network`.
 
 `fallback` is an ISPL action emitted as `Other: {action}` when building the guided protocol. `pass_through` copies the baseline guards for specific actions, regardless of whether a translated plan selected them. `pass_through_patterns` does the same for baseline actions matching a regular expression. `ignore_actions` excludes specified source actions when looking for mapped primitive actions. `extra_actions` can add actions to the generated agent declaration in the ordinary path, and should only be used when intentionally extending that declaration.
 

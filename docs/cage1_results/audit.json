@@ -1,0 +1,65 @@
+{
+  "unit_tests": {
+    "count": 10,
+    "passed": true
+  },
+  "profiles": {
+    "default": {
+      "Cage1-small": {
+        "reachable_states": true,
+        "bdd_bytes": false,
+        "median_wall_seconds": false
+      },
+      "Cage1-simple": {
+        "reachable_states": true,
+        "bdd_bytes": true,
+        "median_wall_seconds": false
+      },
+      "Cage1-complete": {
+        "reachable_states": true,
+        "bdd_bytes": true,
+        "median_wall_seconds": false
+      }
+    },
+    "ordered": {
+      "Cage1-small": {
+        "reachable_states": true,
+        "bdd_bytes": false,
+        "median_wall_seconds": true
+      },
+      "Cage1-simple": {
+        "reachable_states": true,
+        "bdd_bytes": true,
+        "median_wall_seconds": true
+      },
+      "Cage1-complete": {
+        "reachable_states": true,
+        "bdd_bytes": true,
+        "median_wall_seconds": true
+      }
+    }
+  },
+  "original_sources": {
+    "src/formatting.py": {
+      "source_text_identical": true,
+      "byte_identical_to_git_blob": true,
+      "sha256": "f36b0b5010a40b2ee6ba0a0bdecc7a3118eeb2fae1f887e980aba727cf8567de"
+    },
+    "src/jason_guided.py": {
+      "source_text_identical": true,
+      "byte_identical_to_git_blob": true,
+      "sha256": "d98e15fb6569d0e3d8795a67fea056cc85ff89ab0792ea5e01d647e9319b0d15"
+    },
+    "agents/blue_agent.asl": {
+      "source_text_identical": true,
+      "byte_identical_to_git_blob": false,
+      "sha256": "81ffb881d6f51cda0139f61a55de9001444f419069ffcd0053400c7ec8675879"
+    }
+  },
+  "rescue_directories_byte_identical": true,
+  "cage_properties_preserved": true,
+  "cage_deadlock_free": true,
+  "goal_stage_reachability_and_return_verified": true,
+  "paper_original_goal_method_section_preserved": true,
+  "paper_goal_method_sha256": "3877166bc1f997f513f26e6c0ea77a46be2d24cbcc4c8e74b2699a220265bdb8"
+}

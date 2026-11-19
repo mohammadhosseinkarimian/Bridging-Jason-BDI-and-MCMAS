@@ -1,0 +1,290 @@
+\documentclass[runningheads]{llncs}
+
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext}
+\usepackage[varvw]{newtxmath}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{float}
+
+
+\begin{document}
+
+\title{BDI-Guided Strategic Verification of Autonomous Cyber Defence}
+
+\titlerunning{BDI-Guided Verification of Cyber Defence}
+
+\author{MohammadHossein Karimian\inst{1} \and Toyin Adams\inst{1} \and Babak Esfandiari\inst{1} }
+
+\authorrunning{M.H. Karimian et al.}
+
+\institute{
+Carleton University, Ottawa, Canada
+}
+
+\maketitle
+
+\begin{abstract}
+Autonomous cyber-defence agents must respond to attacks without knowing how the attacker or the environment will behave next. We connect a defensive policy written in Jason BDI with Alternating-time Temporal Logic (ATL) verification of finite models based on CAGE Challenge 1. A baseline MCMAS model represents the actions of Blue and Red, nondeterministic environmental outcomes, and the distinction between actual compromise and the information recorded for the agents. Selected Jason plans are then translated into restrictions on Blue's available actions, while the attacker and environmental dynamics are preserved. We compare the baseline and Jason-guided models to examine which strategic abilities remain under the translated defensive policy. In the small two-host example, the reported number of reachable states decreases from 20 to 14. In the five-host and thirteen-host configurations, the counts decrease from 3,903 and 32,559, respectively, to 97 states in each Jason-guided model. The approach connects an implemented BDI decision structure with strategic verification without translating the complete Jason execution semantics.
+
+\keywords{Autonomous Cyber Defence \and Jason BDI \and MCMAS \and ATL \and CAGE Challenge 1 \and Strategy Restriction}
+\end{abstract}
+
+\section{Introduction}
+\label{sec:introduction}
+\noindent
+Autonomous Cyber Defence (ACD) concerns agents that detect and respond to attacks with limited human intervention. In CAGE Challenge 1, a defensive Blue agent protects network services while an attacking Red agent discovers hosts, exploits services, and attempts to disrupt an operational server. The challenge is based on the Cyber Operations Research Gym (CybORG) \cite{standen2021cyborg,cage2021challenge}. Blue chooses its response from the information available to it, without controlling Red's next action or the outcome of every attack.
+
+A successful simulation episode does not show that a defensive policy will always protect the service. Blue might restore a compromised host in one execution but make a different choice in another. Conversely, the network model might allow a successful defensive strategy that the implemented agent never selects. We use Alternating-time Temporal Logic (ATL) \cite{alur2002atl} to ask questions such as: whether Blue or Red can guarantee an objective despite the other agents' choices. MCMAS \cite{lomuscio2017mcmas} checks such properties using models that state which actions each agent can take and how those actions affect the environment.
+
+
+The Belief-Desire-Intention (BDI) approach gives another view of the same decision problem. Jason \cite{bordini2007jason} represents an agent's beliefs, goals, plans, and plan priorities. A previous study \cite{RCRSPreprint} developed a framework for integrating selected Jason plans with ATL model checking in MCMAS, using RoboCup Rescue Simulation (RCRS) as its application domain. In this work, we apply this approach to autonomous cyber defence by using selected plans from a Blue Jason program to restrict the choices available to Blue in MCMAS. We start from a baseline model of the network and generate a Jason-guided model. The latter preserves the modeled attacker actions and environmental outcomes, while restricting Blue's decisions according to the mapped Jason plans. We compare the resulting models in terms of reachable states and ATL strategic abilities.
+
+
+Our contribution has two parts. First, we construct finite CAGE Challenge 1 models in MCMAS, including a configurable generator for different numbers of hosts. Second, we map selected Jason plans to MCMAS protocols and task-control rules so that the defensive decisions can be checked using ATL. A small two-host example makes the translation and verification questions explicit. 
+\section{Background and Related Work}
+
+\subsection{ATL and MCMAS}
+
+ATL \cite{alur2002atl} asks whether agents or coalitions have strategies that guarantee a temporal objective independently of the decisions of agents outside the coalition. For example, $\langle\!\langle\mathit{blue\_team}\rangle\!\rangle \mathbf{G}\,\mathit{OTService\_running}$ asks whether Blue can keep the operational service running despite the attacker and Environment. MCMAS \cite{lomuscio2017mcmas} checks such properties over models containing local variables, actions, protocols, evolution rules, and atomic propositions. Protocols specify available choices; evolution rules specify the effects of joint actions. We compare the same properties in two models that differ in Blue's decision protocol. The reported checks use perfect-information ATL semantics rather than strategies required to be uniform over states indistinguishable to Blue.
+
+\subsection{CAGE Challenge and Autonomous Cyber Defence}
+
+The CybORG environment was introduced to develop and evaluate autonomous cyber agents \cite{standen2021cyborg}. CAGE Challenge 1 asks Blue to protect a network while Red moves from an initial foothold towards the operational server. The official challenge also includes Green user activity, and evaluates Blue using cumulative rewards that account for compromise, service disruption, and the cost of restoration \cite{cage2021challenge}. Our model is an abstraction of selected interactions, not a complete encoding of the simulator: it contains Blue, Red, and Environment, but no Green agent or reward function.
+
+Kiely et al. \cite{kiely2023acd} examine agents submitted to CAGE Challenge 2 and compare single-agent reinforcement learning, hierarchical policies, ensembles, and other approaches. Hammar et al. \cite{hammar2024cage} construct a causal model of the same challenge and use online tree search to compute defensive decisions under partial observability. These studies focus on selecting effective policies; our work instead evaluates the strategic abilities permitted by a mapped Jason defensive policy in MCMAS.
+
+Formal verification has also been applied directly to CAGE-based cyber defence. Meziane et al. \cite{meziane2025formal} build an abstraction of CAGE Challenge 4 for probabilistic model checking in PRISM. Holz et al. \cite{holz2026formal} study dependability requirements for learned defenders in a CAGE Challenge 2 setting through probabilistic verification, while their later work examines the costs of more realistic formal models and introduces dynamic model switching \cite{holz2026switch}. These methods analyse probabilistic or policy-induced models. We instead retain attacker and defender choices in an MCMAS model and ask ATL questions about strategic abilities. We also translate a Jason policy into CAGE Challenge 1 protocols for ATL verification.
+
+Outside CAGE, Sheyner et al. \cite{sheyner2002attackgraphs} use model checking to generate network attack graphs from security counterexamples. Al Ghazo et al. \cite{alghazo2020a2g2v} generate and visualise attacks in computer and SCADA networks. Belardinelli et al. \cite{belardinelli2025strategic} use ATL to study strategic abilities in information-sharing systems, including security-protocol attacks under imperfect information. These works show how formal models can examine attack possibilities or strategic security properties, but do not incorporate the selected decisions of a Jason defender as protocol restrictions.
+
+\subsection{BDI Agents and Verification}
+
+The Belief-Desire-Intention paradigm \cite{rao1995bdi} represents an agent through information about the world, objectives, and committed plans. AgentSpeak \cite{rao1996agentspeak} expresses plans as a triggering event, a context, and a body of actions or subgoals. Jason \cite{bordini2007jason} implements this approach; plan applicability depends on the current beliefs and goals, while plan selection can reflect a chosen ordering or priority mechanism.
+
+BDI has also been used in cybersecurity. Chu and Lisitsa \cite{chu2019bdi} develop a BDI model for automated penetration testing in which testing actions are organised as plans and executed in a changing environment. The focus there is offensive testing rather than verifying a defender's choices. For verification of BDI programs, Bordini et al. \cite{bordini2003modelchecking,bordini2006verifying} translate AgentSpeak programs to model-checkable representations, and Dennis et al. \cite{dennis2012modelchecking} develop verification support for agent programming languages. Archibald et al. \cite{archibald2025uncertainty} examine uncertain beliefs and action outcomes in BDI verification, using probabilistic models. Dastani and Jamroga \cite{dastani2010strategies} and Yadav and Sardi\~na \cite{yadav2012reasoning} relate agent programs to strategic reasoning. Unlike approaches that encode complete agent execution semantics or define a new ATL-like logic, we use selected Jason plans to restrict an existing MCMAS model and retain standard ATL verification.
+
+
+
+\section{CAGE Challenge 1 Models}
+
+\subsection{Baseline Model and Running Example}
+
+The baseline model $M_B$ is written in MCMAS ISPL independently of the Jason policy. Its agents are \texttt{Blue}, \texttt{Red}, and \texttt{Environment}. Blue chooses defensive actions; Red selects attacks; the Environment stores the network state, alternates the turns, and represents outcomes not controlled by either agent. Red waits on Blue turns, and Blue waits on Red turns. The small two-host model starts with Red having root access to \texttt{User0} and with \texttt{Op\_Server0} clean and the operational service running. Red can exploit the server, escalate privileges, and perform an Impact action; Blue can monitor, remove a user-level compromise, or restore the server.
+
+The model keeps Red's actual access separate from the report used by Blue. For example, the Environment declares
+
+\begin{verbatim}
+actual_Op_Server0 : {clean, user, root};
+compromised_Op_Server0 : {no, user, privileged};
+\end{verbatim}
+
+The first variable records the actual compromise; the second records the corresponding information for Blue. The baseline Blue protocol permits the following actions on its turn:
+
+\begin{verbatim}
+Environment.turn = blue_turn:
+    {monitor, remove_Op_Server0,
+     restore_Op_Server0};
+\end{verbatim}
+
+This is the set of modeled choices, not a sequence prescribed by the Jason plans. An Environment evolution rule determines the actual effect of removal or restoration after Blue selects an action.
+
+\subsection{Environmental Outcomes and Recorded Observations}
+
+During Blue's turn the Environment only performs \texttt{env\_idle}. During Red's turn it can choose whether an attack is reported:
+
+\begin{verbatim}
+turn = blue_turn: {env_idle};
+turn = red_turn: {env_seen, env_missed};
+\end{verbatim}
+
+For example, exploiting \texttt{Op\_Server0} can set \texttt{actual\_Op\_Server0} to \texttt{user} under either Environment choice, while \texttt{compromised\_Op\_Server0} is updated to \texttt{user} only if the Environment selects \texttt{env\_seen}. Under \texttt{env\_missed}, Blue may continue to have an outdated report. The model therefore includes alternative environmental outcomes without assigning probabilities to them. The Environment's protocol and evolution rules are unchanged in the Jason-guided model.
+
+The ISPL agent blocks also declare local observation variables: Blue lists the recorded compromise variables, while Red lists its progress variable for the operational server. The state representation can therefore distinguish the information given to Blue from the actual compromise, but \texttt{Lobsvars} does not by itself impose imperfect-information ATL semantics. Our reported checks use perfect information, so a winning strategy need not depend only on Blue's recorded observations.
+
+\subsection{Generating Baseline Configurations}
+
+A Python generator builds baseline ISPL and Jason-mapping files from the requested numbers of user, enterprise, and operational hosts. It instantiates network state variables, Blue and Red actions, the Environment evolution rules, initial states, and verification formulae. The operational server and a defender host are added separately. For example, five user hosts, three enterprise hosts, and three operational hosts yield 13 hosts in total once the two fixed hosts are included. The generator also creates the corresponding mapping for the translator. These generated models extend the small example with discovery steps and decoy-related outcomes. They remain finite abstractions of CAGE interactions, rather than copies of the full CybORG simulator.
+
+The simple configuration contains one user host, one enterprise host,
+one operational host, Defender, and the operational server, giving five
+hosts in total. The complete configuration contains the thirteen hosts
+described above. In both generated baselines, Red follows a directed
+B-line abstraction through the enterprise gateway to
+\texttt{Op\_Server0}. The gateway is \texttt{Enterprise0} in the simple
+configuration and \texttt{Enterprise2} in the complete configuration.
+Failed operational discovery or impact after restoration resets the
+relevant access record so that Red retries. Within each baseline--guided
+pair, this Red policy and the Environment rules are identical.
+The mapping retains the original goal domains. Apart from the initial
+foothold, hosts outside the attack route have invariant clean reports,
+allowing their security predicates
+to be fixed without removing their goal labels.
+
+
+\section{Connecting Jason BDI to CAGE Challenge 1}
+
+The Jason program in the repository implements a security sweep over the hosts known to Blue. Each step can add \texttt{host\_state} beliefs recording a host, observed activity, and a reported compromise level. The entry goal \texttt{!observe\_network} proceeds to \texttt{!secure\_network} once the expected host reports have been received. A host with no reported malicious activity can be marked secure, while reported activity causes the host to be considered for remediation. The initial Red foothold is treated separately: the program skips remediation on that host.
+
+The \texttt{secure\_network} plans prioritise the operational server and selected enterprise hosts before considering other insecure hosts. A second goal, \texttt{!secure(Host)}, chooses a response using the recorded compromise level. Representative plans from the supplied program are:
+
+\begin{verbatim}
++!secure(Host) : host_state(Host, _, "privileged") <-
+    +secure(Host); restore(Host).
+
++!secure(Host) : host_state(Host, _, "user") <-
+    +secure(Host); remove(Host).
+\end{verbatim}
+
+These are shortened extracts of the plan bodies; the implementation also contains diagnostic output. A privileged report leads to restoration, while a user-level report leads to removal. A fallback plan handles a host for which neither condition is present. Once no remaining host requires action, the network-security goal uses \texttt{monitor}. This defines a response priority over the information available to Blue; it is not a claim that Blue knows the actual hidden compromise state.
+
+The Jason program and MCMAS models do not use the same representation. Jason stores host reports as beliefs and selects parameterised actions such as \texttt{restore(Host)}, whereas MCMAS uses finite variables and a separate ground action for each host. A JSON mapping supplies the correspondence between the selected Jason terms and ISPL variables and actions. The mapping for the two-host example focuses on \texttt{User0} and \texttt{Op\_Server0}; it does not execute the full 13-host Jason program or reproduce Jason's complete event scheduling and belief updates. The purpose is to verify the decisions represented by the selected mapped plans.
+
+\subsection{Restricting Blue's Protocol Using Jason}
+
+The translator takes $M_B$, selected Blue plans, and their JSON mapping, and produces a Jason-guided model $M_J$. The translation proceeds in four stages. First, it follows reachable achievement-goal calls to construct the finite control variable \texttt{blue\_goal\_level}. For the two-host example, the generated domain is
+
+\begin{verbatim}
+blue_goal_level:
+    {secure_network, secure_Op_Server0, done};
+\end{verbatim}
+
+Second, it maps Jason plan contexts and actions to baseline-legal protocol rules, including the current task stage and the mapped report. For a privileged compromise report, the guided protocol contains
+
+\begin{verbatim}
+blue_goal_level = secure_Op_Server0 and
+Environment.compromised_Op_Server0 = privileged and
+Environment.turn = blue_turn:
+    {restore_Op_Server0};
+\end{verbatim}
+
+A user-level report similarly enables removal. Third, the translator adds task-control evolution rules; restoring the server, for example, can return \texttt{blue\_goal\_level} from \texttt{secure\_Op\_Server0} to \texttt{secure\_network}. Finally, it replaces Blue's original agent block and initialises the new control variable. The Red and Environment blocks retain the baseline decisions and outcomes.
+
+The mapping is deliberately selective. In the small model, \texttt{restore\_Op\_Server0} is also retained under its baseline guard as a pass-through action, and \texttt{monitor} is available as a fallback. Thus the guided protocol is not necessarily deterministic, and not every action it retains is justified by a Jason plan. In the initial Blue state the baseline offers monitoring, removal, and restoration; the guided model offers monitoring and restoration. Consequently, the reduction measures a particular mapped and partially guided policy, not a faithful execution of every part of the original Jason program.
+
+\subsection{Verification with ATL}
+
+The small models define \texttt{blue\_team} as Blue, \texttt{red\_team} as Red, and \texttt{all\_agents} as Blue, Red, and Environment. We check the same four ATL formulae in $M_B$ and $M_J$:
+
+\begin{align*}
+&\langle\!\langle\mathit{all\_agents}\rangle\!\rangle
+\mathbf{F}\,\mathit{OpServer\_root},\\
+&\langle\!\langle\mathit{all\_agents}\rangle\!\rangle
+\mathbf{F}\,\mathit{OTService\_impacted},\\
+&\langle\!\langle\mathit{red\_team}\rangle\!\rangle
+\mathbf{F}\,\mathit{OTService\_impacted},\\
+&\langle\!\langle\mathit{blue\_team}\rangle\!\rangle
+\mathbf{G}\,\mathit{OTService\_running}.
+\end{align*}
+
+The first two ask whether root access and service disruption are possible. Since the coalition includes every agent, its members can jointly choose the Environment's outcomes; this is different from Red alone forcing disruption. The third asks whether Red can guarantee disruption against Blue and the Environment, and the fourth asks whether Blue can guarantee that the service remains running. The distinction matters because an attack can be possible without being enforceable by Red.
+
+For the simple and complete configurations, three CTL reachability
+queries complement the two ATL strategic queries. The simple
+configuration uses the following MCMAS formula section:
+
+\begin{verbatim}
+Formulae
+    EF Enterprise0_root;
+    EF OpServer_root;
+    EF OTService_impacted;
+    <red_team> F OTService_impacted;
+    <blue_team> G OTService_running;
+end Formulae
+\end{verbatim}
+
+The complete configuration replaces the first query with
+\texttt{EF Enterprise2\_root;}. The remaining four are unchanged.
+The first three ask whether gateway compromise, server compromise,
+and service disruption are possible. The last two ask whether Red
+can force disruption and whether Blue can guarantee availability.
+Their results, in this order, are \texttt{true}, \texttt{true},
+\texttt{true}, \texttt{false}, and \texttt{true} in both members
+of each pair.
+
+\section{Validation and Discussion}
+
+In the two-host comparison, the baseline has 20 reachable states and
+the Jason-guided model has 14. The four ATL queries retain the results
+\texttt{true}, \texttt{true}, \texttt{false}, and \texttt{true},
+respectively. Root access and service disruption remain possible,
+Red cannot force disruption, and Blue retains a winning strategy for
+availability under the perfect-information semantics used here.
+This ability includes the retained restoration choice and does not
+establish an observation-uniform strategy for the original Jason agent.
+
+\paragraph{Five-host and thirteen-host configurations.}
+Table~\ref{tab:runtime} reports the results for the simple and complete
+configurations. Every guided model retains an explicit
+\texttt{blue\_goal\_level} variable, its original goal domain,
+goal-dependent protocol rules, and goal-adoption and completion updates.
+Additional reachability checks confirm that the network and attacked-host
+goal stages can be reached and that host-security stages can return to
+the network-security goal. All six CAGE models are deadlock-free,
+and the original property results are preserved within each pair.
+
+We used MCMAS~1.3.0 on Ubuntu~24.04 under WSL2, without model export.
+The simple pair uses \texttt{-o 1}, and the complete pair uses
+\texttt{-o 1 -g 1}. Each setting is applied identically to the baseline
+and guided model of its pair. These options change BDD ordering and
+grouping; they do not change the goal domains or model semantics.
+Each model had one excluded warm-up run followed by 11 measured runs.
+Runs were serial, with baseline and guided order alternating between
+repetitions. Times are median elapsed wall-clock times measured using
+a monotonic clock. BDD memory is MCMAS's reported memory in use,
+converted from bytes to decimal MB.
+
+\begin{table}[H]
+\caption{MCMAS results for the CAGE baseline and Jason-guided models.}
+\label{tab:runtime}
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrrr}
+\hline
+Model & States & Time (s) & BDD memory (MB) \\
+\hline
+Simple baseline & 3,903 & 0.519 & 13.998 \\
+Simple Jason-guided & 97 & 0.503 & 13.943 \\
+Complete baseline & 32,559 & 16.693 & 41.807 \\
+Complete Jason-guided & 97 & 15.205 & 31.357 \\
+\hline
+\end{tabular}
+\end{table}
+
+The reachable state space decreases by approximately 97.51\%
+in the simple configuration and 99.70\% in the complete
+configuration. These counts include the explicit goal-control state.
+With the stated BDD settings, median execution time in the simple
+configuration decreases from 0.519 to 0.503~seconds.
+With the stated BDD settings, median execution time in the complete
+configuration decreases from 16.693 to 15.205~seconds.
+The cost comparison depends on the symbolic encoding. With MCMAS's
+default BDD settings, the guided models still have fewer reachable
+states, but the measured verification times are higher in both larger
+configurations. Thus, the table does not establish a speedup independent
+of the chosen BDD ordering.
+In the two-host example, default BDD memory changes from 9.177
+to 9.218~MB, while median elapsed time changes
+from 0.048 to 0.046~seconds.
+A smaller reachable set therefore does not guarantee lower verification
+time or BDD memory. The control state and its transition relation also
+contribute to verification costs.
+
+The guided models retain the baseline Red and Environment blocks,
+initial domain states, and physical action effects. The restrictions
+apply to Blue's decisions, together with the added goal-control state.
+The results concern the directed attacker and the selected hierarchical
+mapping described here. The verification does not establish a cumulative
+reward for the original CybORG agent, since the finite model does not
+encode the challenge reward function.
+
+The approach links selected implemented BDI plans to standard ATL checking without translating every Jason execution detail. Its main limitation is the gap between recorded observations and the perfect-information strategies checked here. A next step is to check observation-uniform strategies, extend the mapped Jason decisions, and compare the guided verification model with complete CybORG policy executions.
+
+\bibliographystyle{splncs04}
+\bibliography{references}
+
+
+\end{document}
+

@@ -28,13 +28,23 @@ def check_pair(baseline, guided):
             raise ValueError(f"{name} differs between {baseline} and {guided}")
     for name in ("Evaluation", "Groups", "Formulae", "InitStates"):
         pattern = rf"(?ms)^{name}\s*$.*?^end {name}\s*$"
-        if re.search(pattern, before).group(0).strip() != re.search(pattern, after).group(0).strip():
+        left = re.search(pattern, before).group(0).strip()
+        right = re.search(pattern, after).group(0).strip()
+        if name == "InitStates":
+            added = re.findall(r"Blue\.blue_goal_level\s*=\s*(\w+)", right)
+            if added != ["secure_network"]:
+                raise ValueError("Guided Blue must initialize its goal to secure_network")
+            right = re.sub(r"    Blue\.blue_goal_level = secure_network and\n", "", right)
+        if left != right:
             raise ValueError(f"{name} differs between {baseline} and {guided}")
+    blue = block(after, "Blue")
+    if not re.search(r"blue_goal_level\s*:\s*\{[^}]*secure_Op_Server0", blue):
+        raise ValueError("Guided Blue must retain its network and host goal stages")
 
 
 def parse_output(output):
     def value(label):
-        match = re.search(re.escape(label) + r"\s*=\s*([\d.eE+]+)", output)
+        match = re.search(re.escape(label) + r"\s*=\s*([+\-]?[\d.eE+]+)", output)
         if not match:
             raise ValueError(f"Missing MCMAS statistic: {label}\n{output}")
         return match.group(1)
@@ -71,8 +81,10 @@ def summarize(runs):
         for key in ("reachable_states", "bdd_bytes", "formulae"):
             if run[key] != first[key]:
                 raise ValueError(f"Inconsistent repeated result for {key}")
+    valid_clock = [r["mcmas_seconds"] for r in runs if r["mcmas_seconds"] >= 0]
     return {"reachable_states": first["reachable_states"], "bdd_bytes": first["bdd_bytes"],
-            "median_mcmas_seconds": statistics.median(r["mcmas_seconds"] for r in runs),
+            "median_mcmas_seconds": statistics.median(valid_clock) if valid_clock else None,
+            "mcmas_clock_anomalies": len(runs) - len(valid_clock),
             "median_wall_seconds": statistics.median(r["wall_seconds"] for r in runs),
             "median_peak_rss_kib": statistics.median(r["peak_rss_kib"] for r in runs)
             if all(r["peak_rss_kib"] is not None for r in runs) else None,
@@ -86,6 +98,8 @@ def main():
     parser.add_argument("--timeout", type=int, default=600)
     parser.add_argument("--output", type=Path, default=ROOT / "docs/cage1_results")
     parser.add_argument("--require-reductions", action="store_true")
+    parser.add_argument("--profile", choices=("default", "ordered"), default="default",
+                        help="ordered uses -o 1 for simple and -o 1 -g 1 for complete, equally within each pair")
     args = parser.parse_args()
     if args.repeats < 1:
         parser.error("--repeats must be positive")
@@ -94,21 +108,27 @@ def main():
         parser.error("MCMAS executable not found")
     report = {"platform": platform.platform(), "python": platform.python_version(),
               "measured_at_utc": datetime.now(timezone.utc).isoformat(),
-              "mcmas_executable": str(Path(executable).resolve()), "flags": [],
+              "mcmas_executable": str(Path(executable).resolve()), "profile": args.profile,
+              "flags": "see each scenario; identical for both members of a pair",
               "repeats": args.repeats, "warmups_per_model": 1,
               "procedure": "Serial runs; alternate baseline/guided order each repeat; no export.",
+              "primary_time": f"Median monotonic wall-clock elapsed seconds for all {args.repeats} runs; printed MCMAS times retained separately.",
               "scenarios": {}}
     args.output.mkdir(parents=True, exist_ok=True)
     rows = []
     for scenario in SCENARIOS:
+        flags = []
+        if args.profile == "ordered":
+            flags = {"Cage1-small": [], "Cage1-simple": ["-o", "1"],
+                     "Cage1-complete": ["-o", "1", "-g", "1"]}[scenario]
         models = {"baseline": ROOT / f"examples/{scenario}/input/cage1_baseline.ispl",
                   "guided": ROOT / f"examples/{scenario}/generated/cage1_jason_guided.ispl"}
         check_pair(models["baseline"], models["guided"])
         runs = {kind: [] for kind in models}
-        warmups = {kind: run_model(executable, model, args.timeout) for kind, model in models.items()}
+        warmups = {kind: run_model(executable, model, args.timeout, flags) for kind, model in models.items()}
         for i in range(args.repeats):
             for kind in (("baseline", "guided") if i % 2 == 0 else ("guided", "baseline")):
-                runs[kind].append(run_model(executable, models[kind], args.timeout))
+                runs[kind].append(run_model(executable, models[kind], args.timeout, flags))
         summaries = {kind: summarize(values) for kind, values in runs.items()}
         before, after = summaries["baseline"], summaries["guided"]
         same_properties = before["formulae"] == after["formulae"]
@@ -117,8 +137,9 @@ def main():
         if not same_properties or not protected:
             raise ValueError(f"Strategic-property regression in {scenario}: {summaries}")
         reductions = {key: after[key] < before[key]
-                      for key in ("reachable_states", "bdd_bytes", "median_mcmas_seconds")}
+                      for key in ("reachable_states", "bdd_bytes", "median_wall_seconds")}
         report["scenarios"][scenario] = {
+            "flags": flags,
             "models": {kind: {"path": str(model.relative_to(ROOT)),
                                "sha256": hashlib.sha256(model.read_bytes()).hexdigest()}
                        for kind, model in models.items()},

@@ -23,7 +23,7 @@
     },
     "roles": {
       "blue": {
-        "program": "../../../agents/blue_agent_reactive.asl",
+        "program": "../../../agents/blue_agent.asl",
         "ispl_agent": "Blue",
         "entry_goal": "observe_network",
         "goal_var": "blue_goal_level",
@@ -33,8 +33,7 @@
             "values": [
               "no",
               "user",
-              "privileged",
-              "Op_Server0"
+              "privileged"
             ],
             "signatures": {
               "secure": [
@@ -54,7 +53,10 @@
                 0
               ]
             },
-            "members": []
+            "members": [
+              "User0",
+              "Op_Server0"
+            ]
           },
           "actions": {
             "monitor": "monitor",
@@ -90,7 +92,7 @@
               ]
             },
             "initial_foothold_Op_Server0": false,
-            "host_state_Op_Server0_any": true,
+            "host_state_Op_Server0_any": false,
             "host_state_Op_Server0_user": {
               "eq": [
                 {
@@ -112,9 +114,19 @@
             "blue_wait",
             "restore_Op_Server0"
           ],
-          "transitions": [],
-          "fallback": "monitor",
-          "elide_constant_goal": true
+          "transitions": [
+            {
+              "from": "secure_Op_Server0",
+              "to": "secure_network",
+              "action": "restore_Op_Server0"
+            },
+            {
+              "from": "secure_Op_Server0",
+              "to": "secure_network",
+              "action": "remove_Op_Server0"
+            }
+          ],
+          "fallback": "monitor"
         }
       }
     }

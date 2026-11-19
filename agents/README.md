@@ -12,7 +12,7 @@ A `+step(T)` event starts `!saved_civilians`. That goal is the main decision loo
 
 The remaining plans support searching. `!patrol` prefers known rescue tasks, then unvisited collapsed or damaged buildings, other buildings, and roads. `!visited(Pos)` moves to an area and records that it has been visited. These plans matter in the relation-aware rescue examples because we use their ordering to classify locations and keep equally ranked movement choices. The fallback is `rest`, rather than forcing a movement in every state.
 
-The plans also include belief additions such as `+found_civilian` and `+visited`, and failure handlers beginning with `-!`. Redundant trailing tests of task names or just-added beliefs have been removed. In particular, testing `?saved_civilians` or `?patrol` did not test the effect of the preceding action. The cleanup leaves every translated decision model unchanged; the exact before/after output hashes are recorded in [`../docs/asl_cleanup_verification.json`](../docs/asl_cleanup_verification.json).
+The plans also include belief additions such as `+found_civilian` and `+visited`, and failure handlers beginning with `-!`. Redundant tests of task names and just-added beliefs have been removed. The mapping determines which information is represented explicitly as control variables, observed memory, or communication flags.
 
 ## `ambulance_team.asl`
 
@@ -22,11 +22,11 @@ When the AmbulanceTeam finds a buried civilian, it can use `!told_fire(Civ)` and
 
 The `!patrol` and `!visit(Pos)` plans have location preferences similar to the FireBrigade's, but the AmbulanceTeam can also be redirected by a carried civilian or a reported pickup. These distinctions explain why the RCRS translation needs both an agent's current task stage and its search history. The concrete state change caused by loading or unloading is still encoded in the baseline ISPL evolution rules.
 
-Four effect tests remain: `?loaded(Civ)` after each load plan and `?delivered(Civ)` after each unload plan. Tests after movement or waiting have been removed because those actions do not themselves establish loading or delivery. Repeated `+step` events continue to drive the decision loop.
+Four effect tests remain: `?loaded(Civ)` after the load plans and `?delivered(Civ)` after the unload plans. Movement and waiting no longer test that loading or delivery has already completed.
 
 ## `blue_agent.asl`
 
-This is the original defensive policy retained for reference. Current CAGE mappings select `blue_agent_reactive.asl`, described below. The original starts from `+step(T)`, which calls `!observe_network`. The configured belief `expected_host_count(13)` is a parameter of this source program. A generated mapping can use a different selected host set; this does not mean that the whole 13-host Jason runtime is executed in a smaller ISPL example.
+This is the defensive policy for the CAGE experiments. It starts from `+step(T)`, which calls `!observe_network`. The configured belief `expected_host_count(13)` is a parameter of this source program. A generated mapping can use a different selected host set; this does not mean that the whole 13-host Jason runtime is executed in a smaller ISPL example.
 
 The belief-update plans process `host_state(Host, Activity, Compromised)` reports. A clean report can mark a host as secure. Suspicious activity can identify the initial foothold, which the policy intentionally skips when choosing remediation. Other suspicious reports can remove the `secure(Host)` belief. This is based on reported activity and compromise levels, not direct access to hidden network state.
 
@@ -43,14 +43,10 @@ For example:
 
 The translator does not execute `.print`, wait for simulator observations, or update a complete Jason belief base. The mapping grounds selected `Host` terms, associates report predicates with ISPL conditions, and maps `restore(Host)` or `remove(Host)` to specific Blue actions. Some actions are retained independently through `pass_through` rules, so the guided model is deliberately a selected-policy abstraction.
 
-## `blue_agent_reactive.asl`
-
-This variant keeps the original `observe_network` and `secure_network` vocabulary and uses `host_state`, `restore`, `remove`, and `monitor`. It places the reported-compromise response directly in the security-sweep plans. A privileged report triggers restoration; a user report triggers removal. The explicit server plans have priority over the remaining selected hosts. This represents one reactive response per defensive turn, rather than spending an extra model transition entering `secure(Host)`.
-
-The generated mappings select the server and enterprise gateway attacked by Red. The server's literal terms are normalized through `ground.values`; only the gateway needs expansion through `ground.members`. The small example has no gateway, so its member list is empty. The foothold and Defender remain excluded from remediation.
-
-There are no control transitions in this variant. `plan.elide_constant_goal` therefore removes the constant task variable without changing the policy. Server restoration remains an explicitly documented pass-through choice; the result is still a partial policy abstraction checked under perfect-information ATL semantics. It does not establish a winning observation-uniform strategy or a reward in the original simulator.
-
 ## How these files connect to the examples
 
 Each `examples/<name>/input/jason_mapping.json` identifies the source program under `jason.roles.<role>.program`, the MCMAS agent under `ispl_agent`, and the entry event under `entry_goal`. The translator reads the specified source, finds reachable achievement goals, builds the task-control states, and uses the mapped plans to restrict legal baseline actions. For the meaning of every mapping field, see [`examples/MAPPING_GUIDE.md`](../examples/MAPPING_GUIDE.md). For the implementation, start with [`src/jason_guided.md`](../src/jason_guided.md).
+
+## Test-goal cleanup
+
+The cleanup removed 68 redundant trailing tests while retaining the four tests after loading or unloading. All seven outputs were verified identical before and after that cleanup, before the CAGE changes. See [the cleanup record](../docs/asl_cleanup_verification.json).

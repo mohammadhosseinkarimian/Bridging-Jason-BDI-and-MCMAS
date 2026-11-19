@@ -1,0 +1,7 @@
+scenario,model,reachable_states,bdd_bytes,median_mcmas_seconds,mcmas_clock_anomalies,median_wall_seconds,median_peak_rss_kib
+Cage1-small,baseline,20,9176656,0.032,0,0.04788911099967663,13800
+Cage1-small,guided,14,9217904,0.032,0,0.04615794499841286,13848
+Cage1-simple,baseline,3903,13997680,0.4985,1,0.5185741780005628,18772
+Cage1-simple,guided,97,13942928,0.49,0,0.5030010849986866,18816
+Cage1-complete,baseline,32559,41807248,16.656,0,16.692831759999535,46960
+Cage1-complete,guided,97,31356848,12.728,0,15.204627107003034,36468

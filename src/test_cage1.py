@@ -1,5 +1,4 @@
-"""Regression contracts for the directed attacker and reactive Blue mapping."""
-import copy
+"""Regression contracts for the directed attacker and hierarchical Blue goals."""
 import importlib.util
 import json
 from pathlib import Path
@@ -15,6 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("cage_generator", ROOT / "tools/cage1/generate.py")
 cage = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(cage)
+bench_spec = importlib.util.spec_from_file_location("cage_benchmark", ROOT / "tools/cage1/benchmark.py")
+bench = importlib.util.module_from_spec(bench_spec)
+bench_spec.loader.exec_module(bench)
 
 
 class CageRegressionTests(unittest.TestCase):
@@ -36,7 +38,7 @@ class CageRegressionTests(unittest.TestCase):
                 folder = ROOT / "examples" / name / "input"
                 self.assertEqual(cage.render(mapping, counts), (folder / "cage1_baseline.ispl").read_text())
                 generated = cage.render_jason(mapping, counts, "cage1_baseline.ispl",
-                                              "../../../agents/blue_agent_reactive.asl")
+                                              "../../../agents/blue_agent.asl")
                 self.assertEqual(generated, json.loads((folder / "jason_mapping.json").read_text()))
 
     def test_directed_attacker_and_pair_invariants(self):
@@ -48,7 +50,7 @@ class CageRegressionTests(unittest.TestCase):
                 for agent in ("Environment", "Red"):
                     self.assertEqual(fmt.parse_ispl_block(baseline, agent)[2],
                                      fmt.parse_ispl_block(guided, agent)[2])
-                for section in ("InitStates", "Evaluation", "Groups", "Formulae"):
+                for section in ("Evaluation", "Groups", "Formulae"):
                     pattern = rf"{section}\n.*?end {section}"
                     self.assertEqual(re.search(pattern, baseline, re.S).group(),
                                      re.search(pattern, guided, re.S).group())
@@ -62,25 +64,46 @@ class CageRegressionTests(unittest.TestCase):
                 self.assertIn(f"red_{gateway} = service if turn = red_turn and Red.Action = DiscoverRemoteSystems_Operational", baseline)
                 self.assertIn("red_Op_Server0 = service if turn = red_turn and Red.Action = Impact_Op_Server0", baseline)
 
-    def test_constant_goal_elision_rejects_real_task_progress(self):
-        plan = fmt.Plan("respond", "true", "restore", [fmt.parse_term("restore")], 0)
-        control = fmt.GoalControl("respond", ["respond", "done"], [], ["respond"])
-        spec = fmt.AgentSpec("blue", [plan], control, {}, "", [])
-        role = {"ispl_agent": "Blue", "goal_var": "goal",
-                "plan": {"elide_constant_goal": True}}
-        mapping = {"jason": {"roles": {"blue": role}}}
-        raw = (ROOT / "examples/Cage1-small/input/cage1_baseline.ispl").read_text()
-        with self.assertRaisesRegex(ValueError, "no control transitions"):
-            fmt.build_plain_agent_block(spec, mapping, raw, [], ["goal = done if goal = respond;"])
-        other = copy.deepcopy(spec)
-        other.control.values.insert(1, "repair")
-        with self.assertRaisesRegex(ValueError, "single active goal"):
-            fmt.build_plain_agent_block(other, mapping, raw, [], [])
+    def test_original_goal_domains_and_progress_are_retained(self):
+        expected = {
+            "Cage1-small": ["secure_network", "secure_Op_Server0", "done"],
+            "Cage1-simple": ["secure_network", "secure_Op_Server0", "secure_Enterprise0", "secure_Op_Host0", "done"],
+            "Cage1-complete": ["secure_network", "secure_Op_Server0", "secure_Enterprise0", "secure_Enterprise1", "secure_Enterprise2", "secure_User1", "secure_User2", "secure_User3", "secure_User4", "secure_Op_Host0", "secure_Op_Host1", "secure_Op_Host2", "done"],
+        }
+        for name, goals in expected.items():
+            with self.subTest(example=name):
+                folder = ROOT / "examples" / name
+                config = json.loads((folder / "input/jason_mapping.json").read_text())
+                role = config["jason"]["roles"]["blue"]
+                self.assertTrue(role["program"].endswith("/blue_agent.asl"))
+                self.assertNotIn("elide_constant_goal", role["plan"])
+                guided = (folder / "generated/cage1_jason_guided.ispl").read_text()
+                values = re.search(r"blue_goal_level:\s*\{([^}]+)\}", guided).group(1)
+                self.assertEqual([x.strip() for x in values.split(",")], goals)
+                self.assertIn("Blue.blue_goal_level = secure_network", guided)
+                self.assertIn("blue_goal_level = secure_Op_Server0 if blue_goal_level = secure_network", guided)
+                self.assertIn("blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and Blue.Action = restore_Op_Server0", guided)
+                self.assertIn("blue_goal_level = secure_Op_Server0 and Environment.compromised_Op_Server0 = privileged", guided)
+                baseline = (folder / "input/cage1_baseline.ispl").read_text()
+                original_init = re.search(r"InitStates\n.*?end InitStates", baseline, re.S).group()
+                guided_init = re.search(r"InitStates\n.*?end InitStates", guided, re.S).group()
+                self.assertEqual(original_init, guided_init.replace("    Blue.blue_goal_level = secure_network and\n", ""))
 
     def test_generator_rejects_nonpositive_counts(self):
         for count in (0, -1):
             with self.assertRaisesRegex(ValueError, "at least 1"):
                 cage.read_count("users", count)
+
+    def test_negative_mcmas_clock_preserves_monotonic_measurement(self):
+        output = ("Formula number 1: (<blue_team>G OTService_running), is TRUE in the model\n"
+                  "execution time = -2.152\nnumber of reachable states = 14\n"
+                  "BDD memory in use = 9217904\n")
+        record = bench.parse_output(output)
+        record.update(wall_seconds=0.04, peak_rss_kib=14000)
+        summary = bench.summarize([record])
+        self.assertEqual(summary["median_wall_seconds"], 0.04)
+        self.assertEqual(summary["mcmas_clock_anomalies"], 1)
+        self.assertIsNone(summary["median_mcmas_seconds"])
 
 
 if __name__ == "__main__":

@@ -482,6 +482,7 @@ Agent Blue
     Lobsvars = {user_decoy, enterprise_decoy, operational_decoy, activity_User0, activity_User1, activity_User2, activity_User3, activity_User4, activity_Enterprise0, activity_Enterprise1, activity_Enterprise2, activity_Defender, activity_Op_Host0, activity_Op_Host1, activity_Op_Host2, activity_Op_Server0, compromised_User0, compromised_User1, compromised_User2, compromised_User3, compromised_User4, compromised_Enterprise0, compromised_Enterprise1, compromised_Enterprise2, compromised_Defender, compromised_Op_Host0, compromised_Op_Host1, compromised_Op_Host2, compromised_Op_Server0};
     Vars:
         dummy : boolean;
+        blue_goal_level: {secure_network, secure_Op_Server0, secure_Enterprise0, secure_Enterprise1, secure_Enterprise2, secure_User1, secure_User2, secure_User3, secure_User4, secure_Op_Host0, secure_Op_Host1, secure_Op_Host2, done};
     end Vars
 
     Actions = {
@@ -498,11 +499,11 @@ Agent Blue
         analyse_Op_Server0, remove_Op_Server0, misinform_Op_Server0, restore_Op_Server0, blue_wait
     };
     Protocol:
-        Environment.compromised_Op_Server0 = privileged and Environment.turn = blue_turn: {restore_Op_Server0};
-        Environment.compromised_Op_Server0 = user and !(Environment.compromised_Op_Server0 = privileged) and Environment.turn = blue_turn: {remove_Op_Server0};
-        Environment.compromised_Enterprise2 = privileged and !(Environment.compromised_Op_Server0 = privileged) and !(Environment.compromised_Op_Server0 = user) and Environment.turn = blue_turn: {restore_Enterprise2};
-        Environment.compromised_Enterprise2 = user and !(Environment.compromised_Op_Server0 = privileged) and !(Environment.compromised_Op_Server0 = user) and !(Environment.compromised_Enterprise2 = privileged) and Environment.turn = blue_turn: {remove_Enterprise2};
-        !(Environment.compromised_Op_Server0 = privileged) and !(Environment.compromised_Op_Server0 = user) and !(Environment.compromised_Enterprise2 = privileged) and !(Environment.compromised_Enterprise2 = user) and Environment.turn = blue_turn: {monitor};
+        blue_goal_level = secure_network and Environment.compromised_Op_Server0 = no and Environment.compromised_Enterprise2 = no and Environment.turn = blue_turn: {monitor};
+        blue_goal_level = secure_Op_Server0 and Environment.compromised_Op_Server0 = privileged and Environment.turn = blue_turn: {restore_Op_Server0};
+        blue_goal_level = secure_Op_Server0 and Environment.compromised_Op_Server0 = user and !(Environment.compromised_Op_Server0 = privileged) and Environment.turn = blue_turn: {remove_Op_Server0};
+        blue_goal_level = secure_Enterprise2 and Environment.compromised_Enterprise2 = privileged and Environment.turn = blue_turn: {restore_Enterprise2};
+        blue_goal_level = secure_Enterprise2 and Environment.compromised_Enterprise2 = user and !(Environment.compromised_Enterprise2 = privileged) and Environment.turn = blue_turn: {remove_Enterprise2};
         Environment.turn = red_turn: {blue_wait};
         Environment.turn = blue_turn: {restore_Op_Server0};
         Other: {monitor};
@@ -510,6 +511,23 @@ Agent Blue
     Evolution:
         dummy = dummy if dummy = true;
         dummy = dummy if dummy = false;
+        blue_goal_level = secure_Op_Server0 if blue_goal_level = secure_network and !(Environment.compromised_Op_Server0 = no);
+        blue_goal_level = secure_Enterprise2 if blue_goal_level = secure_network and !(Environment.compromised_Enterprise2 = no) and Environment.compromised_Op_Server0 = no;
+        blue_goal_level = secure_network if blue_goal_level = secure_User1;
+        blue_goal_level = secure_network if blue_goal_level = secure_User2;
+        blue_goal_level = secure_network if blue_goal_level = secure_User3;
+        blue_goal_level = secure_network if blue_goal_level = secure_User4;
+        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise0;
+        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise1;
+        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise2 and !(Environment.compromised_Enterprise2 = privileged) and !(Environment.compromised_Enterprise2 = user);
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Host0;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Host1;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Host2;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and !(Environment.compromised_Op_Server0 = privileged) and !(Environment.compromised_Op_Server0 = user);
+        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise2 and Blue.Action = restore_Enterprise2;
+        blue_goal_level = secure_network if blue_goal_level = secure_Enterprise2 and Blue.Action = remove_Enterprise2;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and Blue.Action = restore_Op_Server0;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and Blue.Action = remove_Op_Server0;
     end Evolution
 end Agent
 
@@ -614,6 +632,7 @@ InitStates
     Environment.red_Op_Host2 = unknown and
     Environment.actual_Op_Server0 = clean and
     Environment.red_Op_Server0 = unknown and
+    Blue.blue_goal_level = secure_network and
     Blue.dummy = false and
     Red.dummy = false;
 end InitStates

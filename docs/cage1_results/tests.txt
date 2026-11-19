@@ -1,0 +1,15 @@
+test_all_checked_in_guided_models_regenerate (test_cage1.CageRegressionTests.test_all_checked_in_guided_models_regenerate) ... ok
+test_directed_attacker_and_pair_invariants (test_cage1.CageRegressionTests.test_directed_attacker_and_pair_invariants) ... ok
+test_generator_rejects_nonpositive_counts (test_cage1.CageRegressionTests.test_generator_rejects_nonpositive_counts) ... ok
+test_generator_reproduces_shipped_inputs (test_cage1.CageRegressionTests.test_generator_reproduces_shipped_inputs) ... ok
+test_negative_mcmas_clock_preserves_monotonic_measurement (test_cage1.CageRegressionTests.test_negative_mcmas_clock_preserves_monotonic_measurement) ... ok
+test_original_goal_domains_and_progress_are_retained (test_cage1.CageRegressionTests.test_original_goal_domains_and_progress_are_retained) ... ok
+test_build_goal_control (test_jason_guided.JasonGuidedTests.test_build_goal_control) ... ok
+test_generate_evolution_rules (test_jason_guided.JasonGuidedTests.test_generate_evolution_rules) ... ok
+test_generate_protocol (test_jason_guided.JasonGuidedTests.test_generate_protocol) ... ok
+test_replace_agent_decision_model (test_jason_guided.JasonGuidedTests.test_replace_agent_decision_model) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.328s
+
+OK

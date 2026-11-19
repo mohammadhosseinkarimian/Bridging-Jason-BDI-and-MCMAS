@@ -94,8 +94,6 @@ is formatted as `Environment.compromised_Op_Server0 = privileged`. The `Environm
 
 `rewrite_plain_init` locates `InitStates`, removes its old trailing separators while reading assignments, inserts the initial goal-control assignments for translated agents, and writes a syntactically assembled list back. This matters because adding a new agent variable without initializing it would make the generated model incomplete or ambiguous.
 
-An optional `plan.elide_constant_goal` supports reactive policies whose control domain is exactly the entry task and unreachable `done`, with no control evolution rules. In that case the goal guard is replaced by its constant value, and no control declaration, self-update, or initialization is added. The formatter rejects actual task transitions, additional active stages, or an existing baseline goal variable. This is enabled only by the current reactive CAGE mappings; ordinary and relation-aware rescue mappings retain their previous output.
-
 The direct path therefore uses both parsing and formatting in this file, while `jason_guided.py` decides **which plan rules to create**. The relation-aware path uses its own agent construction because it adds visited markers, shared memory, and movement rules that are not part of the plain block assembly.
 
 ## Path handling and errors

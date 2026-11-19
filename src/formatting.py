@@ -323,16 +323,9 @@ def build_plain_agent_block(
     role_cfg = mapping['jason']['roles'][spec.role_key]
     _, _, block = parse_ispl_block(raw, str(role_cfg['ispl_agent']))
 
-    plan_cfg = role_cfg.get('plan', {})
-    constant_goal = bool(plan_cfg.get('elide_constant_goal', False))
-    if constant_goal and (spec.control.values != [spec.control.top, 'done'] or evolution_rules):
-        raise ValueError('elide_constant_goal requires a single active goal and no control transitions')
-
     goal_var = str(role_cfg['goal_var'])
-    if constant_goal and re.search(r'\b' + re.escape(goal_var) + r'\b', block):
-        raise ValueError('elide_constant_goal cannot remove an existing baseline variable')
     declaration = f"        {goal_var}: {{{', '.join(spec.control.values)}}};"
-    if not constant_goal and not re.search(f'\\b{re.escape(goal_var)}\\s*:', block):
+    if not re.search(f'\\b{re.escape(goal_var)}\\s*:', block):
         if re.search('\\bVars:', block):
             block = block.replace('    end Vars', declaration + '\n    end Vars', 1)
         else:
@@ -347,6 +340,7 @@ def build_plain_agent_block(
                 + block[marker.start():]
             )
 
+    plan_cfg = role_cfg.get('plan', {})
     extra_actions = [str(x) for x in plan_cfg.get('extra_actions', [])]
     if extra_actions:
         action_match = re.search(
@@ -365,12 +359,6 @@ def build_plain_agent_block(
 
     protocol_lines = ['    Protocol:']
     for condition, enabled in protocol_rules:
-        if constant_goal:
-            prefix = f'{goal_var} = {spec.control.top}'
-            if condition == prefix:
-                condition = 'true'
-            elif condition.startswith(prefix + ' and '):
-                condition = condition[len(prefix + ' and '):]
         protocol_lines.append(f'        {condition}: {action_set(enabled, 16, 6)};')
     fallback = plan_cfg.get('fallback')
     if fallback:
@@ -385,7 +373,7 @@ def build_plain_agent_block(
     )
 
     rules = list(evolution_rules)
-    if not rules and not constant_goal:
+    if not rules:
         rules = [
             f'        {goal_var} = {value} if {goal_var} = {value};'
             for value in spec.control.values
@@ -421,7 +409,6 @@ def rewrite_plain_init(
             f"{roles[key]['ispl_agent']}.{roles[key]['goal_var']} = {spec.control.top}",
         )
         for key, spec in specs.items()
-        if not roles[key].get('plan', {}).get('elide_constant_goal', False)
     ]
     for agent, addition in reversed(additions):
         index = next(

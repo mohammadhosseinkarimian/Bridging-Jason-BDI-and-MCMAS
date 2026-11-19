@@ -275,14 +275,6 @@
         "Enterprise0",
         "Enterprise1",
         "Enterprise2"
-      ],
-      "elide_constant_goal": true,
-      "selected_hosts": [
-        "{server}",
-        "{gateway}"
-      ],
-      "fixed_hosts": [
-        "{server}"
       ]
     }
   },

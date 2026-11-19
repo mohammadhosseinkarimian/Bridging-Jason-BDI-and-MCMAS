@@ -170,32 +170,31 @@ def render_jason(mapping, counts, baseline_name, program):
     actions = {"monitor": "monitor"}
     predicates = {}
     transitions = []
-    substitutions = {"foothold": foothold, "server": server, "gateway": gateway}
+    substitutions = {"foothold": foothold, "server": server}
     skipped = {expand(name, substitutions) for name in plan.get("skip_ground", [])}
     priority = {expand(name, substitutions) for name in plan.get("priority_hosts", [])}
-    selected = {expand(host, substitutions) for host in plan.get("selected_hosts", hosts)}
-    fixed = {expand(host, substitutions) for host in plan.get("fixed_hosts", [])}
-    grounded = sorted((host for host in hosts if host not in skipped and host in selected and host not in fixed),
-                      key=lambda host: (host != server, not host.startswith("Enterprise"), hosts.index(host)))
+    grounded = [host for host in hosts if host not in skipped]
+    # The directed attacker can compromise only these targets. Other
+    # remediation hosts retain their original goal labels; their clean-report invariant
+    # makes their remediation stages unreachable in this experiment.
+    attacked = {gateway, server}
     for host in hosts:
         for action in ("restore", "remove"):
             actions[f"{action}_{host}"] = f"{action}_{host}"
-            if host in grounded and not plan.get("elide_constant_goal"):
+            if host in grounded and host in attacked:
                 transitions.append({"from": f"secure_{host}", "to": "secure_network", "action": f"{action}_{host}"})
-        predicates[f"secure_{host}"] = (True if host in (foothold, "Defender") else
+        predicates[f"secure_{host}"] = (True if host not in attacked else
                                            {"eq": [{"env": f"compromised_{host}"}, "no"]})
         predicates[f"initial_foothold_{host}"] = host == foothold
         predicates[f"host_state_{host}_any"] = host not in priority or host in skipped
         for level in ("user", "privileged"):
-            predicates[f"host_state_{host}_{level}"] = {"eq": [{"env": f"compromised_{host}"}, level]}
+            predicates[f"host_state_{host}_{level}"] = ({"eq": [{"env": f"compromised_{host}"}, level]}
+                                                      if host in attacked or host == foothold else False)
     role = {"program": program, "ispl_agent": "Blue", "entry_goal": source["entry_goal"],
             "goal_var": source["goal_var"],
             "plan": {"ground": plan["ground"] | {"members": grounded}, "actions": actions,
                      "predicates": predicates, "pass_through": plan["pass_through"],
                      "transitions": transitions, "fallback": plan["fallback"]}}
-    if plan.get("elide_constant_goal"):
-        role["plan"]["elide_constant_goal"] = True
-    role["plan"]["ground"]["values"] = plan["ground"]["values"] + sorted(fixed)
     role["plan"]["pass_through"] = [x.replace("{server}", server) for x in plan["pass_through"]]
     return {"files": {"raw": baseline_name, "output": "../generated/cage1_jason_guided.ispl"},
             "model": {"environment_agent": "Environment"},
@@ -223,7 +222,7 @@ def main():
     baseline = args.output_dir / args.baseline_name
     jason = args.output_dir / "jason_mapping.json"
     program = args.program or Path(os.path.relpath(
-        Path(__file__).resolve().parents[2] / "agents/blue_agent_reactive.asl",
+        Path(__file__).resolve().parents[2] / "agents/blue_agent.asl",
         args.output_dir.resolve())).as_posix()
     baseline.write_text(render(mapping, counts), encoding="utf-8")
     jason.write_text(json.dumps(render_jason(mapping, counts, baseline.name, program), indent=2) + "\n", encoding="utf-8")

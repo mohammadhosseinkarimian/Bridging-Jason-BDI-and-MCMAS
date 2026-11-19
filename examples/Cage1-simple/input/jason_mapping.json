@@ -23,7 +23,7 @@
     },
     "roles": {
       "blue": {
-        "program": "../../../agents/blue_agent_reactive.asl",
+        "program": "../../../agents/blue_agent.asl",
         "ispl_agent": "Blue",
         "entry_goal": "observe_network",
         "goal_var": "blue_goal_level",
@@ -33,8 +33,7 @@
             "values": [
               "no",
               "user",
-              "privileged",
-              "Op_Server0"
+              "privileged"
             ],
             "signatures": {
               "secure": [
@@ -55,7 +54,9 @@
               ]
             },
             "members": [
-              "Enterprise0"
+              "Enterprise0",
+              "Op_Host0",
+              "Op_Server0"
             ]
           },
           "actions": {
@@ -120,48 +121,13 @@
             "secure_Defender": true,
             "initial_foothold_Defender": false,
             "host_state_Defender_any": true,
-            "host_state_Defender_user": {
-              "eq": [
-                {
-                  "env": "compromised_Defender"
-                },
-                "user"
-              ]
-            },
-            "host_state_Defender_privileged": {
-              "eq": [
-                {
-                  "env": "compromised_Defender"
-                },
-                "privileged"
-              ]
-            },
-            "secure_Op_Host0": {
-              "eq": [
-                {
-                  "env": "compromised_Op_Host0"
-                },
-                "no"
-              ]
-            },
+            "host_state_Defender_user": false,
+            "host_state_Defender_privileged": false,
+            "secure_Op_Host0": true,
             "initial_foothold_Op_Host0": false,
             "host_state_Op_Host0_any": true,
-            "host_state_Op_Host0_user": {
-              "eq": [
-                {
-                  "env": "compromised_Op_Host0"
-                },
-                "user"
-              ]
-            },
-            "host_state_Op_Host0_privileged": {
-              "eq": [
-                {
-                  "env": "compromised_Op_Host0"
-                },
-                "privileged"
-              ]
-            },
+            "host_state_Op_Host0_user": false,
+            "host_state_Op_Host0_privileged": false,
             "secure_Op_Server0": {
               "eq": [
                 {
@@ -193,9 +159,29 @@
             "blue_wait",
             "restore_Op_Server0"
           ],
-          "transitions": [],
-          "fallback": "monitor",
-          "elide_constant_goal": true
+          "transitions": [
+            {
+              "from": "secure_Enterprise0",
+              "to": "secure_network",
+              "action": "restore_Enterprise0"
+            },
+            {
+              "from": "secure_Enterprise0",
+              "to": "secure_network",
+              "action": "remove_Enterprise0"
+            },
+            {
+              "from": "secure_Op_Server0",
+              "to": "secure_network",
+              "action": "restore_Op_Server0"
+            },
+            {
+              "from": "secure_Op_Server0",
+              "to": "secure_network",
+              "action": "remove_Op_Server0"
+            }
+          ],
+          "fallback": "monitor"
         }
       }
     }

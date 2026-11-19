@@ -36,9 +36,9 @@ Other options:
 | `--mapping PATH` | Use a different domain-template JSON instead of `tools/cage1/mapping.json`. |
 | `--output-dir PATH` | Directory receiving both output files. The default is the current working directory. |
 | `--baseline-name NAME` | Name of the generated baseline, by default `cage1_baseline.ispl`. |
-| `--program PATH` | Override the ASL path placed in the mapping. By default the tool computes the relative path to `agents/blue_agent_reactive.asl` from the output folder. |
+| `--program PATH` | Override the source path relative to the mapping; the default computes the relative path to `agents/blue_agent.asl` from the output folder. |
 
-An explicit `--program` is interpreted relative to the generated JSON. A different source may require corresponding domain-template changes; in particular, the default `elide_constant_goal` option applies to the supplied reactive source, not a hierarchical policy with task transitions.
+An explicit `--program` is interpreted relative to the generated JSON; the default source path is computed for the selected output directory.
 
 To translate the generated model:
 
@@ -66,8 +66,7 @@ The template is organized into a number of sections. Each section is read by `ge
 | `state` | Declares public and private Environment variables, per-host access/state variables, and per-host observation variables. |
 | `initial` | Supplies starting values for common state, the foothold, ordinary hosts, observations, decoys, and agent variables. |
 | `actions` | Lists Environment actions and templates for Blue's common/host actions and Red's discovery, exploit, escalation, and service actions. |
-| `protocols` | Defines the conditions under which Environment and directed Red actions are enabled. Blue's broad baseline protocol is assembled from its configured action sets. |
-| `attacker` | Defines the directed B-line route: enterprise gateway, then operational server, with guards based only on Red's recorded progress. |
+| `protocols` | Defines the conditions under which Environment and Red actions are enabled. Blue's broad baseline protocol is assembled from its configured action sets. |
 | `evolution` | Defines how turn changes, restoration, removal, discovery, exploitation, privilege changes, service impact, decoys, and observation updates affect the next state. |
 | `evaluation` | Defines atomic propositions for verification, including access and service status. |
 | `formulae` | Temporal properties copied into the resulting ISPL. These need to be checked for the exact semantics intended in each experiment. |
@@ -92,16 +91,14 @@ These are the text-construction helpers. `expand` replaces named placeholders wi
 1. Declares the Environment's observable state and private variables. It creates host-specific fields and the configured decoy variables.
 2. Declares Environment actions, protocol rules, and evolution rules. It expands the network dynamics for each host and subnet, including Blue response effects, Red discovery and access changes, decoy behavior, and the information reported to the agents.
 3. Declares `Agent Blue`. Its `Lobsvars` reference the configured observation variables. On Blue turns, the baseline protocol offers the configured common and per-host defensive actions; on Red turns, Blue takes its wait action.
-4. Declares `Agent Red`. Its `Lobsvars` represent Red's recorded information. It discovers and attacks the last numbered enterprise host before moving to the operational server. Sleep and off-route attacks are not enabled. Failed operational discovery or impact after Blue restoration resets the relevant stale access record so that Red retries.
+4. Declares `Agent Red`. Its `Lobsvars` represent Red's recorded information. It receives its configured discovery, exploit, privilege, impact, and wait choices under their baseline guards.
 5. Writes evaluation propositions, all initial assignments, the `blue_team` and `red_team` groups, and the selected formulae.
 
 The Environment evolution rules are where the modeled effects and alternative outcomes are defined. The presence of separate actual-state and reported-state fields allows an attack to change the network without necessarily updating Blue's view. Alternative Environment actions represent nondeterministic outcomes, without assigning probabilities.
 
 ### `render_jason`
 
-`render_jason(mapping, counts, baseline_name, program)` builds the *second* JSON file. It creates the Blue `role` using the chosen program, entry goal, and goal-variable name. The current template selects only the server and gateway attacked by Red. Literal server terms are normalized through `ground.values`, and the gateway's parameterized plans are expanded through `ground.members`. Report predicates map to the recorded compromise fields, with server-first response priority.
-
-The reactive source has no intermediate task transition. `elide_constant_goal` omits the constant task variable after checking that it is safe to do so. The original hierarchical source remains in `agents/blue_agent.asl`. Server restoration is still retained as a pass-through recovery action; this remains a partial policy mapping, not a full Jason runtime translation.
+`render_jason(mapping, counts, baseline_name, program)` builds the *second* JSON file. It creates the Blue `role` using the chosen program, entry goal, and `blue_goal_level`. It grounds selected host-dependent terms, adds mappings for per-host `restore` and `remove`, maps host reports and secure beliefs to the generated ISPL fields, and creates task-stage transitions that return a host-security goal to the network-security goal after a mapped response.
 
 The function also applies configured exclusions such as the initial foothold and Defender, carries over pass-through choices, and substitutes the chosen server name where required. Thus, the generated Jason mapping is specific to the host list produced by the same run. It should not be casually reused for a different host count.
 
@@ -115,15 +112,12 @@ The network variables and action templates in `mapping.json` must agree with the
 
 After generating a new network, inspect the Blue and Red `Protocol` sections, the Environment observation updates, the `InitStates` block, and the mapping's `plan.actions`, `plan.predicates`, `pass_through`, and `transitions`. Then generate the guided file and run MCMAS on **both** versions. See [`../../examples/MAPPING_GUIDE.md`](../../examples/MAPPING_GUIDE.md) for the mapping syntax and [`../../src/jason_guided.md`](../../src/jason_guided.md) for translation behavior.
 
-## Reproduce the measurements
+## Directed attacker and explicit goals
 
-Run in Linux or WSL with MCMAS on `PATH`:
+The baseline uses a directed B-line abstraction through the last enterprise host to the operational server. Failed operational discovery or impact resets stale Red access so it retries. The same Red and Environment blocks are retained in each guided model.
 
-```bash
-python3 tools/cage1/benchmark.py --mcmas mcmas --repeats 11
-python3 tools/cage1/validate.py --mcmas mcmas
-```
+The original hierarchical `blue_agent.asl` supplies the complete original goal domains. `blue_goal_level` is declared, initialized, tested by the protocol, and updated by goal-adoption and remediation rules. Hosts outside the directed attack route retain their goal labels. Their reported-clean status is invariant in these baselines, so the mapping can fix their security predicates to true and their compromise predicates to false. Their unconditional fallback already returns control to the network goal, making extra action-conditioned return rules redundant.
 
-The benchmark runs serially, excludes one warm-up per model, alternates pair order, and saves every MCMAS output plus `/usr/bin/time -v` output in `docs/cage1_results/results.json`. It verifies identical Environment, Red, initialization, evaluation, groups, and formula sections before measuring. `summary.csv` contains the medians. `validate.py` checks all examples and CAGE deadlock freedom, saving `validation.json`.
+Run `python3 -B tools/cage1/benchmark.py --repeats 11` for timings and `python3 -B tools/cage1/validate.py` for property, deadlock, and goal-reachability checks. See [the current results](../../docs/cage1_results.md).
 
-`--require-reductions` makes the benchmark exit unsuccessfully unless states, BDD memory, and median MCMAS time all decrease in every pair. The current two-host example fails that strict requirement: its BDD allocation is unchanged and its runtime is slightly higher. The larger examples show all three reductions in the recorded measurements. See [`../../docs/cage1_results.md`](../../docs/cage1_results.md) for exact results and limits.
+The default profile and the separately recorded `--profile ordered` comparison are both reported. Ordered uses `-o 1` for simple and `-o 1 -g 1` for complete, identically within each pair; it is not claimed to be the fastest configuration for each individual model. Use `--output docs/cage1_results/ordered` to keep it separate. Primary times are median monotonic elapsed times over all runs. Printed MCMAS times and negative-clock anomalies are retained separately. `--require-reductions` fails when any pair lacks a strict decrease in states, BDD bytes, or median elapsed time.

@@ -23,7 +23,7 @@
     },
     "roles": {
       "blue": {
-        "program": "../../agents/blue_agent_reactive.asl",
+        "program": "../../agents/blue_agent.asl",
         "ispl_agent": "Blue",
         "entry_goal": "observe_network",
         "goal_var": "blue_goal_level",
@@ -33,8 +33,7 @@
             "values": [
               "no",
               "user",
-              "privileged",
-              "Op_Server0"
+              "privileged"
             ],
             "signatures": {
               "secure": [
@@ -55,7 +54,17 @@
               ]
             },
             "members": [
-              "Enterprise2"
+              "User1",
+              "User2",
+              "User3",
+              "User4",
+              "Enterprise0",
+              "Enterprise1",
+              "Enterprise2",
+              "Op_Host0",
+              "Op_Host1",
+              "Op_Host2",
+              "Op_Server0"
             ]
           },
           "actions": {
@@ -107,162 +116,36 @@
                 "privileged"
               ]
             },
-            "secure_User1": {
-              "eq": [
-                {
-                  "env": "compromised_User1"
-                },
-                "no"
-              ]
-            },
+            "secure_User1": true,
             "initial_foothold_User1": false,
             "host_state_User1_any": true,
-            "host_state_User1_user": {
-              "eq": [
-                {
-                  "env": "compromised_User1"
-                },
-                "user"
-              ]
-            },
-            "host_state_User1_privileged": {
-              "eq": [
-                {
-                  "env": "compromised_User1"
-                },
-                "privileged"
-              ]
-            },
-            "secure_User2": {
-              "eq": [
-                {
-                  "env": "compromised_User2"
-                },
-                "no"
-              ]
-            },
+            "host_state_User1_user": false,
+            "host_state_User1_privileged": false,
+            "secure_User2": true,
             "initial_foothold_User2": false,
             "host_state_User2_any": true,
-            "host_state_User2_user": {
-              "eq": [
-                {
-                  "env": "compromised_User2"
-                },
-                "user"
-              ]
-            },
-            "host_state_User2_privileged": {
-              "eq": [
-                {
-                  "env": "compromised_User2"
-                },
-                "privileged"
-              ]
-            },
-            "secure_User3": {
-              "eq": [
-                {
-                  "env": "compromised_User3"
-                },
-                "no"
-              ]
-            },
+            "host_state_User2_user": false,
+            "host_state_User2_privileged": false,
+            "secure_User3": true,
             "initial_foothold_User3": false,
             "host_state_User3_any": true,
-            "host_state_User3_user": {
-              "eq": [
-                {
-                  "env": "compromised_User3"
-                },
-                "user"
-              ]
-            },
-            "host_state_User3_privileged": {
-              "eq": [
-                {
-                  "env": "compromised_User3"
-                },
-                "privileged"
-              ]
-            },
-            "secure_User4": {
-              "eq": [
-                {
-                  "env": "compromised_User4"
-                },
-                "no"
-              ]
-            },
+            "host_state_User3_user": false,
+            "host_state_User3_privileged": false,
+            "secure_User4": true,
             "initial_foothold_User4": false,
             "host_state_User4_any": true,
-            "host_state_User4_user": {
-              "eq": [
-                {
-                  "env": "compromised_User4"
-                },
-                "user"
-              ]
-            },
-            "host_state_User4_privileged": {
-              "eq": [
-                {
-                  "env": "compromised_User4"
-                },
-                "privileged"
-              ]
-            },
-            "secure_Enterprise0": {
-              "eq": [
-                {
-                  "env": "compromised_Enterprise0"
-                },
-                "no"
-              ]
-            },
+            "host_state_User4_user": false,
+            "host_state_User4_privileged": false,
+            "secure_Enterprise0": true,
             "initial_foothold_Enterprise0": false,
             "host_state_Enterprise0_any": false,
-            "host_state_Enterprise0_user": {
-              "eq": [
-                {
-                  "env": "compromised_Enterprise0"
-                },
-                "user"
-              ]
-            },
-            "host_state_Enterprise0_privileged": {
-              "eq": [
-                {
-                  "env": "compromised_Enterprise0"
-                },
-                "privileged"
-              ]
-            },
-            "secure_Enterprise1": {
-              "eq": [
-                {
-                  "env": "compromised_Enterprise1"
-                },
-                "no"
-              ]
-            },
+            "host_state_Enterprise0_user": false,
+            "host_state_Enterprise0_privileged": false,
+            "secure_Enterprise1": true,
             "initial_foothold_Enterprise1": false,
             "host_state_Enterprise1_any": false,
-            "host_state_Enterprise1_user": {
-              "eq": [
-                {
-                  "env": "compromised_Enterprise1"
-                },
-                "user"
-              ]
-            },
-            "host_state_Enterprise1_privileged": {
-              "eq": [
-                {
-                  "env": "compromised_Enterprise1"
-                },
-                "privileged"
-              ]
-            },
+            "host_state_Enterprise1_user": false,
+            "host_state_Enterprise1_privileged": false,
             "secure_Enterprise2": {
               "eq": [
                 {
@@ -292,100 +175,23 @@
             "secure_Defender": true,
             "initial_foothold_Defender": false,
             "host_state_Defender_any": true,
-            "host_state_Defender_user": {
-              "eq": [
-                {
-                  "env": "compromised_Defender"
-                },
-                "user"
-              ]
-            },
-            "host_state_Defender_privileged": {
-              "eq": [
-                {
-                  "env": "compromised_Defender"
-                },
-                "privileged"
-              ]
-            },
-            "secure_Op_Host0": {
-              "eq": [
-                {
-                  "env": "compromised_Op_Host0"
-                },
-                "no"
-              ]
-            },
+            "host_state_Defender_user": false,
+            "host_state_Defender_privileged": false,
+            "secure_Op_Host0": true,
             "initial_foothold_Op_Host0": false,
             "host_state_Op_Host0_any": true,
-            "host_state_Op_Host0_user": {
-              "eq": [
-                {
-                  "env": "compromised_Op_Host0"
-                },
-                "user"
-              ]
-            },
-            "host_state_Op_Host0_privileged": {
-              "eq": [
-                {
-                  "env": "compromised_Op_Host0"
-                },
-                "privileged"
-              ]
-            },
-            "secure_Op_Host1": {
-              "eq": [
-                {
-                  "env": "compromised_Op_Host1"
-                },
-                "no"
-              ]
-            },
+            "host_state_Op_Host0_user": false,
+            "host_state_Op_Host0_privileged": false,
+            "secure_Op_Host1": true,
             "initial_foothold_Op_Host1": false,
             "host_state_Op_Host1_any": true,
-            "host_state_Op_Host1_user": {
-              "eq": [
-                {
-                  "env": "compromised_Op_Host1"
-                },
-                "user"
-              ]
-            },
-            "host_state_Op_Host1_privileged": {
-              "eq": [
-                {
-                  "env": "compromised_Op_Host1"
-                },
-                "privileged"
-              ]
-            },
-            "secure_Op_Host2": {
-              "eq": [
-                {
-                  "env": "compromised_Op_Host2"
-                },
-                "no"
-              ]
-            },
+            "host_state_Op_Host1_user": false,
+            "host_state_Op_Host1_privileged": false,
+            "secure_Op_Host2": true,
             "initial_foothold_Op_Host2": false,
             "host_state_Op_Host2_any": true,
-            "host_state_Op_Host2_user": {
-              "eq": [
-                {
-                  "env": "compromised_Op_Host2"
-                },
-                "user"
-              ]
-            },
-            "host_state_Op_Host2_privileged": {
-              "eq": [
-                {
-                  "env": "compromised_Op_Host2"
-                },
-                "privileged"
-              ]
-            },
+            "host_state_Op_Host2_user": false,
+            "host_state_Op_Host2_privileged": false,
             "secure_Op_Server0": {
               "eq": [
                 {
@@ -417,9 +223,29 @@
             "blue_wait",
             "restore_Op_Server0"
           ],
-          "transitions": [],
-          "fallback": "monitor",
-          "elide_constant_goal": true
+          "transitions": [
+            {
+              "from": "secure_Enterprise2",
+              "to": "secure_network",
+              "action": "restore_Enterprise2"
+            },
+            {
+              "from": "secure_Enterprise2",
+              "to": "secure_network",
+              "action": "remove_Enterprise2"
+            },
+            {
+              "from": "secure_Op_Server0",
+              "to": "secure_network",
+              "action": "restore_Op_Server0"
+            },
+            {
+              "from": "secure_Op_Server0",
+              "to": "secure_network",
+              "action": "remove_Op_Server0"
+            }
+          ],
+          "fallback": "monitor"
         }
       }
     }

@@ -46,12 +46,13 @@ Agent Blue
     Lobsvars = {compromised_User0, compromised_Op_Server0};
     Vars:
         dummy : boolean;
+        blue_goal_level: {secure_network, secure_Op_Server0, done};
     end Vars
     Actions = {monitor, remove_Op_Server0, restore_Op_Server0, blue_wait};
     Protocol:
-        Environment.compromised_Op_Server0 = privileged and Environment.turn = blue_turn: {restore_Op_Server0};
-        Environment.compromised_Op_Server0 = user and !(Environment.compromised_Op_Server0 = privileged) and Environment.turn = blue_turn: {remove_Op_Server0};
-        !(Environment.compromised_Op_Server0 = privileged) and !(Environment.compromised_Op_Server0 = user) and Environment.turn = blue_turn: {monitor};
+        blue_goal_level = secure_network and Environment.compromised_Op_Server0 = no and Environment.turn = blue_turn: {monitor};
+        blue_goal_level = secure_Op_Server0 and Environment.compromised_Op_Server0 = privileged and Environment.turn = blue_turn: {restore_Op_Server0};
+        blue_goal_level = secure_Op_Server0 and Environment.compromised_Op_Server0 = user and !(Environment.compromised_Op_Server0 = privileged) and Environment.turn = blue_turn: {remove_Op_Server0};
         Environment.turn = red_turn: {blue_wait};
         Environment.turn = blue_turn: {restore_Op_Server0};
         Other: {monitor};
@@ -59,6 +60,10 @@ Agent Blue
     Evolution:
         dummy = dummy if dummy = true;
         dummy = dummy if dummy = false;
+        blue_goal_level = secure_Op_Server0 if blue_goal_level = secure_network and !(Environment.compromised_Op_Server0 = no);
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and !(Environment.compromised_Op_Server0 = privileged) and !(Environment.compromised_Op_Server0 = user);
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and Blue.Action = restore_Op_Server0;
+        blue_goal_level = secure_network if blue_goal_level = secure_Op_Server0 and Blue.Action = remove_Op_Server0;
     end Evolution
 end Agent
 
@@ -95,6 +100,7 @@ InitStates
     Environment.compromised_Op_Server0 = no and
     Environment.red_Op_Server0 = service and
     Environment.ot_service_running = true and
+    Blue.blue_goal_level = secure_network and
     Blue.dummy = false and
     Red.dummy = false;
 end InitStates
